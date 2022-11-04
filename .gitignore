@@ -5,3 +5,6 @@
 # Virtual env
 venv/
 .venv/
+
+# Model display files
+*.dot

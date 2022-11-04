@@ -1,41 +1,62 @@
 // Process complete declaration
 Declaration:
-    function_block=FunctionBlock
+    types*=TypeDef
+    (function=Function)?
     CommentIgnored*
 ;
 
-// E.g. "FUNCTION_BLOCK FB_MyBlock"
-FunctionBlock:
+TypeDef:
     comment=CommentBlock?
-    'FUNCTION_BLOCK' name=ID
-    input_lists*=InputList
-    output_lists*=OutputList
-    var_list*=VariableList
+    'TYPE' name=ID ('EXTENDS' extends=ID)? ':'
+    (type=TypeStruct | options=TypeEnum)
+    'END_TYPE'
 ;
 
-// Input list (can have multiple)
-InputList:
-    'VAR_INPUT'
-    inputs*=Variable
-    CommentIgnored*
-    'END_VAR'
+TypeStruct:
+    'STRUCT'
+    properties*=Variable
+    'END_STRUCT'
 ;
 
-// Output list (can have multiple)
-OutputList:
-    'VAR_OUTPUT'
-    outputs*=Variable
-    'END_VAR'
+TypeEnum:
+    '('
+    values*=EnumOption
+    ');'
 ;
 
-// Ignore regular variables
+EnumOption:
+    name=ID
+    (':=' INT)?
+    ','?
+;
+
+Function:
+    comment=CommentBlock?
+    function_type=FunctionType name=ID ('EXTENDS' extends=ID)? (':' return=ID)?
+    lists*=VariableList
+;
+
+FunctionType :
+    'FUNCTION_BLOCK' | 'FUNCTION'
+;
+
+Listing :
+    VariableList | CommentIgnored
+;
+
 VariableList:
-    'VAR'
-    outputs*=Variable
+    CommentIgnored*
+    name=VariableType
+    variables*=Variable
     'END_VAR'
+    CommentIgnored*
 ;
 
-// A variable (input/output) definition
+VariableType:
+    /VAR_.*/ | 'VAR'
+;
+
+// A single variable definition
 Variable:
     CommentIgnored*
     name=ID ':' type=ID ';' comment=CommentDescription?

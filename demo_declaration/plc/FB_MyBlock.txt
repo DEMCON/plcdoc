@@ -11,13 +11,13 @@ VAR_INPUT
     someInput       : LREAL;    // Some comment!
     otherInput      : BOOL;
 END_VAR
+VAR_OUTPUT
+    myOutput        : UINT;
+END_VAR
 VAR_INPUT
     // Useless comment
     secondClause    : LREAL; //Thisisalsoacomment
     // Useless comment
-END_VAR
-VAR_OUTPUT
-    myOutput        : UINT;
 END_VAR
 VAR
     internal_variable : BOOL;

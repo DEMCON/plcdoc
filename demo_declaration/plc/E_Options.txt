@@ -1,0 +1,7 @@
+TYPE E_Options :
+(
+	Default := 0,
+    Option1,
+    Option2
+);
+END_TYPE

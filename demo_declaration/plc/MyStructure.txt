@@ -1,0 +1,6 @@
+TYPE MyStructure :
+STRUCT
+    member1     : LREAL; // Some member
+    member2     : LREAL; // Some member
+END_STRUCT
+END_TYPE

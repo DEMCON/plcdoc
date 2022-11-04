@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <DUT Name="E_Options" Id="{6e36f65b-7eeb-4a07-a080-da4416efbd53}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_Options :
+(
+	Default := 0,
+    Option1,
+    Option2
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

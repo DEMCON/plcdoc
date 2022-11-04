@@ -1,0 +1,5 @@
+TYPE MyStructureExtended EXTENDS MyStructure :
+STRUCT
+    member2     : UDINT;            //          Another property
+END_STRUCT
+END_TYPE

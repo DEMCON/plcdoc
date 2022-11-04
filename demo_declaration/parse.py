@@ -6,6 +6,11 @@ if __name__ == "__main__":
 
     meta_model = metamodel_from_file("st_declaration.tx")
 
-    model = meta_model.model_from_file("FB_MyBlock.txt")
+    # filename = "FB_MyBlockExtended.txt"
+    # filename = "FB_MyBlock.txt"
+    # filename = "RegularFunction.txt"
+    # filename = "MyStructure.txt"
+    filename = "E_Options.txt"
+    model = meta_model.model_from_file("plc/" + filename)
 
-    model_export(model, "model.dot")
+    model_export(model, filename + ".dot")

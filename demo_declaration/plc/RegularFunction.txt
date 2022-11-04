@@ -1,0 +1,11 @@
+(*
+Wanna hear something cool?
+
+Listen up.
+*)
+FUNCTION RegularFunction : LREAL
+VAR_INPUT
+    input       : LREAL;        // Herpaderp
+END_VAR
+VAR
+END_VAR

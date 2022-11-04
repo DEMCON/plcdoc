@@ -9,6 +9,9 @@ VAR_INPUT
     someInput       : LREAL;        // This is some input with a description
     otherInput      : BOOL;         // Awesome description 
 END_VAR
+VAR_INPUT
+    secondClause    : LREAL;        // This is some input with a description 
+END_VAR
 VAR_OUTPUT
     myOutput        : UINT;         // Return something nice
 END_VAR
@@ -17,8 +20,6 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[myOutput := 420;
-
-FB_MyBlock := TRUE;
 ]]></ST>
     </Implementation>
     <Method Name="MyMethod" Id="{0c39134c-0d9c-4e67-a24c-81526057b12e}">
