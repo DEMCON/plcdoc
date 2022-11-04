@@ -22,4 +22,4 @@ def parse_file(path: str):
 
 
 if __name__ == "__main__":
-    parse_file("examples/FB_MyBlock.TcPOU")
+    parse_file("../examples/TwinCAT PLC/FB_MyBlock.TcPOU")

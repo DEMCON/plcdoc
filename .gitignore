@@ -2,10 +2,13 @@
 .idea/
 .vscode/
 
-# Virtual env
+# Python stuff
 venv/
 .venv/
 __pycache__/
+*.egg-info/
+
+examples/docs/_build/
 
 # Model display files
 *.dot
