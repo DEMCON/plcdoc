@@ -1,0 +1,24 @@
+
+    digraph textX {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    node[
+        shape=record,
+        style=filled,
+        fillcolor=aliceblue
+    ]
+    nodesep = 0.3
+    edge[dir=black,arrowtail=empty]
+
+
+2558149211808 -> 2558149209360 [label="typedefs:0" arrowtail=diamond dir=both]
+2558149209360 -> 2558149211184 [label="type" arrowtail=diamond dir=both]
+2558149211184 -> 2558149212960 [label="properties:0" arrowtail=diamond dir=both]
+2558149212960 -> 2558149212672 [label="comment" arrowtail=diamond dir=both]
+2558149212672[label="{:CommentDescription|+comment:str='Another property'\l}"]
+2558149212960[label="{member2:Variable|+type:str='UDINT'\l}"]
+2558149211184[label="{:TypeStruct|}"]
+2558149209360[label="{MyStructureExtended:TypeDef|+extends:str='MyStructure'\l}"]
+2558149211808[label="{:Declaration|}"]
+
+}

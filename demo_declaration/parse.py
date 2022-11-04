@@ -4,7 +4,7 @@ from textx.export import model_export
 
 if __name__ == "__main__":
 
-    meta_model = metamodel_from_file("st_declaration.tx")
+    meta_model = metamodel_from_file("../plc_doc/st_declaration.tx")
 
     # filename = "FB_MyBlockExtended.txt"
     # filename = "FB_MyBlock.txt"

@@ -1,0 +1,26 @@
+
+    digraph textX {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    node[
+        shape=record,
+        style=filled,
+        fillcolor=aliceblue
+    ]
+    nodesep = 0.3
+    edge[dir=black,arrowtail=empty]
+
+
+2558149205616 -> 2558149200576 [label="typedefs:0" arrowtail=diamond dir=both]
+2558149200576 -> 2558149206624 [label="type" arrowtail=diamond dir=both]
+2558149206624 -> 2558149205568 [label="values:0" arrowtail=diamond dir=both]
+2558149205568[label="{Default:EnumOption|}"]
+2558149206624 -> 2558149207488 [label="values:1" arrowtail=diamond dir=both]
+2558149207488[label="{Option1:EnumOption|}"]
+2558149206624 -> 2558149206192 [label="values:2" arrowtail=diamond dir=both]
+2558149206192[label="{Option2:EnumOption|}"]
+2558149206624[label="{:TypeEnum|}"]
+2558149200576[label="{E_Options:TypeDef|+extends:str=''\l}"]
+2558149205616[label="{:Declaration|}"]
+
+}

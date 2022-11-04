@@ -1,0 +1,28 @@
+
+    digraph textX {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    node[
+        shape=record,
+        style=filled,
+        fillcolor=aliceblue
+    ]
+    nodesep = 0.3
+    edge[dir=black,arrowtail=empty]
+
+
+2558149201200 -> 2558149212912 [label="function" arrowtail=diamond dir=both]
+2558149212912 -> 2558149200864 [label="comment" arrowtail=diamond dir=both]
+2558149200864[label="{:CommentBlock|+comment:str='(*\\nWanna hear som...'\l}"]
+2558149212912 -> 2558149209984 [label="lists:0" arrowtail=diamond dir=both]
+2558149209984 -> 2558149202256 [label="variables:0" arrowtail=diamond dir=both]
+2558149202256 -> 2558149210704 [label="comment" arrowtail=diamond dir=both]
+2558149210704[label="{:CommentDescription|+comment:str='Herpaderp'\l}"]
+2558149202256[label="{input:Variable|+type:str='LREAL'\l}"]
+2558149209984[label="{VAR_INPUT:VariableList|}"]
+2558149212912 -> 2558149210320 [label="lists:1" arrowtail=diamond dir=both]
+2558149210320[label="{VAR:VariableList|variables:list=[]\l}"]
+2558149212912[label="{RegularFunction:Function|+function_type:str='FUNCTION'\l+extends:str=''\l+return:str='LREAL'\l}"]
+2558149201200[label="{:Declaration|typedefs:list=[]\l}"]
+
+}

@@ -6,7 +6,7 @@ def parse_file(path: str):
     tree = ET.parse(path)
     root = tree.getroot()
 
-    model = metamodel_from_file("st_declaration.tx")
+    model = metamodel_from_file("plc_doc/st_declaration.tx")
 
     for item in root:
         plc_item = item.tag

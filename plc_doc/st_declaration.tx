@@ -1,15 +1,15 @@
 // Process complete declaration
 Declaration:
-    types*=TypeDef
+    typedefs*=TypeDef
     (function=Function)?
-    CommentIgnored*
 ;
 
 TypeDef:
     comment=CommentBlock?
     'TYPE' name=ID ('EXTENDS' extends=ID)? ':'
-    (type=TypeStruct | options=TypeEnum)
+    (type=TypeStruct | type=TypeEnum)
     'END_TYPE'
+    CommentIgnored*
 ;
 
 TypeStruct:
@@ -34,6 +34,7 @@ Function:
     comment=CommentBlock?
     function_type=FunctionType name=ID ('EXTENDS' extends=ID)? (':' return=ID)?
     lists*=VariableList
+    CommentIgnored*
 ;
 
 FunctionType :
@@ -46,13 +47,13 @@ Listing :
 
 VariableList:
     CommentIgnored*
-    name=VariableType
+    name=VariableListType
     variables*=Variable
     'END_VAR'
     CommentIgnored*
 ;
 
-VariableType:
+VariableListType:
     /VAR_.*/ | 'VAR'
 ;
 

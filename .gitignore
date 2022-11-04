@@ -5,6 +5,7 @@
 # Virtual env
 venv/
 .venv/
+__pycache__/
 
 # Model display files
 *.dot
