@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_MyBlock" Id="{349377b9-c8f5-4136-9f25-4b51249737ae}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Info!
+*)
+FUNCTION_BLOCK FB_MyBlock
+VAR_INPUT
+    someInput       : LREAL;        // This is some input with a description
+    otherInput      : BOOL;         // Awesome description 
+END_VAR
+VAR_OUTPUT
+    myOutput        : UINT;         // Return something nice
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[myOutput := 420;
+
+FB_MyBlock := TRUE;
+]]></ST>
+    </Implementation>
+    <Method Name="MyMethod" Id="{0c39134c-0d9c-4e67-a24c-81526057b12e}">
+      <Declaration><![CDATA[METHOD MyMethod : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MyMethod := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

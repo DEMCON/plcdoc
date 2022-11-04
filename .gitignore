@@ -1,0 +1,7 @@
+# IDE
+.idea/
+.vscode/
+
+# Virtual env
+venv/
+.venv/

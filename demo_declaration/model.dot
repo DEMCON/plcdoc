@@ -1,0 +1,42 @@
+
+    digraph textX {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    node[
+        shape=record,
+        style=filled,
+        fillcolor=aliceblue
+    ]
+    nodesep = 0.3
+    edge[dir=black,arrowtail=empty]
+
+
+2253306482784 -> 2253306482928 [label="function_block" arrowtail=diamond dir=both]
+2253306482928 -> 2253306483024 [label="comment" arrowtail=diamond dir=both]
+2253306483024[label="{:CommentBlock|+comment:str='(*\\nMy doc block!\\...'\l}"]
+2253306482928 -> 2253306483168 [label="input_lists:0" arrowtail=diamond dir=both]
+2253306483168 -> 2253306483360 [label="inputs:0" arrowtail=diamond dir=both]
+2253306483360 -> 2253306483504 [label="comment" arrowtail=diamond dir=both]
+2253306483504[label="{:CommentDescription|+comment:str='Some comment!'\l}"]
+2253306483360[label="{someInput:Variable|+type:str='LREAL'\l}"]
+2253306483168 -> 2253306483408 [label="inputs:1" arrowtail=diamond dir=both]
+2253306483408[label="{otherInput:Variable|+type:str='BOOL'\l}"]
+2253306483168[label="{:InputList|}"]
+2253306482928 -> 2253306483264 [label="input_lists:1" arrowtail=diamond dir=both]
+2253306483264 -> 2253306483648 [label="inputs:0" arrowtail=diamond dir=both]
+2253306483648 -> 2253306483744 [label="comment" arrowtail=diamond dir=both]
+2253306483744[label="{:CommentDescription|+comment:str='Thisisalsoacomment'\l}"]
+2253306483648[label="{secondClause:Variable|+type:str='LREAL'\l}"]
+2253306483264[label="{:InputList|}"]
+2253306482928 -> 2253306483456 [label="output_lists:0" arrowtail=diamond dir=both]
+2253306483456 -> 2253306483888 [label="outputs:0" arrowtail=diamond dir=both]
+2253306483888[label="{myOutput:Variable|+type:str='UINT'\l}"]
+2253306483456[label="{:OutputList|}"]
+2253306482928 -> 2253306483696 [label="var_list:0" arrowtail=diamond dir=both]
+2253306483696 -> 2253306484032 [label="outputs:0" arrowtail=diamond dir=both]
+2253306484032[label="{internal_variable:Variable|+type:str='BOOL'\l}"]
+2253306483696[label="{:VariableList|}"]
+2253306482928[label="{FB_MyBlock:FunctionBlock|}"]
+2253306482784[label="{:Declaration|}"]
+
+}

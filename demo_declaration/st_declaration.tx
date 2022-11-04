@@ -1,0 +1,54 @@
+// Process complete declaration
+Declaration:
+    function_block=FunctionBlock
+    CommentIgnored*
+;
+
+// E.g. "FUNCTION_BLOCK FB_MyBlock"
+FunctionBlock:
+    comment=CommentBlock?
+    'FUNCTION_BLOCK' name=ID
+    input_lists*=InputList
+    output_lists*=OutputList
+    var_list*=VariableList
+;
+
+// Input list (can have multiple)
+InputList:
+    'VAR_INPUT'
+    inputs*=Variable
+    CommentIgnored*
+    'END_VAR'
+;
+
+// Output list (can have multiple)
+OutputList:
+    'VAR_OUTPUT'
+    outputs*=Variable
+    'END_VAR'
+;
+
+// Ignore regular variables
+VariableList:
+    'VAR'
+    outputs*=Variable
+    'END_VAR'
+;
+
+// A variable (input/output) definition
+Variable:
+    CommentIgnored*
+    name=ID ':' type=ID ';' comment=CommentDescription?
+    CommentIgnored*
+;
+
+// The `Comment` clause is reserved, create a custom clause that won't be processed
+CommentIgnored: /\/\/.*$/;
+
+CommentDescription:
+    '//' comment=/.*$/
+;
+
+CommentBlock[noskipws]:
+    comment=/\(\*(.|\n)*\*\)/
+;

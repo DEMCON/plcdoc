@@ -1,0 +1,28 @@
+(*
+My doc block!
+And a second line
+
+How far does this go?
+
+            Lol                 Lol
+*)
+FUNCTION_BLOCK FB_MyBlock
+VAR_INPUT
+    someInput       : LREAL;    // Some comment!
+    otherInput      : BOOL;
+END_VAR
+VAR_INPUT
+    // Useless comment
+    secondClause    : LREAL; //Thisisalsoacomment
+    // Useless comment
+END_VAR
+VAR_OUTPUT
+    myOutput        : UINT;
+END_VAR
+VAR
+    internal_variable : BOOL;
+END_VAR
+// Useless comment
+// Useless comment
+// Useless comment
+// Useless comment
