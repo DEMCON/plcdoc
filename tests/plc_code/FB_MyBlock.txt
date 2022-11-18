@@ -20,7 +20,8 @@ VAR_INPUT
     // Useless comment
 END_VAR
 VAR
-    internal_variable : BOOL;
+    some_string:STRING:='hoi';
+    internal_variable : BOOL        := FALSE;
 END_VAR
 // Useless comment
 // Useless comment

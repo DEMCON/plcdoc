@@ -60,8 +60,18 @@ VariableListType:
 // A single variable definition
 Variable:
     CommentIgnored*
-    name=ID ':' type=ID ';' comment=CommentDescription?
+    name=ID ':' type=ID value=Value? ';' comment=CommentDescription?
     CommentIgnored*
+;
+
+// Variable initial value
+Value:
+    ':=' value=Literal
+;
+
+// Catch literals for initialization
+Literal:
+    STRICTFLOAT|INT|STRING|ID
 ;
 
 // The `Comment` clause is reserved, create a custom clause that won't be processed

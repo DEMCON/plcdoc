@@ -1,8 +1,8 @@
 from setuptools import setup
-from
+
 
 setup(
-    name="plc-doc",
+    name="plcdoc",
     version="0.0.1",
     description="A tool to create PLC documentation for Sphinx",
     url="https://github.com/RobertoRoos/sphinx-plc-wip",

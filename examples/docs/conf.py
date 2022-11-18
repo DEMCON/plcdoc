@@ -18,6 +18,10 @@ extensions = ["plcdoc"]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+plc_sources = [
+    # "../TwinCAT PLC/.TcPOU",
+    "../TwinCAT PLC/FB_MyBlock.TcPOU",
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

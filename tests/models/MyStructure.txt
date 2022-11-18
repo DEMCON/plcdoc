@@ -11,18 +11,18 @@
     edge[dir=black,arrowtail=empty]
 
 
-2558149211232 -> 2558149211616 [label="typedefs:0" arrowtail=diamond dir=both]
-2558149211616 -> 2558149212144 [label="type" arrowtail=diamond dir=both]
-2558149212144 -> 2558149211040 [label="properties:0" arrowtail=diamond dir=both]
-2558149211040 -> 2558149211136 [label="comment" arrowtail=diamond dir=both]
-2558149211136[label="{:CommentDescription|+comment:str='Some member'\l}"]
-2558149211040[label="{member1:Variable|+type:str='LREAL'\l}"]
-2558149212144 -> 2558149211088 [label="properties:1" arrowtail=diamond dir=both]
-2558149211088 -> 2558149208832 [label="comment" arrowtail=diamond dir=both]
-2558149208832[label="{:CommentDescription|+comment:str='Some member'\l}"]
-2558149211088[label="{member2:Variable|+type:str='LREAL'\l}"]
-2558149212144[label="{:TypeStruct|}"]
-2558149211616[label="{MyStructure:TypeDef|+extends:str=''\l}"]
-2558149211232[label="{:Declaration|}"]
+1157668884576 -> 1157668884480 [label="typedefs:0" arrowtail=diamond dir=both]
+1157668884480 -> 1157668883328 [label="type" arrowtail=diamond dir=both]
+1157668883328 -> 1157668881936 [label="properties:0" arrowtail=diamond dir=both]
+1157668881936 -> 1157668698672 [label="comment" arrowtail=diamond dir=both]
+1157668698672[label="{:CommentDescription|+comment:str='Some member'\l}"]
+1157668881936[label="{member1:Variable|+type:str='LREAL'\l}"]
+1157668883328 -> 1157668883664 [label="properties:1" arrowtail=diamond dir=both]
+1157668883664 -> 1157668698336 [label="comment" arrowtail=diamond dir=both]
+1157668698336[label="{:CommentDescription|+comment:str='Some member'\l}"]
+1157668883664[label="{member2:Variable|+type:str='LREAL'\l}"]
+1157668883328[label="{:TypeStruct|}"]
+1157668884480[label="{MyStructure:TypeDef|+extends:str=''\l}"]
+1157668884576[label="{:Declaration|}"]
 
 }

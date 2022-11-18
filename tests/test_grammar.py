@@ -22,7 +22,7 @@ class TestGrammar(unittest.TestCase):
     ]
 
     def setUp(self) -> None:
-        txpath = os.path.realpath(tests_dir + "/../plc_doc/st_declaration.tx")
+        txpath = os.path.realpath(tests_dir + "/../plcdoc/st_declaration.tx")
         self.meta_model = metamodel_from_file(txpath)
 
     def test_grammar(self):

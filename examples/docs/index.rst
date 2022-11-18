@@ -24,4 +24,4 @@ Indices and tables
 Stuff
 =====
 
-.. plcdocdirective:: Thingy2
+.. plcautofunctionblock:: FB_MyBlock
