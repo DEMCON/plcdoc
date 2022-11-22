@@ -6,3 +6,12 @@ The basis is the [TextX](https://github.com/textX/textX) package to parse some o
 ## Tests
 
 Run tests with `python -m unittest discover`.
+
+## Objects
+
+The types that can be processed will be:
+
+ * `FUNCTION`
+ * `STRUCT`
+ * `TYPE`
+ * `FUNCTION_BLOCK`

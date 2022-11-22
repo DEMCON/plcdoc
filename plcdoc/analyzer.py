@@ -18,7 +18,9 @@ class PlcAnalyzer:
         :param app: Reference to Sphinx app instance
         """
 
-        self._meta_model = metamodel_from_file(os.path.join(PACKAGE_DIR, "st_declaration.tx"))
+        self._meta_model = metamodel_from_file(
+            os.path.join(PACKAGE_DIR, "st_declaration.tx")
+        )
 
         self._models: Dict[str, Any] = {}  # Library of processed models
 

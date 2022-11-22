@@ -2,8 +2,8 @@ import os
 from typing import Dict
 from sphinx.application import Sphinx
 
-from .directvies import PlcDocFunctionDirective, PlcDocFunctionBlockDirective
 from .analyzer import PlcAnalyzer
+from .domain import StructuredTextDomain
 
 
 def plcdoc_setup(app: Sphinx) -> Dict:
@@ -14,10 +14,12 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.connect("builder-inited", analyze)
 
-    app.add_directive("plcautofunction", PlcDocFunctionDirective)
-    app.add_directive("plcautofunctionblock", PlcDocFunctionBlockDirective)
-
     app.add_config_value("plc_sources", [], True)  # List[str]
+
+    app.add_domain(StructuredTextDomain)
+
+    # app.add_directive("plcautofunction", FunctionDirective)
+    # app.add_directive("plcautofunctionblock", FunctionBlockDirective)
 
     return {
         "version": "0.0.1",
@@ -35,6 +37,8 @@ def analyze(app: Sphinx):
         else app.config.plc_sources
     )
 
-    abs_source_paths = [os.path.normpath(os.path.join(app.confdir, path)) for path in source_paths]
+    abs_source_paths = [
+        os.path.normpath(os.path.join(app.confdir, path)) for path in source_paths
+    ]
 
     app._plcdoc_analyzer = PlcAnalyzer(abs_source_paths, app)
