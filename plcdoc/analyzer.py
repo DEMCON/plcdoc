@@ -56,9 +56,12 @@ class PlcAnalyzer:
 
         :param model: Processed model
         """
-
         if hasattr(model, "function"):
             self._models[model.function.name] = model.function
 
-        # for model_item in model:
-        #     print(model_item)
+    def get_object(self, name: str):
+        """Search for an object by name in parsed models.
+
+        :param name: Object name
+        """
+        return self._models[name]

@@ -11,6 +11,8 @@ from sphinx.directives import SphinxDirective, ObjectDescription
 from sphinx.util.docfields import Field, GroupedField, TypedField
 from sphinx.domains.python import _pseudo_parse_arglist, _parse_annotation
 
+from .renderers import AutoFunctionBlockRenderer
+
 
 # Regex for unofficial PLC signatures
 plc_sig_re = re.compile(
@@ -140,3 +142,15 @@ class PlcEnumerator(PlcObject):
 #
 #         node = nodes.paragraph(text="I am `PlcDocFunctionBlockDirective`")
 #         return [node]
+
+
+class PlcDirective(SphinxDirective):
+
+    required_arguments = 1
+
+
+class PlcAutoFunctionBlock(PlcDirective):
+
+    def run(self) -> List[Node]:
+        renderer = AutoFunctionBlockRenderer(self)
+        return renderer.rst_nodes()

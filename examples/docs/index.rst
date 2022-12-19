@@ -21,10 +21,10 @@ Indices and tables
 
 
 
-Auto Thingy
-===========
+Auto Typed PLC Stuff
+====================
 
-.. .. plcautofunctionblock:: FB_MyBlock
+.. plc:autofunctionblock:: FB_MyBlock
 
 
 Manually Typed PLC Function Blocks
