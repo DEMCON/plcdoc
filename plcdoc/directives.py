@@ -1,6 +1,9 @@
-import re
+"""
+This file contains the static directives for the PLC domain.
+They are added into ``StructuredText``, they are not registered manually inside the Sphinx ``setup`` callback.
+"""
+
 from typing import List, Tuple
-import re
 
 from docutils import nodes
 from docutils.nodes import Node
@@ -11,19 +14,7 @@ from sphinx.directives import SphinxDirective, ObjectDescription
 from sphinx.util.docfields import Field, GroupedField, TypedField
 from sphinx.domains.python import _pseudo_parse_arglist, _parse_annotation
 
-from .renderers import AutoFunctionBlockRenderer
-
-
-# Regex for unofficial PLC signatures
-plc_sig_re = re.compile(
-    r"""^ (\w+)  \s*                    # thing name
-          (?: \(\s*(.*)\s*\)            # optional: arguments
-          (?:\s* : \s* (.*))?           #           return annotation
-          (?:\s* EXTENDS \s* (.*))?     #           extends
-          )? $                          # and nothing more
-    """,
-    re.VERBOSE
-)
+from .documenters import plc_signature_re
 
 
 class PlcObject(ObjectDescription):
@@ -48,7 +39,7 @@ class PlcObject(ObjectDescription):
         Further declaration will have to rely on commands like `:var_in:`.
         Even though not valid PLC syntax, an argument list after the name is processed in Python style.
         """
-        m = plc_sig_re.match(sig)
+        m = plc_signature_re.match(sig)
         if m is None:
             raise ValueError
         name, arglist, retann, extends = m.groups()
@@ -147,10 +138,3 @@ class PlcEnumerator(PlcObject):
 class PlcDirective(SphinxDirective):
 
     required_arguments = 1
-
-
-class PlcAutoFunctionBlock(PlcDirective):
-
-    def run(self) -> List[Node]:
-        renderer = AutoFunctionBlockRenderer(self)
-        return renderer.rst_nodes()

@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple
+import re
 
 from docutils.nodes import Element
 from sphinx.addnodes import pending_xref

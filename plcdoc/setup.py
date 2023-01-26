@@ -2,9 +2,11 @@ import os
 from typing import Dict
 from sphinx.application import Sphinx
 
+from .__version__ import __version__
 from .analyzer import PlcAnalyzer
 from .domain import StructuredTextDomain
-from .directives import PlcAutoFunctionBlock
+from .auto_directives import PlcAutodocDirective, PlcAutoFunctionBlock
+from .documenters import PlcFunctionBlockDocumenter
 
 
 def plcdoc_setup(app: Sphinx) -> Dict:
@@ -19,18 +21,22 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.add_domain(StructuredTextDomain)
 
-    app.add_directive_to_domain("plc", "autofunctionblock", PlcAutoFunctionBlock)
-    # app.add_directive("plcautofunctionblock", FunctionBlockDirective)
+    app.registry.add_documenter("plc:functionblock", PlcFunctionBlockDocumenter)
+    app.add_directive_to_domain("plc", "autofunctionblock", PlcAutodocDirective)
 
     return {
-        "version": "0.0.1",
+        "version": __version__,
         "parallel_read_safe": True,
         "parallel_write_safe": True,
     }
 
 
 def analyze(app: Sphinx):
-    """Perform the analysis of PLC source and extract docs."""
+    """Perform the analysis of PLC source and extract docs.
+
+    The analysed results need to be available throughout the rest of the extension. To accomplish that, we just insert
+    a new property into ``app``.
+    """
 
     source_paths = (
         [app.config.plc_sources]
