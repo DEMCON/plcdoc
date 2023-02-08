@@ -1,0 +1,15 @@
+# IDE stuff
+*.bak
+.vs
+*.suo
+*.project.~u
+*.user
+*.dbg
+
+# TwinCAT files
+*.tmc
+TrialLicense.tclrs
+_CompileInfo/
+_ModuleInstall/
+_Boot/
+_Libraries/

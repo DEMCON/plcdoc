@@ -3,7 +3,8 @@
   <POU Name="RegularFunction" Id="{f80a8020-3966-4dae-a6c7-7aceb360dfeb}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION RegularFunction : LREAL
 VAR_INPUT
-    input       : LREAL;
+    input       : LREAL;            // This is an in-code description of some variable
+    other_arg   : UDINT;
 END_VAR
 VAR
 END_VAR
