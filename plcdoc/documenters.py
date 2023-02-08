@@ -4,7 +4,7 @@ import re
 from sphinx.ext.autodoc import Documenter as PyDocumenter
 from docutils.statemachine import StringList
 
-from .analyzer import PlcAnalyzer
+from .interpreter import PlcInterpreter, PlcDeclaration
 
 
 # Regex for unofficial PLC signatures -- this is used for non-auto
@@ -102,30 +102,19 @@ class PlcDocumenter(PyDocumenter):
     def format_args(self, **kwargs: Any) -> Optional[str]:
         """Format arguments for signature, based on auto-data."""
 
-        if not hasattr(self.object, "lists"):
-            return None
-
-        arg_strs = []
-
-        for var_list in self.object.lists:
-            var_kind = var_list.name.lower()
-            if var_kind not in ["var_input", "var_output", "var_input_output"]:
-                continue  # Skip internal variables `VAR`
-
-            for var in var_list.variables:
-                arg_strs.append(f"{var.name}: {var.type}")
+        arg_strs = [f"{var.name}" for var in self.object.get_args()]
 
         return "(" + ", ".join(arg_strs) + ")"
 
     def import_object(self, raiseerror: bool = False) -> bool:
         """Imports the object given by ``self.modname``.
 
-        Processing of source files is already done in ``analyse``, we look for the result here.
+        Processing of source files is already done in :func:`analyse``, we look for the result here.
         In the original Python ``autodoc`` this is where target files are loaded and read.
         """
-        analyzer: PlcAnalyzer = self.env.app._plcdoc_analyzer
+        interpreter: PlcInterpreter = self.env.app._interpreter
 
-        self.object = analyzer.get_object(self.name)
+        self.object: PlcDeclaration = interpreter.get_object(self.name)
 
         return True
 
@@ -158,17 +147,11 @@ class PlcDocumenter(PyDocumenter):
 
         docstrings = []
 
-        if hasattr(self.object, "lists"):
-            for var_list in self.object.lists:
-                var_kind = var_list.name.lower()
-                if var_kind not in ["var_input", "var_output", "var_input_output"]:
-                    continue  # Skip internal variables `VAR`
-
-                for var in var_list.variables:
-                    line_param = f":{var_kind} {var.type} {var.name}:"
-                    if var.comment and var.comment.comment:
-                        line_param += " " + var.comment.comment
-                    docstrings.append(line_param)
+        for var in self.object.get_args():
+            line_param = f":{var.kind} {var.type} {var.name}:"
+            if var.comment and var.comment.comment:
+                line_param += " " + var.comment.comment
+            docstrings.append(line_param)
 
         return docstrings
 
@@ -198,5 +181,7 @@ class PlcFunctionDocumenter(PlcDocumenter):
     objtype = "function"
 
     @classmethod
-    def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
         return isinstance(member, PlcFunctionDocumenter)

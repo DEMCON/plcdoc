@@ -2,14 +2,29 @@
 Manually Typed PLC Commands
 ***************************
 
+
+Manually Typed PLC Functions
+============================
+
+.. plc:function:: MyAtan2(y: LREAL, x: LREAL) : LREAL
+
+   This is a regular function.
+
+.. plc:function:: TestArgTypes(arg1, arg2)
+
+   :param arg1: Content Arg1
+   :type arg1: HERPDERP
+   :param SCHERP arg2: Content Arg2
+
+
 Manually Typed PLC Function Blocks
 ==================================
 
-.. plc:functionblock:: MyFunctionBlock2(MyInput: LREAL)
+.. plc:functionblock:: MyFunctionBlock(MyInput: LREAL)
 
-.. plc:functionblock:: MyFunctionBlock3(MyInput: LREAL, MyOutput: REAL, MyInputOutput: LREAL)
+.. plc:functionblock:: MyFunctionBlock2(MyInput: LREAL, MyOutput: REAL, MyInputOutput: LREAL)
 
-.. plc:functionblock:: MyFunctionBlock(SomeInput, OtherInput, Buffer, IsReady, HasError)
+.. plc:functionblock:: MyFunctionBlock3(SomeInput, OtherInput, Buffer, IsReady, HasError)
 
    This is a very cool function block!
 
@@ -23,19 +38,7 @@ Manually Typed PLC Function Blocks
 
    It has a base class!
 
-.. plc:function:: MyAtan2(y: LREAL, x: LREAL) : LREAL
-
-   This is a regular function.
-
-This should be a reference :plc:funcblock:`FirstFunction`.
-
-
-Manually Typed PLC Functions
-============================
-
-.. plc:function:: MyAtan2(y: LREAL, x: LREAL) : LREAL
-
-   This is a regular function.
+This should be a reference: :plc:funcblock:`MyFunctionBlock`.
 
 
 Manually Typed PLC Enums
@@ -50,6 +53,8 @@ Manually Typed PLC Enums
    .. plc:enumerator:: \
       FaceUp
       FaceDown
+
+   I am an orientation.
 
 
 Manually Typed PLC Structs

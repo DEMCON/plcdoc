@@ -90,7 +90,7 @@ class PlcCallableDescription(PlcObjectDescription):
             label="VAR_IN",
             names=("var_in", "VAR_IN", "var_input", "VAR_INPUT", "in", "IN", "param", "parameter", "arg", "argument"),
             typerolename="type",
-            typenames=("paramtype", "type"),
+            typenames=("paramtype", "type", "var_in_type", "type_in"),
             can_collapse=False,
         ),
         TypedField(
@@ -98,7 +98,7 @@ class PlcCallableDescription(PlcObjectDescription):
             label="VAR_OUT",
             names=("var_out", "VAR_OUT", "var_output", "VAR_OUTPUT", "out", "OUT"),
             typerolename="type",
-            typenames=("paramtype", "type"),
+            typenames=("var_out_type", "type_out"),  # Just "type" cannot be re-used!
             can_collapse=False,
         ),
         TypedField(
@@ -106,7 +106,7 @@ class PlcCallableDescription(PlcObjectDescription):
             label="VAR_IN_OUT",
             names=("var_in_out", "VAR_IN_OUT", "var_input_output", "VAR_INPUT_OUTPUT", "in_out", "IN_OUT"),
             typerolename="type",
-            typenames=("paramtype", "type"),
+            typenames=("var_in_out_type", "type_in_out"),
             can_collapse=False,
         ),
         Field(

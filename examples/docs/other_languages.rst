@@ -42,6 +42,15 @@ Regular Python Examples
 
 Above is some info about for example :py:func:`my_function`
 
+.. py:function:: function_types_test(x, y, z: int, w)
+
+   :param int x: Variable X
+   :param y: Variable Y
+   :type y: int
+   :param z: Variable Z
+   :param w: Variable W
+   :type w: herpaderp
+
 
 Regular C++ Examples
 ====================

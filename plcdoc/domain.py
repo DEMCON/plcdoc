@@ -6,7 +6,11 @@ from sphinx.addnodes import pending_xref
 from sphinx.roles import XRefRole
 from sphinx.domains import Domain, ObjType
 
-from .directives import PlcCallableDescription, PlcObjectDescription, PlcEnumeratorDescription
+from .directives import (
+    PlcCallableDescription,
+    PlcObjectDescription,
+    PlcEnumeratorDescription,
+)
 
 
 class StructuredTextDomain(Domain):

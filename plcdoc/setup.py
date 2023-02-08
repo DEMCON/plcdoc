@@ -3,7 +3,7 @@ from typing import Dict
 from sphinx.application import Sphinx
 
 from .__version__ import __version__
-from .analyzer import PlcAnalyzer
+from .interpreter import PlcInterpreter
 from .domain import StructuredTextDomain
 from .auto_directives import PlcAutodocDirective
 from .documenters import PlcFunctionBlockDocumenter, PlcFunctionDocumenter
@@ -37,6 +37,8 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 def analyze(app: Sphinx):
     """Perform the analysis of PLC source and extract docs.
 
+    The sources to be scoured are listed in the user's ``conf.py``.
+
     The analysed results need to be available throughout the rest of the extension. To accomplish that, we just insert
     a new property into ``app``.
     """
@@ -51,4 +53,8 @@ def analyze(app: Sphinx):
         os.path.normpath(os.path.join(app.confdir, path)) for path in source_paths
     ]
 
-    app._plcdoc_analyzer = PlcAnalyzer(abs_source_paths, app)
+    # Inserting the shared interpreter into an existing object is not the most neat, but it's the best way
+    # to keep an instance linked to an `app` object. The alternative would be the `app.env.temp_data` dict, which is
+    # also nasty.
+    interpreter = PlcInterpreter(abs_source_paths, app)
+    setattr(app, "_interpreter", interpreter)
