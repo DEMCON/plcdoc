@@ -1,10 +1,13 @@
 from typing import Any, Tuple, List, Optional
 import re
 
+from sphinx.util import logging
 from sphinx.ext.autodoc import Documenter as PyDocumenter
 from docutils.statemachine import StringList
 
 from .interpreter import PlcInterpreter, PlcDeclaration
+
+logger = logging.getLogger(__name__)
 
 
 # Regex for unofficial PLC signatures -- this is used for non-auto
@@ -40,7 +43,7 @@ class PlcDocumenter(PyDocumenter):
     ) -> None:
         """Generate reST for the object given by ``self.name``."""
         if not self.parse_name():
-            self.directive.warn(f"Failed to parse name `{self.name}`")
+            logger.warning(f"Failed to parse name `{self.name}`")
             return
 
         if not self.import_object():
@@ -53,11 +56,10 @@ class PlcDocumenter(PyDocumenter):
 
         # Format the object's signature, if any
         sig = self.format_signature()
-        # TODO: signature now always seems empty, should add something
 
         # Generate the directive header and options, if applicable
         self.add_directive_header(sig)
-        self.add_line("", "<autodoc>")
+        self.add_line("", "<autodoc>")  # Blank line again
 
         # E.g. the module directive doesn't have content
         self.indent += self.content_indent
@@ -66,7 +68,7 @@ class PlcDocumenter(PyDocumenter):
         self.add_content(more_content)
 
         # Document members, if possible
-        # self.document_members(all_members)
+        self.document_members(all_members)
 
     def parse_name(self) -> bool:
         """Determine the full name of the target and what modules to import.
@@ -121,39 +123,55 @@ class PlcDocumenter(PyDocumenter):
     def add_content(self, more_content: Optional[StringList]) -> None:
         """Add content from docstrings, attribute documentation and user."""
 
-        sourcename = self.name
-
-        # TODO: Test FunctionDocumenter and add content from code source
-
-        # TODO: Added docs from Sphinx-style doc-block
-
-        # docstrings = self.get_doc()
-        # if not docstrings:
-        #     # Append at least a dummy docstring
-        #     docstrings.append([])
-
-        # self.add_line("Lorem Ipsum", sourcename, 0)
-        # self.add_line("Lorem Ipsum", sourcename, 1)
-
+        # Add docstring from meta-model
         sourcename = f"declaration of {self.name}"
+        docstrings = self.get_doc()
 
-        for i, line in enumerate(self.get_docstring_from_model()):
-            self.add_line(line, sourcename, i)
-
-        return
-
-    def get_docstring_from_model(self) -> List:
-        """Create Sphinx docstring based on analyzed meta-model."""
-
-        docstrings = []
-
+        # Also add VARs from meta-model
+        args_block = []
         for var in self.object.get_args():
             line_param = f":{var.kind} {var.type} {var.name}:"
             if var.comment and var.comment.comment:
                 line_param += " " + var.comment.comment
-            docstrings.append(line_param)
+            args_block.append(line_param)
 
-        return docstrings
+        if args_block:
+            docstrings.append(args_block)
+
+        if docstrings is not None:
+            if not docstrings:  # Empty array
+                # Append at least a dummy docstring so the events are fired
+                docstrings.append([])
+            for i, line in enumerate(self.process_doc(docstrings)):
+                self.add_line(line, sourcename, i)
+
+        # Add additional content (e.g. from document), if present
+        if more_content:
+            for line, src in zip(more_content.data, more_content.items):
+                self.add_line(line, src[0], src[1])
+
+    def get_doc(self) -> Optional[List[List[str]]]:
+        """Get docstring from the meta-model."""
+
+        # Read main docblock
+        if not self.object.comment:
+            return []
+
+        comments = [
+            line.strip() for line in self.object.comment.strip().split("\n")
+        ]
+
+        return [comments]
+
+    def document_members(self, all_members: bool = False) -> None:
+        """Created automatic documentation of members of the object.
+
+        This includes methods, properties, etc.
+
+        ``autodoc`` will skip undocumented members by default, we will document
+        everything always.
+        """
+        
 
     @classmethod
     def can_document_member(

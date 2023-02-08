@@ -1,11 +1,11 @@
 import os
-from typing import List, Dict, Any
+import re
+from typing import List, Dict, Any, Optional
 from sphinx.application import Sphinx
 from glob import glob
 import xml.etree.ElementTree as ET
 from textx import metamodel_from_file
 from textx.metamodel import TextXMetaModel
-from enum import Enum
 
 PACKAGE_DIR = os.path.dirname(__file__)
 
@@ -91,6 +91,15 @@ class PlcDeclaration:
             self._model = meta_model.function
 
         self._name = self._model.name
+        self._comment = self._make_comment()
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def comment(self) -> Optional[str]:
+        return self._comment
 
     def get_args(self, skip_internal=True) -> List:
         """Return arguments.
@@ -114,6 +123,20 @@ class PlcDeclaration:
 
         return args
 
-    @property
-    def name(self) -> str:
-        return self._name
+    def _make_comment(self) -> Optional[str]:
+        """Process main block comment from model into a neat list.
+
+        A list is created for each 'region' of comments. The first comment block above a declaration
+        if the most common one.
+        """
+        if not hasattr(self._model, "comment"):
+            return None
+
+        big_block: str = self._model.comment.comment.strip()  # Remove whitespace
+        # Remove comment indicators (cannot get rid of them by TextX)
+        if big_block.startswith("(*"):
+            big_block = big_block[2:]
+        if big_block.endswith("*)"):
+            big_block = big_block[:-2]
+
+        return big_block
