@@ -32,7 +32,7 @@ class PlcAnalyzer:
     def parse_file(self, filepath) -> bool:
         """Process a single PLC file.
 
-        :return: True of a file was processed successfully
+        :return: True if a file was processed successfully
         """
 
         tree = ET.parse(filepath)

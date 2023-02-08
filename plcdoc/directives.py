@@ -88,7 +88,7 @@ class PlcCallable(PlcObject):
         TypedField(
             "var_in",
             label="VAR_IN",
-            names=("var_in", "VAR_IN", "in", "IN", "param", "parameter", "arg", "argument"),
+            names=("var_in", "VAR_IN", "var_input", "VAR_INPUT", "in", "IN", "param", "parameter", "arg", "argument"),
             typerolename="type",
             typenames=("paramtype", "type"),
             can_collapse=True,
@@ -96,7 +96,7 @@ class PlcCallable(PlcObject):
         TypedField(
             "var_out",
             label="VAR_OUT",
-            names=("var_out", "VAR_OUT", "out", "OUT"),
+            names=("var_out", "VAR_OUT", "var_output", "VAR_OUTPUT", "out", "OUT"),
             typerolename="type",
             typenames=("paramtype", "type"),
             can_collapse=True,
@@ -104,7 +104,7 @@ class PlcCallable(PlcObject):
         TypedField(
             "var_in_out",
             label="VAR_IN_OUT",
-            names=("var_in_out", "VAR_IN_OUT", "in_out", "IN_OUT"),
+            names=("var_in_out", "VAR_IN_OUT", "var_input_output", "VAR_INPUT_OUTPUT", "in_out", "IN_OUT"),
             typerolename="type",
             typenames=("paramtype", "type"),
             can_collapse=True,

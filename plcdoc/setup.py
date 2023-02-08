@@ -5,8 +5,8 @@ from sphinx.application import Sphinx
 from .__version__ import __version__
 from .analyzer import PlcAnalyzer
 from .domain import StructuredTextDomain
-from .auto_directives import PlcAutodocDirective, PlcAutoFunctionBlock
-from .documenters import PlcFunctionBlockDocumenter
+from .auto_directives import PlcAutodocDirective
+from .documenters import PlcFunctionBlockDocumenter, PlcFunctionDocumenter
 
 
 def plcdoc_setup(app: Sphinx) -> Dict:
@@ -20,6 +20,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     app.add_config_value("plc_sources", [], True)  # List[str]
 
     app.add_domain(StructuredTextDomain)
+
+    app.registry.add_documenter("plc:function", PlcFunctionDocumenter)
+    app.add_directive_to_domain("plc", "autofunction", PlcAutodocDirective)
 
     app.registry.add_documenter("plc:functionblock", PlcFunctionBlockDocumenter)
     app.add_directive_to_domain("plc", "autofunctionblock", PlcAutodocDirective)

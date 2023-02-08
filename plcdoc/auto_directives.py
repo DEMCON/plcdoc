@@ -22,7 +22,10 @@ class PlcAutodocDirective(AutodocDirective):
 
     It works as a dispatcher of Documenters. It invokes a Documenter on running.
     After the processing, it parses and returns the generated content by
-    Documenter.
+    Documenter. The directive itself doesn't modify the content.
+
+    The exact type is extracted from the full directive name and the appropriate
+    documenter is selected based on it.
     """
 
     option_spec = DummyOptionSpec()
@@ -82,7 +85,3 @@ class PlcAutodocDirective(AutodocDirective):
 
         result = parse_generated_content(self.state, params.result, documenter)
         return result
-
-
-class PlcAutoFunctionBlock(PlcAutodocDirective):
-    pass
