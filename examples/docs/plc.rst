@@ -9,7 +9,7 @@ Manually Typed PLC Function Blocks
 
 .. plc:functionblock:: MyFunctionBlock3(MyInput: LREAL, MyOutput: REAL, MyInputOutput: LREAL)
 
-.. plc:functionblock:: MyFunctionBlock
+.. plc:functionblock:: MyFunctionBlock(SomeInput, OtherInput, Buffer, IsReady, HasError)
 
    This is a very cool function block!
 

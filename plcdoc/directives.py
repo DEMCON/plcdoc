@@ -17,7 +17,7 @@ from sphinx.domains.python import _pseudo_parse_arglist, _parse_annotation
 from .documenters import plc_signature_re
 
 
-class PlcObject(ObjectDescription):
+class PlcObjectDescription(ObjectDescription):
     """Base class for description directives (e.g. for `function`).
 
     :cvar has_arguments: True if this type of description has a list of arguments
@@ -78,7 +78,7 @@ class PlcObject(ObjectDescription):
         return [nodes.Text(objtype), addnodes.desc_sig_space()]
 
 
-class PlcCallable(PlcObject):
+class PlcCallableDescription(PlcObjectDescription):
     """Directive to describe a callable object (function, function block)."""
 
     has_arguments = True
@@ -91,7 +91,7 @@ class PlcCallable(PlcObject):
             names=("var_in", "VAR_IN", "var_input", "VAR_INPUT", "in", "IN", "param", "parameter", "arg", "argument"),
             typerolename="type",
             typenames=("paramtype", "type"),
-            can_collapse=True,
+            can_collapse=False,
         ),
         TypedField(
             "var_out",
@@ -99,7 +99,7 @@ class PlcCallable(PlcObject):
             names=("var_out", "VAR_OUT", "var_output", "VAR_OUTPUT", "out", "OUT"),
             typerolename="type",
             typenames=("paramtype", "type"),
-            can_collapse=True,
+            can_collapse=False,
         ),
         TypedField(
             "var_in_out",
@@ -107,7 +107,7 @@ class PlcCallable(PlcObject):
             names=("var_in_out", "VAR_IN_OUT", "var_input_output", "VAR_INPUT_OUTPUT", "in_out", "IN_OUT"),
             typerolename="type",
             typenames=("paramtype", "type"),
-            can_collapse=True,
+            can_collapse=False,
         ),
         Field(
             "returnvalue",
@@ -120,7 +120,7 @@ class PlcCallable(PlcObject):
     # fmt: on
 
 
-class PlcEnumerator(PlcObject):
+class PlcEnumeratorDescription(PlcObjectDescription):
     """Directive for values of enums."""
 
     object_display_type = False

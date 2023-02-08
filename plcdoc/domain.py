@@ -6,7 +6,7 @@ from sphinx.addnodes import pending_xref
 from sphinx.roles import XRefRole
 from sphinx.domains import Domain, ObjType
 
-from .directives import PlcCallable, PlcObject, PlcEnumerator
+from .directives import PlcCallableDescription, PlcObjectDescription, PlcEnumeratorDescription
 
 
 class StructuredTextDomain(Domain):
@@ -31,12 +31,12 @@ class StructuredTextDomain(Domain):
     }
 
     directives = {
-        "function":         PlcCallable,
-        "functionblock":    PlcCallable,
-        "enum":             PlcObject,
-        "enumerator":       PlcEnumerator,
-        "struct":           PlcObject,
-        "property":         PlcObject,
+        "function":         PlcCallableDescription,
+        "functionblock":    PlcCallableDescription,
+        "enum":             PlcObjectDescription,
+        "enumerator":       PlcEnumeratorDescription,
+        "struct":           PlcObjectDescription,
+        "property":         PlcObjectDescription,
     }
 
     # Roles are used to reference objects and are used like :rolename:`content`

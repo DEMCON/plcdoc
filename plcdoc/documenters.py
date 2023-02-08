@@ -99,6 +99,24 @@ class PlcDocumenter(PyDocumenter):
         """
         return self.name
 
+    def format_args(self, **kwargs: Any) -> Optional[str]:
+        """Format arguments for signature, based on auto-data."""
+
+        if not hasattr(self.object, "lists"):
+            return None
+
+        arg_strs = []
+
+        for var_list in self.object.lists:
+            var_kind = var_list.name.lower()
+            if var_kind not in ["var_input", "var_output", "var_input_output"]:
+                continue  # Skip internal variables `VAR`
+
+            for var in var_list.variables:
+                arg_strs.append(f"{var.name}: {var.type}")
+
+        return "(" + ", ".join(arg_strs) + ")"
+
     def import_object(self, raiseerror: bool = False) -> bool:
         """Imports the object given by ``self.modname``.
 
