@@ -82,7 +82,9 @@ class PlcDocumenter(PyDocumenter, ABC):
         """
         try:
             # Parse the name supplied as directive argument
-            prefix, name, args, retann, extann = plc_signature_re.match(self.name).groups()
+            prefix, name, args, retann, extann = plc_signature_re.match(
+                self.name
+            ).groups()
         except AttributeError:
             logger.warning(f"Invalid signature for auto-{self.objtype} (f{self.name})")
             return False
@@ -119,9 +121,13 @@ class PlcDocumenter(PyDocumenter, ABC):
         interpreter: PlcInterpreter = self.env.app._interpreter
 
         try:
-            self.object: PlcDeclaration = interpreter.get_object(self.name, self.objtype)
+            self.object: PlcDeclaration = interpreter.get_object(
+                self.name, self.objtype
+            )
         except KeyError:
-            logger.warning(f"Failed to find object `{self.name}` for the type `{self.objtype}`")
+            logger.warning(
+                f"Failed to find object `{self.name}` for the type `{self.objtype}`"
+            )
             return False
 
         return True
@@ -164,9 +170,7 @@ class PlcDocumenter(PyDocumenter, ABC):
         if not comment_str:
             return []
 
-        comment_lines = [
-            line.strip() for line in comment_str.strip().split("\n")
-        ]
+        comment_lines = [line.strip() for line in comment_str.strip().split("\n")]
 
         return [comment_lines]
 

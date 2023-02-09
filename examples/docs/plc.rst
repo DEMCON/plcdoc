@@ -44,7 +44,11 @@ This should be a reference: :plc:funcblock:`MyFunctionBlock`.
 
    This is some function block.
 
-.. plc:method:: ImaginedFunctionBlock.SomeMethod()
+   .. plc:method:: SomeMethod()
+
+   .. plc:method:: FunctionBlockWithMethod.MethodWithPrefix()
+
+.. plc:method:: ImaginedFunctionBlock.SomeMethodStandAlone()
 
 
 Manually Typed PLC Enums

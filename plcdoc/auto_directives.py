@@ -10,9 +10,9 @@ from sphinx.ext.autodoc.directive import (
     parse_generated_content,
 )
 from sphinx.util.docutils import Reporter
-import sphinx.util
+from sphinx.util import logging
 
-logger = sphinx.util.logging.getLogger("plc-domain")
+logger = logging.getLogger(__name__)
 
 
 class PlcAutodocDirective(AutodocDirective):

@@ -160,7 +160,11 @@ class PlcDeclaration:
 
         for var_list in self._model.lists:
             var_kind = var_list.name.lower()
-            if skip_internal and var_kind not in ["var_input", "var_output", "var_input_output"]:
+            if skip_internal and var_kind not in [
+                "var_input",
+                "var_output",
+                "var_input_output",
+            ]:
                 continue  # Skip internal variables `VAR`
 
             for var in var_list.variables:
