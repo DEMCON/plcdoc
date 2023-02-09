@@ -42,13 +42,24 @@ class PlcObjectDescription(ObjectDescription):
         m = plc_signature_re.match(sig)
         if m is None:
             raise ValueError
-        name, arglist, retann, extends = m.groups()
+        prefix, name, arglist, retann, extends = m.groups()
 
-        signode["fullname"] = name
+        if prefix:
+            classname = prefix.rstrip(".")
+            fullname = prefix + name
+        else:
+            classname = None
+            fullname = name
+
+        signode["class"] = classname
+        signode["fullname"] = fullname
 
         sig_prefix = self.get_signature_prefix(sig)
         if sig_prefix:
             signode += addnodes.desc_annotation(str(sig_prefix), "", *sig_prefix)
+
+        if prefix:
+            signode += addnodes.desc_addname(prefix, prefix)
 
         signode += addnodes.desc_name("", "", addnodes.desc_sig_name(name, name))
 
@@ -62,7 +73,7 @@ class PlcObjectDescription(ObjectDescription):
             children = _parse_annotation(retann, self.env)
             signode += addnodes.desc_returns(retann, "", *children)
 
-        return name, ""
+        return fullname, prefix
 
     def get_signature_prefix(self, sig: str) -> List[nodes.Node]:
         """Return a prefix to put before the object name in the signature."""

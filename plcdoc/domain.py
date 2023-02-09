@@ -37,6 +37,7 @@ class StructuredTextDomain(Domain):
     directives = {
         "function":         PlcCallableDescription,
         "functionblock":    PlcCallableDescription,
+        "method":           PlcCallableDescription,
         "enum":             PlcObjectDescription,
         "enumerator":       PlcEnumeratorDescription,
         "struct":           PlcObjectDescription,

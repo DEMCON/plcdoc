@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 # Regex for unofficial PLC signatures -- this is used for non-auto
 # directives for example.
 plc_signature_re = re.compile(
-    r"""^ (\w+)  \s*                    # thing name
+    r"""^ ([\w.]*\.)?                   # class name(s)
+          (\w+)  \s*                    # thing name
           (?: \(\s*(.*)\s*\)            # optional: arguments
           (?:\s* : \s* (.*))?           #           return annotation
           (?:\s* EXTENDS \s* (.*))?     #           extends
@@ -81,11 +82,9 @@ class PlcDocumenter(PyDocumenter, ABC):
         """
         try:
             # Parse the name supplied as directive argument
-            name, args, retann, extann = plc_signature_re.match(self.name).groups()
+            prefix, name, args, retann, extann = plc_signature_re.match(self.name).groups()
         except AttributeError:
-            self.directive.warn(
-                f"Invalid signature for auto-{self.objtype} (f{self.name})"
-            )
+            logger.warning(f"Invalid signature for auto-{self.objtype} (f{self.name})")
             return False
 
         self.modname = None  # Modules and paths don't really exist or matter

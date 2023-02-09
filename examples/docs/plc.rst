@@ -40,6 +40,12 @@ Manually Typed PLC Function Blocks
 
 This should be a reference: :plc:funcblock:`MyFunctionBlock`.
 
+.. plc:functionblock:: FunctionBlockWithMethod
+
+   This is some function block.
+
+.. plc:method:: ImaginedFunctionBlock.SomeMethod()
+
 
 Manually Typed PLC Enums
 ========================
