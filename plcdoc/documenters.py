@@ -1,9 +1,15 @@
 from abc import ABC
-from typing import Any, Tuple, List, Optional
+from typing import Any, Tuple, List, Dict, Optional, Any
 import re
 
 from sphinx.util import logging
-from sphinx.ext.autodoc import Documenter as PyDocumenter, members_option
+from sphinx.ext.autodoc import (
+    Documenter as AutodocDocumenter,
+    members_option,
+    ObjectMember,
+    ObjectMembers,
+    ALL,
+)
 from docutils.statemachine import StringList
 
 from .interpreter import PlcInterpreter, PlcDeclaration
@@ -25,7 +31,7 @@ plc_signature_re = re.compile(
 )
 
 
-class PlcDocumenter(PyDocumenter, ABC):
+class PlcDocumenter(AutodocDocumenter, ABC):
     """Derived documenter base class for the PLC domain.
 
     These documenters are added to the registry in the extension ``setup`` callback.
@@ -175,7 +181,7 @@ class PlcDocumenter(PyDocumenter, ABC):
         return [comment_lines]
 
     def document_members(self, all_members: bool = False) -> None:
-        """Created automatic documentation of members of the object.
+        """Create automatic documentation of members of the object.
 
         This includes methods, properties, etc.
 
@@ -200,14 +206,11 @@ class PlcFunctionDocumenter(PlcDocumenter):
     objtype = "function"
 
     @classmethod
-    def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        return isinstance(member, PlcFunctionDocumenter)
+    def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
+        if hasattr(member, "objtype"):
+            return member.objtype in ["function", "method"]
 
-    def document_members(self, all_members: bool = False) -> None:
-        """Cannot document members."""
-        pass
+        return False
 
 
 class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
@@ -220,12 +223,65 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
     }
 
     @classmethod
-    def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
-    ) -> bool:
+    def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
+        if hasattr(member, "objtype"):
+            return member.objtype in ["functionblock"]
+
         return False
 
     def document_members(self, all_members: bool = False) -> None:
         """Cannot document members."""
         # TODO: Add documenting for members
-        pass
+
+        # Set current namespace for finding members
+        self.env.temp_data["autodoc:module"] = self.modname
+        if self.objpath:
+            self.env.temp_data["autodoc:class"] = self.objpath[0]
+
+        want_all = (
+            all_members or self.options.inherited_members or self.options.members is ALL
+        )
+
+        memberdocumenters: List[Tuple[PlcDocumenter, bool]] = []
+
+        for child in self.get_object_children(want_all).values():
+            # Find suitable documenters for this member
+            classes = [
+                cls
+                for documenter_name, cls in self.documenters.items()
+                if documenter_name.startswith("plc:")
+                and cls.can_document_member(child, child.name, True, self)
+            ]
+            # Prefer the documenter with the highest priority
+            classes.sort(key=lambda cls: cls.priority)
+            documenter = classes[-1](self.directive, child.name, self.indent)
+            memberdocumenters.append((documenter, False))
+
+        # TODO: Sort members
+
+        for documenter, isattr in memberdocumenters:
+            documenter.generate(
+                all_members=True,
+                real_modname="",
+                check_module=False,
+            )
+            # TODO: CONTINUE HERE! Pick up generating of members
+
+    def get_object_children(self, want_all: bool) -> Dict[str, Any]:
+        """Get list of children of self.object that overlap with the member settings."""
+        selected_children = {}
+
+        if not want_all:
+            if not self.options.members:
+                return selected_children
+
+            # Specific members given
+            for name in self.options.members:
+                if name in self.object.children:
+                    selected_children[name] = self.object.children[name]
+                else:
+                    logger.warning(f"Cannot find {name} inside {self.fullname}")
+        else:
+            selected_children = self.object.children
+
+        return selected_children

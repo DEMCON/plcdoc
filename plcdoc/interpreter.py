@@ -110,11 +110,9 @@ class PlcDeclaration:
     Instances of these declarations are stored in an interpreter object.
 
     An object also stores a list of all child objects (e.g. methods).
-    """
 
-    # Object types as defined in :class:`StructuredTextDomain`
-    FUNCTION = "function"
-    FUNCTIONBLOCK = "functionblock"
+    The `objtype` is as they appear in :class:`StructuredTextDomain`.
+    """
 
     def __init__(self, meta_model: TextXMetaModel, file=None):
         """
@@ -130,7 +128,7 @@ class PlcDeclaration:
 
         self._name = self._model.name
         self._file: Optional[str] = file
-        self._children: List["PlcDeclaration"] = []
+        self._children: Dict[str, "PlcDeclaration"] = {}
 
     @property
     def name(self) -> str:
@@ -145,7 +143,7 @@ class PlcDeclaration:
         return self._file or "<unknown>"
 
     @property
-    def children(self) -> List["PlcDeclaration"]:
+    def children(self) -> Dict[str, "PlcDeclaration"]:
         return self._children
 
     def get_comment(self) -> Optional[str]:
@@ -196,4 +194,4 @@ class PlcDeclaration:
         return args
 
     def add_child(self, child: "PlcDeclaration"):
-        self._children.append(child)
+        self._children[child.name] = child
