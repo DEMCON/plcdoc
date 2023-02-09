@@ -7,12 +7,17 @@ VAR
     ack             : UDINT := 0;
     
     block           : FB_MyBlock;
+    
+    result          : LREAL;
+    
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF ack <> request THEN
     ack := request;
 END_IF
+
+result := RegularFunction(input := 3.14, other_arg := 7);
 ]]></ST>
     </Implementation>
   </POU>

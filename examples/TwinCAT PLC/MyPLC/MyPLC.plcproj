@@ -35,6 +35,12 @@
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\PlainFunction.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PlainFunctionBlock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\RegularFunction.TcPOU">
       <SubType>Code</SubType>
     </Compile>

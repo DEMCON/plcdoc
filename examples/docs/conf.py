@@ -21,6 +21,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 plc_sources = [
     # "../TwinCAT PLC/.TcPOU",
     "../TwinCAT PLC/MyPLC/POUs/RegularFunction.TcPOU",
+    "../TwinCAT PLC/MyPLC/POUs/PlainFunctionBlock.TcPOU",
+    "../TwinCAT PLC/MyPLC/POUs/PlainFunction.TcPOU",
 ]
 
 # -- Options for HTML output -------------------------------------------------

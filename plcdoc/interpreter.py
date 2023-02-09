@@ -29,7 +29,8 @@ class PlcInterpreter:
             os.path.join(PACKAGE_DIR, "st_declaration.tx")
         )
 
-        self._models: Dict[str, Any] = {}  # Library of processed models
+        # Library of processed models, keyed by the objtype and then by the name
+        self._models: Dict[str, Dict[str, Any]] = {}
 
         for path in paths:
             source_files = glob(path)
@@ -49,14 +50,14 @@ class PlcInterpreter:
             return False
 
         for item in root:
-            plc_item = item.tag
-            name = item.attrib["Name"]
+            # plc_item = item.tag
+            # name = item.attrib["Name"]
 
             declaration_node = item.find("Declaration")
 
             meta_model = self._meta_model.model_from_str(declaration_node.text)
 
-            obj = PlcDeclaration(meta_model)
+            obj = PlcDeclaration(meta_model, filepath)
 
             self.add_model(obj)
 
@@ -65,15 +66,28 @@ class PlcInterpreter:
 
         :param obj: Processed model
         """
-        self._models[obj.name] = obj
+        if obj.objtype not in self._models:
+            self._models[obj.objtype] = {}
 
-    def get_object(self, name: str) -> "PlcDeclaration":
+        self._models[obj.objtype][obj.name] = obj
+
+    def get_object(self, name: str, objtype: Optional[str] = None) -> "PlcDeclaration":
         """Search for an object by name in parsed models.
 
+        If ``objtype`` is `None`, any object is returned.
+
         :param name: Object name
+        :param objtype: objtype of the object to look for ("function", etc.)
         :raises: KeyError if the object could not be found
         """
-        return self._models[name]
+        if objtype:
+            return self._models[objtype][name]
+
+        for models_set in self._models.values():
+            if name in models_set:
+                return models_set[name]
+
+        raise KeyError(f"Failed to find model for `{name}`")
 
 
 class PlcDeclaration:
@@ -82,24 +96,56 @@ class PlcDeclaration:
     Instances of these declarations are stored in an interpreter object.
     """
 
-    def __init__(self, meta_model: TextXMetaModel):
+    FUNCTION = "function"
+    FUNCTIONBLOCK = "functionblock"
+
+    def __init__(self, meta_model: TextXMetaModel, file=None):
         """
 
         :param meta_model: Parsing result
+        :param file: Path to the file this model originates from
         """
+        self._objtype = None
+
         if hasattr(meta_model, "function"):
             self._model = meta_model.function
+            if self._model.function_type == "FUNCTION":
+                self._objtype = self.FUNCTION
+            elif self._model.function_type == "FUNCTION_BLOCK":
+                self._objtype = self.FUNCTIONBLOCK
 
         self._name = self._model.name
-        self._comment = self._make_comment()
+        self._file: Optional[str] = file
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def comment(self) -> Optional[str]:
-        return self._comment
+    def objtype(self) -> str:
+        return self._objtype
+
+    @property
+    def file(self) -> str:
+        return self._file or "<unknown>"
+
+    def get_comment(self) -> Optional[str]:
+        """Process main block comment from model into a neat list.
+
+        A list is created for each 'region' of comments. The first comment block above a declaration
+        is the most common one.
+        """
+        if not hasattr(self._model, "comment") or self._model.comment is None:
+            return None
+
+        big_block: str = self._model.comment.comment.strip()  # Remove whitespace
+        # Remove comment indicators (cannot get rid of them by TextX)
+        if big_block.startswith("(*"):
+            big_block = big_block[2:]
+        if big_block.endswith("*)"):
+            big_block = big_block[:-2]
+
+        return big_block
 
     def get_args(self, skip_internal=True) -> List:
         """Return arguments.
@@ -122,21 +168,3 @@ class PlcDeclaration:
                 args.append(var)
 
         return args
-
-    def _make_comment(self) -> Optional[str]:
-        """Process main block comment from model into a neat list.
-
-        A list is created for each 'region' of comments. The first comment block above a declaration
-        if the most common one.
-        """
-        if not hasattr(self._model, "comment"):
-            return None
-
-        big_block: str = self._model.comment.comment.strip()  # Remove whitespace
-        # Remove comment indicators (cannot get rid of them by TextX)
-        if big_block.startswith("(*"):
-            big_block = big_block[2:]
-        if big_block.endswith("*)"):
-            big_block = big_block[:-2]
-
-        return big_block

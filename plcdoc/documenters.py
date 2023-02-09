@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Any, Tuple, List, Optional
 import re
 
@@ -23,7 +24,7 @@ plc_signature_re = re.compile(
 )
 
 
-class PlcDocumenter(PyDocumenter):
+class PlcDocumenter(PyDocumenter, ABC):
     """Derived documenter base class for the PLC domain.
 
     These documenters are added to the registry in the extension ``setup`` callback.
@@ -33,6 +34,8 @@ class PlcDocumenter(PyDocumenter):
 
     :cvar objtype: The object name as used for generating a directive (should be overriden by different types)
     """
+
+    domain = "plc"
 
     def generate(
         self,
@@ -52,14 +55,14 @@ class PlcDocumenter(PyDocumenter):
         # Make sure that the result starts with an empty line.  This is
         # necessary for some situations where another directive preprocesses
         # reST and no starting newline is present
-        self.add_line("", "<autodoc>")
+        self.add_line("", "<plc_autodoc>")
 
         # Format the object's signature, if any
         sig = self.format_signature()
 
         # Generate the directive header and options, if applicable
         self.add_directive_header(sig)
-        self.add_line("", "<autodoc>")  # Blank line again
+        self.add_line("", "<plc_autodoc>")  # Blank line again
 
         # E.g. the module directive doesn't have content
         self.indent += self.content_indent
@@ -116,7 +119,11 @@ class PlcDocumenter(PyDocumenter):
         """
         interpreter: PlcInterpreter = self.env.app._interpreter
 
-        self.object: PlcDeclaration = interpreter.get_object(self.name)
+        try:
+            self.object: PlcDeclaration = interpreter.get_object(self.name, self.objtype)
+        except KeyError:
+            logger.warning(f"Failed to find object `{self.name}` for the type `{self.objtype}`")
+            return False
 
         return True
 
@@ -124,7 +131,7 @@ class PlcDocumenter(PyDocumenter):
         """Add content from docstrings, attribute documentation and user."""
 
         # Add docstring from meta-model
-        sourcename = f"declaration of {self.name}"
+        sourcename = self.get_sourcename()
         docstrings = self.get_doc()
 
         # Also add VARs from meta-model
@@ -154,14 +161,15 @@ class PlcDocumenter(PyDocumenter):
         """Get docstring from the meta-model."""
 
         # Read main docblock
-        if not self.object.comment:
+        comment_str = self.object.get_comment()
+        if not comment_str:
             return []
 
-        comments = [
-            line.strip() for line in self.object.comment.strip().split("\n")
+        comment_lines = [
+            line.strip() for line in comment_str.strip().split("\n")
         ]
 
-        return [comments]
+        return [comment_lines]
 
     def document_members(self, all_members: bool = False) -> None:
         """Created automatic documentation of members of the object.
@@ -171,26 +179,16 @@ class PlcDocumenter(PyDocumenter):
         ``autodoc`` will skip undocumented members by default, we will document
         everything always.
         """
-        
+        return None
 
-    @classmethod
-    def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        return False
+    def get_sourcename(self) -> str:
+        """Get origin of info for tracing purposes."""
+        return f"{self.object.file}:declaration of {self.fullname}"
 
     def resolve_name(
         self, modname: str, parents: Any, path: str, base: Any
     ) -> Tuple[str, List[str]]:
         return "", [""]
-
-    domain = "plc"
-
-
-class PlcFunctionBlockDocumenter(PlcDocumenter):
-    """Documenter for the Function Block type."""
-
-    objtype = "functionblock"
 
 
 class PlcFunctionDocumenter(PlcDocumenter):
@@ -203,3 +201,24 @@ class PlcFunctionDocumenter(PlcDocumenter):
         cls, member: Any, membername: str, isattr: bool, parent: Any
     ) -> bool:
         return isinstance(member, PlcFunctionDocumenter)
+
+    def document_members(self, all_members: bool = False) -> None:
+        """Cannot document members."""
+        pass
+
+
+class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
+    """Documenter for the Function Block type."""
+
+    objtype = "functionblock"
+
+    @classmethod
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        return False
+
+    def document_members(self, all_members: bool = False) -> None:
+        """Cannot document members."""
+        # TODO: Add documenting for members
+        pass
