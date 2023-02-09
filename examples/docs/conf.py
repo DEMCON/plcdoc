@@ -13,7 +13,7 @@ author = "Robert Roos"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["plcdoc"]
+extensions = ["plcdoc", "sphinx.ext.autodoc"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -23,6 +23,7 @@ plc_sources = [
     "../TwinCAT PLC/MyPLC/POUs/RegularFunction.TcPOU",
     "../TwinCAT PLC/MyPLC/POUs/PlainFunctionBlock.TcPOU",
     "../TwinCAT PLC/MyPLC/POUs/PlainFunction.TcPOU",
+    "../TwinCAT PLC/MyPLC/POUs/FB_MyBlock.TcPOU",
 ]
 
 # -- Options for HTML output -------------------------------------------------

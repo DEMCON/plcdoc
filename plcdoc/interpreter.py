@@ -49,17 +49,31 @@ class PlcInterpreter:
         if root.tag != "TcPlcObject":
             return False
 
+        # Files really only contain a single object per file anyway
         for item in root:
-            # plc_item = item.tag
+            # plc_item = item.tag  # I.e. "POU"
+
+            # Name repeated inside the declaration, use it from there instead
             # name = item.attrib["Name"]
 
-            declaration_node = item.find("Declaration")
+            object_model = self.parse_declaration(item)
 
-            meta_model = self._meta_model.model_from_str(declaration_node.text)
+            obj = PlcDeclaration(object_model, filepath)
 
-            obj = PlcDeclaration(meta_model, filepath)
+            # Methods are inside their own subtree with a `Declaration` - simply append them to the object
+            for node in item:
+                if node.tag in ["Declaration", "Implementation"]:
+                    continue
+                method_model = self.parse_declaration(node)
+                method = PlcDeclaration(method_model, filepath)
+                obj.add_child(method)
 
             self.add_model(obj)
+
+    def parse_declaration(self, item):
+        declaration_node = item.find("Declaration")
+        meta_model = self._meta_model.model_from_str(declaration_node.text)
+        return meta_model
 
     def add_model(self, obj: "PlcDeclaration"):
         """Get processed model and add it to our library.
@@ -94,8 +108,11 @@ class PlcDeclaration:
     """Wrapper class for the result of the TextX parsing of a PLC source file.
 
     Instances of these declarations are stored in an interpreter object.
+
+    An object also stores a list of all child objects (e.g. methods).
     """
 
+    # Object types as defined in :class:`StructuredTextDomain`
     FUNCTION = "function"
     FUNCTIONBLOCK = "functionblock"
 
@@ -109,13 +126,11 @@ class PlcDeclaration:
 
         if hasattr(meta_model, "function"):
             self._model = meta_model.function
-            if self._model.function_type == "FUNCTION":
-                self._objtype = self.FUNCTION
-            elif self._model.function_type == "FUNCTION_BLOCK":
-                self._objtype = self.FUNCTIONBLOCK
+            self._objtype = self._model.function_type.lower().replace("_", "")
 
         self._name = self._model.name
         self._file: Optional[str] = file
+        self._children: List["PlcDeclaration"] = []
 
     @property
     def name(self) -> str:
@@ -128,6 +143,10 @@ class PlcDeclaration:
     @property
     def file(self) -> str:
         return self._file or "<unknown>"
+
+    @property
+    def children(self) -> List["PlcDeclaration"]:
+        return self._children
 
     def get_comment(self) -> Optional[str]:
         """Process main block comment from model into a neat list.
@@ -144,6 +163,9 @@ class PlcDeclaration:
             big_block = big_block[2:]
         if big_block.endswith("*)"):
             big_block = big_block[:-2]
+
+        # It looks like Windows line endings are already lost by now, but make sure
+        big_block = big_block.replace("\r\n", "\n")
 
         return big_block
 
@@ -172,3 +194,6 @@ class PlcDeclaration:
                 args.append(var)
 
         return args
+
+    def add_child(self, child: "PlcDeclaration"):
+        self._children.append(child)

@@ -43,12 +43,7 @@ class PlcAutodocDirective(AutodocDirective):
         except AttributeError:
             source, lineno = (None, None)
 
-        logger.debug(
-            "[plcdoc] %s:%s: input:\n%s",
-            source,
-            lineno,
-            self.block_text,
-        )
+        logger.debug(f"[plcdoc] {source}:{lineno}: input:\n{self.block_text}")
 
         # Look up target Documenter
         objtype = self.name.replace("auto", "")  # Remove prefix from directive name

@@ -28,7 +28,7 @@ class PlcObjectDescription(ObjectDescription):
 
     has_arguments = False
 
-    option_spec = {"noindex": directives.flag}
+    option_spec = {"noindex": directives.flag, "noindexentry": directives.flag}
 
     # None: determine automatically, False: do not use, str: use literal value
     object_display_type = None

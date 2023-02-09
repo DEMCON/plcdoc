@@ -3,7 +3,7 @@ from typing import Any, Tuple, List, Optional
 import re
 
 from sphinx.util import logging
-from sphinx.ext.autodoc import Documenter as PyDocumenter
+from sphinx.ext.autodoc import Documenter as PyDocumenter, members_option
 from docutils.statemachine import StringList
 
 from .interpreter import PlcInterpreter, PlcDeclaration
@@ -214,6 +214,10 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
     """Documenter for the Function Block type."""
 
     objtype = "functionblock"
+
+    option_spec = {
+        "members": members_option,
+    }
 
     @classmethod
     def can_document_member(

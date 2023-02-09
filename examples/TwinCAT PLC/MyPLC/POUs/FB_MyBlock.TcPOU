@@ -22,6 +22,16 @@ END_VAR
       <ST><![CDATA[myOutput := 420;
 ]]></ST>
     </Implementation>
+    <Method Name="AnotherMethod" Id="{1f1a001e-6f51-4979-b89d-4d72f4734951}">
+      <Declaration><![CDATA[METHOD AnotherMethod : LREAL
+VAR_INPUT
+    methodInput     : LREAL;            // Some input
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="MyMethod" Id="{0c39134c-0d9c-4e67-a24c-81526057b12e}">
       <Declaration><![CDATA[METHOD MyMethod : BOOL
 VAR_INPUT

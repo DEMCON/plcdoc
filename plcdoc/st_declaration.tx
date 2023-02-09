@@ -38,7 +38,7 @@ Function:
 ;
 
 FunctionType :
-    'FUNCTION_BLOCK' | 'FUNCTION'
+    'FUNCTION_BLOCK' | 'FUNCTION' | 'METHOD'
 ;
 
 Listing :

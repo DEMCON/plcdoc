@@ -16,3 +16,7 @@ Auto Typed PLC Stuff
 
 
 .. plc:autofunctionblock:: PlainFunctionBlock
+
+
+.. plc:autofunctionblock:: FB_MyBlock
+   :members:
