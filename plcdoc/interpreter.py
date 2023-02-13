@@ -21,11 +21,10 @@ class PlcInterpreter:
     # Some object types are documented the same
     EQUIVALENT_TYPES = {"function": ["function", "method"]}
 
-    def __init__(self, paths: List[str], app: Sphinx):
+    def __init__(self, paths: List[str]):
         """
 
         :param paths: Source paths to process
-        :param app: Reference to Sphinx app instance
         """
 
         self._meta_model = metamodel_from_file(

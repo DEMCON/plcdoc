@@ -63,5 +63,5 @@ def analyze(app: Sphinx):
     # Inserting the shared interpreter into an existing object is not the most neat, but it's the best way
     # to keep an instance linked to an `app` object. The alternative would be the `app.env.temp_data` dict, which is
     # also nasty.
-    interpreter = PlcInterpreter(abs_source_paths, app)
+    interpreter = PlcInterpreter(abs_source_paths)
     setattr(app, "_interpreter", interpreter)
