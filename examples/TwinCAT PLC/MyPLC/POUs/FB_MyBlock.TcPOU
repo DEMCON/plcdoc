@@ -33,7 +33,10 @@ END_VAR
       </Implementation>
     </Method>
     <Method Name="MyMethod" Id="{0c39134c-0d9c-4e67-a24c-81526057b12e}">
-      <Declaration><![CDATA[METHOD MyMethod : BOOL
+      <Declaration><![CDATA[(*
+This is a description.
+*)
+METHOD MyMethod : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>

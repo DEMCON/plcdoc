@@ -85,22 +85,26 @@ class PlcDocumenter(AutodocDocumenter, ABC):
 
         We are going to get info from already processed content, so we don't actually have to import
         any files (this is terminology from the original ``autodoc``).
+
+        Sets the properties `fullname`, `modname`, `retann`, `args`
         """
         try:
             # Parse the name supplied as directive argument
-            prefix, name, args, retann, extann = plc_signature_re.match(
+            path, base, args, retann, extann = plc_signature_re.match(
                 self.name
             ).groups()
         except AttributeError:
             logger.warning(f"Invalid signature for auto-{self.objtype} (f{self.name})")
             return False
 
-        self.modname = None  # Modules and paths don't really exist or matter
-        self.objpath = []
+        modname = None
+        parents = []
+
+        self.modname, self.objpath = self.resolve_name(modname, parents, path, base)
 
         self.args = args
         self.retann = retann
-        self.fullname = name
+        self.fullname = ".".join(self.objpath)
 
         return True
 
@@ -128,7 +132,7 @@ class PlcDocumenter(AutodocDocumenter, ABC):
 
         try:
             self.object: PlcDeclaration = interpreter.get_object(
-                self.name, self.objtype
+                self.fullname, self.objtype
             )
         except KeyError:
             logger.warning(
@@ -194,79 +198,6 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         """Get origin of info for tracing purposes."""
         return f"{self.object.file}:declaration of {self.fullname}"
 
-    def resolve_name(
-        self, modname: str, parents: Any, path: str, base: Any
-    ) -> Tuple[str, List[str]]:
-        return "", [""]
-
-
-class PlcFunctionDocumenter(PlcDocumenter):
-    """Documenter for the plain Function type."""
-
-    objtype = "function"
-
-    @classmethod
-    def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
-        if hasattr(member, "objtype"):
-            return member.objtype in ["function", "method"]
-
-        return False
-
-
-class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
-    """Documenter for the Function Block type."""
-
-    objtype = "functionblock"
-
-    option_spec = {
-        "members": members_option,
-    }
-
-    @classmethod
-    def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
-        if hasattr(member, "objtype"):
-            return member.objtype in ["functionblock"]
-
-        return False
-
-    def document_members(self, all_members: bool = False) -> None:
-        """Cannot document members."""
-        # TODO: Add documenting for members
-
-        # Set current namespace for finding members
-        self.env.temp_data["autodoc:module"] = self.modname
-        if self.objpath:
-            self.env.temp_data["autodoc:class"] = self.objpath[0]
-
-        want_all = (
-            all_members or self.options.inherited_members or self.options.members is ALL
-        )
-
-        memberdocumenters: List[Tuple[PlcDocumenter, bool]] = []
-
-        for child in self.get_object_children(want_all).values():
-            # Find suitable documenters for this member
-            classes = [
-                cls
-                for documenter_name, cls in self.documenters.items()
-                if documenter_name.startswith("plc:")
-                and cls.can_document_member(child, child.name, True, self)
-            ]
-            # Prefer the documenter with the highest priority
-            classes.sort(key=lambda cls: cls.priority)
-            documenter = classes[-1](self.directive, child.name, self.indent)
-            memberdocumenters.append((documenter, False))
-
-        # TODO: Sort members
-
-        for documenter, isattr in memberdocumenters:
-            documenter.generate(
-                all_members=True,
-                real_modname="",
-                check_module=False,
-            )
-            # TODO: CONTINUE HERE! Pick up generating of members
-
     def get_object_children(self, want_all: bool) -> Dict[str, Any]:
         """Get list of children of self.object that overlap with the member settings."""
         selected_children = {}
@@ -285,3 +216,117 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
             selected_children = self.object.children
 
         return selected_children
+
+
+class PlcFunctionDocumenter(PlcDocumenter):
+    """Documenter for the plain Function type."""
+
+    objtype = "function"
+
+    @classmethod
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        if hasattr(member, "objtype"):
+            return member.objtype in ["function", "method"]
+
+        return False
+
+    def resolve_name(
+        self, modname: str, parents: Any, path: str, base: Any
+    ) -> Tuple[str, List[str]]:
+        """Using the regex result, identify this object.
+
+        Also use the environment if necessary.
+        """
+        if path:
+            mod_cls = path.rstrip(".")
+        else:
+            # No full path is given, search in:
+            # An autodoc directive
+            mod_cls = self.env.temp_data.get("plc_autodoc:class")
+            # Nested class-like directive:
+            if mod_cls is None:
+                # TODO: Make sure `ref_context` can actually work
+                mod_cls = self.env.ref_context.get("plc:class")
+            # Cannot be found at all
+            if mod_cls is None:
+                return None, parents + [base]
+
+        _, sep, cls = mod_cls.rpartition(".")
+        parents = [cls]
+
+        return None, parents + [base]
+
+
+class PlcMethodDocumenter(PlcFunctionDocumenter):
+    """Documenter for the Method type.
+
+    This works both as a stand-alone directive as part of a function block.
+    """
+
+    objtype = "method"
+    priority = PlcFunctionDocumenter.priority + 1
+
+
+class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
+    """Documenter for the Function Block type."""
+
+    objtype = "functionblock"
+
+    option_spec = {
+        "members": members_option,
+    }
+
+    @classmethod
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        if hasattr(member, "objtype"):
+            return member.objtype in ["functionblock"]
+
+        return False
+
+    def document_members(self, all_members: bool = False) -> None:
+        """Cannot document members."""
+        # TODO: Add documenting for members
+
+        # Set current namespace for finding members
+        self.env.temp_data["plc_autodoc:module"] = self.modname
+        if self.objpath:
+            self.env.temp_data["plc_autodoc:class"] = self.objpath[0]
+
+        want_all = (
+            all_members or self.options.inherited_members or self.options.members is ALL
+        )
+
+        memberdocumenters: List[Tuple[PlcDocumenter, bool]] = []
+
+        for child in self.get_object_children(want_all).values():
+            # Find suitable documenters for this member
+            classes = [
+                cls
+                for documenter_name, cls in self.documenters.items()
+                if documenter_name.startswith("plc:")
+                and cls.can_document_member(child, child.name, True, self)
+            ]
+            # Prefer the documenter with the highest priority
+            classes.sort(key=lambda cls: cls.priority)
+            documenter = classes[-1](
+                self.directive, child.name, self.indent
+            )
+            memberdocumenters.append((documenter, False))
+
+        # TODO: Sort members
+
+        for documenter, isattr in memberdocumenters:
+            documenter.generate(
+                all_members=True,
+                real_modname="",
+                check_module=False,
+            )
+            # TODO: CONTINUE HERE! Pick up generating of members
+
+        # Reset context
+        self.env.temp_data["plc_autodoc:module"] = None
+        self.env.temp_data["plc_autodoc:class"] = None

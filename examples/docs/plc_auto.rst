@@ -18,5 +18,8 @@ Auto Typed PLC Stuff
 .. plc:autofunctionblock:: PlainFunctionBlock
 
 
+.. .. plc:automethod:: FB_MyBlock.MyMethod
+
+
 .. plc:autofunctionblock:: FB_MyBlock
    :members:

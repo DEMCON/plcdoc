@@ -6,7 +6,11 @@ from .__version__ import __version__
 from .interpreter import PlcInterpreter
 from .domain import StructuredTextDomain
 from .auto_directives import PlcAutodocDirective
-from .documenters import PlcFunctionBlockDocumenter, PlcFunctionDocumenter
+from .documenters import (
+    PlcFunctionBlockDocumenter,
+    PlcFunctionDocumenter,
+    PlcMethodDocumenter,
+)
 
 
 def plcdoc_setup(app: Sphinx) -> Dict:
@@ -26,6 +30,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.registry.add_documenter("plc:functionblock", PlcFunctionBlockDocumenter)
     app.add_directive_to_domain("plc", "autofunctionblock", PlcAutodocDirective)
+
+    app.registry.add_documenter("plc:method", PlcMethodDocumenter)
+    app.add_directive_to_domain("plc", "automethod", PlcAutodocDirective)
 
     return {
         "version": __version__,

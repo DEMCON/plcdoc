@@ -18,6 +18,9 @@ class PlcInterpreter:
     The parsed objects are stored as their raw TextX format, as meta-models
     """
 
+    # Some object types are documented the same
+    EQUIVALENT_TYPES = {"function": ["function", "method"]}
+
     def __init__(self, paths: List[str], app: Sphinx):
         """
 
@@ -75,15 +78,40 @@ class PlcInterpreter:
         meta_model = self._meta_model.model_from_str(declaration_node.text)
         return meta_model
 
-    def add_model(self, obj: "PlcDeclaration"):
+    def reduce_type(self, key: str):
+        """If key is one of multiple, return the main type.
+
+        E.g. "method" will be reduced to "function".
+        """
+        for major_type, equivalents in self.EQUIVALENT_TYPES.items():
+            if key in equivalents:
+                return major_type
+
+        return key
+
+    def add_model(
+        self, obj: "PlcDeclaration", parent: Optional["PlcDeclaration"] = None
+    ):
         """Get processed model and add it to our library.
 
-        :param obj: Processed model
-        """
-        if obj.objtype not in self._models:
-            self._models[obj.objtype] = {}
+        Also store references to the children of an object directly, so they can be
+        found easily later.
 
-        self._models[obj.objtype][obj.name] = obj
+        :param obj: Processed model
+        :param parent: Object that this object belongs to
+        """
+        key = self.reduce_type(obj.objtype)
+
+        name = (parent.name + "." if parent else "") + obj.name
+
+        if key not in self._models:
+            self._models[key] = {}
+
+        self._models[key][name] = obj
+
+        if not parent:
+            for child in obj.children.values():
+                self.add_model(child, obj)
 
     def get_object(self, name: str, objtype: Optional[str] = None) -> "PlcDeclaration":
         """Search for an object by name in parsed models.
@@ -95,11 +123,16 @@ class PlcInterpreter:
         :raises: KeyError if the object could not be found
         """
         if objtype:
-            return self._models[objtype][name]
+            objtype = self.reduce_type(objtype)
+            try:
+                return self._models[objtype][name]
+            except KeyError:
+                pass
 
-        for models_set in self._models.values():
-            if name in models_set:
-                return models_set[name]
+        else:
+            for models_set in self._models.values():
+                if name in models_set:
+                    return models_set[name]
 
         raise KeyError(f"Failed to find model for `{name}`")
 
