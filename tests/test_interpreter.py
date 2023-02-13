@@ -1,3 +1,7 @@
+"""
+Test the PLC interpreter on some TwinCAT source files.
+"""
+
 import pytest
 import os
 
@@ -8,8 +12,6 @@ PLC_DIR = os.path.join(os.path.dirname(__file__), "TwinCAT PLC", "MyPLC")
 
 
 class TestPlcInterpreter:
-    """Test the PLC interpreter on some TwinCAT source files."""
-
     FILES = [
         "POUs/PlainFunction.TcPOU",
         "POUs/RegularFunction.TcPOU",
@@ -19,7 +21,6 @@ class TestPlcInterpreter:
     ]
 
     def test_init(self):
-
         files = [os.path.join(PLC_DIR, file) for file in self.FILES]
         interpreter = PlcInterpreter(files)
 

@@ -312,9 +312,7 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
             ]
             # Prefer the documenter with the highest priority
             classes.sort(key=lambda cls: cls.priority)
-            documenter = classes[-1](
-                self.directive, child.name, self.indent
-            )
+            documenter = classes[-1](self.directive, child.name, self.indent)
             memberdocumenters.append((documenter, False))
 
         # TODO: Sort members

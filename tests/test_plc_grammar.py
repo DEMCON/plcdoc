@@ -1,4 +1,9 @@
+"""
+Run the TextX grammar over some PLC code to see if it works.
+"""
+
 import pytest
+
 import os
 from textx import metamodel_from_file
 
@@ -7,8 +12,6 @@ tests_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_grammar_on_files():
-    """Run the TextX grammar over some PLC code to see if it works."""
-
     txpath = os.path.realpath(tests_dir + "/../plcdoc/st_declaration.tx")
     meta_model = metamodel_from_file(txpath)
 

@@ -35,7 +35,6 @@ class PlcAutodocDirective(AutodocDirective):
     final_argument_whitespace = True
 
     def run(self) -> List:
-
         reporter: Reporter = self.state.document.reporter
 
         try:

@@ -8,7 +8,7 @@ venv/
 __pycache__/
 *.egg-info/
 
-examples/docs/_build/
+_build/
 
 # Model display files
 *.dot
