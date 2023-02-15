@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="PlainFunctionBlock" Id="{e9c77de4-fb3d-4077-ade3-01c3e8e43ca3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PlainFunctionBlock
+VAR_INPUT
+    someInput       : BOOL;
+END_VAR
+VAR_OUTPUT
+    someOutput      : BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

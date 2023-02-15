@@ -1,7 +1,7 @@
 
 .. Functions -----------------------------
 
-.. plc:function:: ATAN2(y: LREAL, x: LREAL) -> LREAL
+.. plc:function:: BoringFunction(y: LREAL, x: LREAL) : LREAL
 
    Get the 4-quadrant arctan of a coordinates.
 

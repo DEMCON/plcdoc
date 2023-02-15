@@ -10,10 +10,4 @@ source_suffix = ".rst"
 
 nitpicky = True
 
-plc_sources = [
-    # "../TwinCAT PLC/.TcPOU",
-    "../../TwinCAT PLC/MyPLC/POUs/RegularFunction.TcPOU",
-    "../../TwinCAT PLC/MyPLC/POUs/PlainFunctionBlock.TcPOU",
-    "../../TwinCAT PLC/MyPLC/POUs/PlainFunction.TcPOU",
-    "../../TwinCAT PLC/MyPLC/POUs/FB_MyBlock.TcPOU",
-]
+plc_sources = [os.path.join(os.path.abspath("."), "src_plc/*.TcPOU")]

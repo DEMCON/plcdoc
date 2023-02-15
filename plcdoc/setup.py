@@ -57,7 +57,7 @@ def analyze(app: Sphinx):
     )
 
     abs_source_paths = [
-        os.path.normpath(os.path.join(app.confdir, path)) for path in source_paths
+        os.path.normpath(path) for path in source_paths
     ]
 
     # Inserting the shared interpreter into an existing object is not the most neat, but it's the best way

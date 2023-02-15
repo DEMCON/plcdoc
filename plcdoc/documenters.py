@@ -248,7 +248,7 @@ class PlcFunctionDocumenter(PlcDocumenter):
             # Nested class-like directive:
             if mod_cls is None:
                 # TODO: Make sure `ref_context` can actually work
-                mod_cls = self.env.ref_context.get("plc:class")
+                mod_cls = self.env.ref_context.get("plc:functionblock")
             # Cannot be found at all
             if mod_cls is None:
                 return None, parents + [base]
