@@ -2,6 +2,7 @@
 Declaration:
     typedefs*=TypeDef
     (function=Function)?
+//    (program=Program)?
 ;
 
 TypeDef:
@@ -38,7 +39,13 @@ Function:
 ;
 
 FunctionType :
-    'FUNCTION_BLOCK' | 'FUNCTION' | 'METHOD'
+    'FUNCTION_BLOCK' | 'FUNCTION' | 'METHOD' | 'PROGRAM'
+;
+
+Program:
+    comment=CommentBlock?
+    'PROGRAM' name=ID
+    lists*=VariableList
 ;
 
 Listing :

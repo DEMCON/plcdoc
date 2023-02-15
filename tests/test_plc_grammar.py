@@ -22,6 +22,7 @@ def test_grammar_on_files():
         "MyStructure.txt",
         "MyStructureExtended.txt",
         "E_Options.txt",
+        "Main.txt"
     ]
 
     for filename in files:

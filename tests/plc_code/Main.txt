@@ -1,0 +1,10 @@
+PROGRAM MAIN
+VAR
+    request         : UDINT := 0;
+    ack             : UDINT := 0;
+
+    block           : FB_MyBlock;
+
+    result          : LREAL;
+
+END_VAR
