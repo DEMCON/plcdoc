@@ -1,7 +1,5 @@
 import os
-import re
 from typing import List, Dict, Any, Optional
-from sphinx.application import Sphinx
 from glob import glob
 import xml.etree.ElementTree as ET
 from textx import metamodel_from_file
@@ -21,12 +19,7 @@ class PlcInterpreter:
     # Some object types are documented the same
     EQUIVALENT_TYPES = {"function": ["function", "method"]}
 
-    def __init__(self, paths: List[str]):
-        """
-
-        :param paths: Source paths to process
-        """
-
+    def __init__(self):
         self._meta_model = metamodel_from_file(
             os.path.join(PACKAGE_DIR, "st_declaration.tx")
         )
@@ -34,12 +27,54 @@ class PlcInterpreter:
         # Library of processed models, keyed by the objtype and then by the name
         self._models: Dict[str, Dict[str, Any]] = {}
 
+    def parse_plc_project(self, path: str) -> bool:
+        """Parse a PLC project.
+
+        The ``*.plcproj`` file is searched for references to source files.
+
+        :returns: True if successful
+        """
+        tree = ET.parse(path)
+        root = tree.getroot()
+
+        # The items in the project XML are namespaced, so addressing each item by name does not work
+        if not root.tag.endswith("Project"):
+            return False
+
+        source_files = []
+
+        for item_group in root:
+            if not item_group.tag.endswith("ItemGroup"):
+                continue
+
+            for item in item_group:
+                if item.tag.endswith("Compile"):
+                    source_files.append(item.attrib["Include"])
+
+        # The paths in the PLC Project are relative to the project file itself:
+        dir_path = os.path.dirname(path)
+        source_files = [os.path.join(dir_path, item) for item in source_files]
+
+        return self.parse_source_files(source_files)
+
+    def parse_source_files(self, paths: List[str]) -> bool:
+        """Parse a set of source files.
+
+        `glob` is used, so wildcards are allowed.
+
+        :param paths: Source paths to process
+        """
+        result = True
+
         for path in paths:
             source_files = glob(path)
             for source_file in source_files:
-                self.parse_file(source_file)
+                if not self._parse_file(source_file):
+                    result = False
 
-    def parse_file(self, filepath) -> bool:
+        return result
+
+    def _parse_file(self, filepath) -> bool:
         """Process a single PLC file.
 
         :return: True if a file was processed successfully
@@ -58,7 +93,7 @@ class PlcInterpreter:
             # Name repeated inside the declaration, use it from there instead
             # name = item.attrib["Name"]
 
-            object_model = self.parse_declaration(item)
+            object_model = self._parse_declaration(item)
 
             obj = PlcDeclaration(object_model, filepath)
 
@@ -66,13 +101,13 @@ class PlcInterpreter:
             for node in item:
                 if node.tag in ["Declaration", "Implementation"]:
                     continue
-                method_model = self.parse_declaration(node)
+                method_model = self._parse_declaration(node)
                 method = PlcDeclaration(method_model, filepath)
                 obj.add_child(method)
 
-            self.add_model(obj)
+            self._add_model(obj)
 
-    def parse_declaration(self, item):
+    def _parse_declaration(self, item):
         declaration_node = item.find("Declaration")
         meta_model = self._meta_model.model_from_str(declaration_node.text)
         return meta_model
@@ -88,7 +123,7 @@ class PlcInterpreter:
 
         return key
 
-    def add_model(
+    def _add_model(
         self, obj: "PlcDeclaration", parent: Optional["PlcDeclaration"] = None
     ):
         """Get processed model and add it to our library.
@@ -110,7 +145,7 @@ class PlcInterpreter:
 
         if not parent:
             for child in obj.children.values():
-                self.add_model(child, obj)
+                self._add_model(child, obj)
 
     def get_object(self, name: str, objtype: Optional[str] = None) -> "PlcDeclaration":
         """Search for an object by name in parsed models.

@@ -22,6 +22,7 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     app.connect("builder-inited", analyze)
 
     app.add_config_value("plc_sources", [], True)  # List[str]
+    app.add_config_value("plc_project", None, True)  # str
 
     app.add_domain(StructuredTextDomain)
 
@@ -50,18 +51,21 @@ def analyze(app: Sphinx):
     a new property into ``app``.
     """
 
+    # Inserting the shared interpreter into an existing object is not the neatest, but it's the best way
+    # to keep an instance linked to an `app` object. The alternative would be the `app.env.temp_data` dict, which is
+    # also nasty.
+    interpreter = PlcInterpreter()
+
     source_paths = (
         [app.config.plc_sources]
         if isinstance(app.config.plc_sources, str)
         else app.config.plc_sources
     )
+    if source_paths:
+        interpreter.parse_source_files(source_paths)
 
-    abs_source_paths = [
-        os.path.normpath(path) for path in source_paths
-    ]
+    project_file = app.config.plc_project
+    if project_file:
+        interpreter.parse_plc_project(project_file)
 
-    # Inserting the shared interpreter into an existing object is not the most neat, but it's the best way
-    # to keep an instance linked to an `app` object. The alternative would be the `app.env.temp_data` dict, which is
-    # also nasty.
-    interpreter = PlcInterpreter(abs_source_paths)
     setattr(app, "_interpreter", interpreter)

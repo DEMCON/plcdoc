@@ -22,12 +22,13 @@ class TestPlcInterpreter:
 
     def test_init(self):
         files = [os.path.join(PLC_DIR, file) for file in self.FILES]
-        interpreter = PlcInterpreter(files)
+        interpreter = PlcInterpreter()
+        interpreter.parse_source_files(files)
 
         objects = ["PlainFunction", "FB_MyBlock", "FB_MyBlock.MyMethod"]
 
         for name in objects:
             try:
                 interpreter.get_object(name)
-            except:
+            except KeyError:
                 pytest.fail(f"Failed to get object `{name}` as expected")
