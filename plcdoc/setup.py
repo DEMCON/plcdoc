@@ -19,6 +19,8 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     # We place a callback for Sphinx for when the builder is about ready to start to index the PLC files
     # The moment of reading the PLC files could probably be anything.
 
+    app.setup_extension("sphinx.ext.autodoc")  # Require the autodoc extension
+
     app.connect("builder-inited", analyze)
 
     app.add_config_value("plc_sources", [], True)  # List[str]

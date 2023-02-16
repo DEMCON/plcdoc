@@ -9,5 +9,3 @@ extensions = ["plcdoc"]
 source_suffix = ".rst"
 
 nitpicky = True
-
-plc_project = os.path.join(os.path.abspath("."), "src_plc/MyPLC.plcproj")

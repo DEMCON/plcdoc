@@ -1,10 +1,12 @@
-from typing import List, Dict, Tuple, Any, NamedTuple
+from typing import List, Dict, Tuple, Any, NamedTuple, Optional
 
 from docutils.nodes import Element
 from sphinx.addnodes import pending_xref
-from sphinx.roles import XRefRole
 from sphinx.domains import Domain, ObjType
+from sphinx.builders import Builder
+from sphinx.environment import BuildEnvironment
 from sphinx.util import logging
+from sphinx.util.nodes import make_refnode
 
 from .directives import (
     PlcCallableDescription,
@@ -94,11 +96,135 @@ class StructuredTextDomain(Domain):
 
         self.objects[name] = ObjectEntry(self.env.docname, node_id, objtype)
 
+    def find_obj(
+        self,
+        env: BuildEnvironment,
+        modname: Optional[str],
+        classname: Optional[str],
+        name: str,
+        typ: Optional[str],
+        searchmode: int = 0,
+    ) -> list[tuple[str, ObjectEntry]]:
+        """Find an object for "name" in the database of objects.
+
+        Returns a list of (name, object entry) tuples.
+
+        The implementation is almost identical to :meth:`PythonDomain.find_obj`.
+
+        If `searchmode` is equal to 1, the search is relaxed. The full path does not need
+        to be specified.
+        If `searchmode` is 0, only the full path is checked.
+        """
+        if name[-2:] == "()":
+            name = name[:-2]
+
+        if not name:
+            return []
+
+        matches: list[tuple[str, ObjectEntry]] = []
+
+        newname = None
+        if searchmode == 1:
+            if typ is None:
+                objtypes = list(self.object_types)
+            else:
+                objtypes = self.objtypes_for_role(typ)
+            if objtypes is not None:
+                if modname and classname:
+                    fullname = modname + "." + classname + "." + name
+                    if (
+                        fullname in self.objects
+                        and self.objects[fullname].objtype in objtypes
+                    ):
+                        newname = fullname
+                if not newname:
+                    if (
+                        modname
+                        and modname + "." + name in self.objects
+                        and self.objects[modname + "." + name].objtype in objtypes
+                    ):
+                        newname = modname + "." + name
+                    elif (
+                        name in self.objects and self.objects[name].objtype in objtypes
+                    ):
+                        newname = name
+                    else:
+                        # "fuzzy" searching mode
+                        searchname = "." + name
+                        matches = [
+                            (oname, self.objects[oname])
+                            for oname in self.objects
+                            if oname.endswith(searchname)
+                            and self.objects[oname].objtype in objtypes
+                        ]
+        else:
+            # NOTE: searching for exact match, object type is not considered
+            if name in self.objects:
+                newname = name
+            elif typ == "mod":
+                # only exact matches allowed for modules
+                return []
+            elif classname and classname + "." + name in self.objects:
+                newname = classname + "." + name
+            elif modname and modname + "." + name in self.objects:
+                newname = modname + "." + name
+            elif (
+                modname
+                and classname
+                and modname + "." + classname + "." + name in self.objects
+            ):
+                newname = modname + "." + classname + "." + name
+        if newname is not None:
+            matches.append((newname, self.objects[newname]))
+        return matches
+
+    def resolve_xref(
+        self,
+        env: BuildEnvironment,
+        fromdocname: str,
+        builder: Builder,
+        typ: str,
+        target: str,
+        node: pending_xref,
+        contnode: Element,
+    ) -> Optional[Element]:
+        """Resolve cross-reference.
+
+        Returns a reference node.
+
+        The implementation is almost identical to :meth:`PythonDomain.resolve_xref`.
+        """
+        modname = None
+        clsname = None
+        searchmode = 1 if node.hasattr("refspecific") else 0
+        matches = self.find_obj(env, modname, clsname, target, typ, searchmode)
+
+        if not matches:
+            return None
+        elif len(matches) > 1:
+            logger.warning(
+                "[plcdoc] more than one target found for cross-reference %r: %s",
+                target,
+                ", ".join(match[0] for match in matches),
+                type="ref",
+                subtype="python",
+                location=node,
+            )
+
+        name, obj = matches[0]
+
+        if obj[2] == "module":
+            # get additional info for modules
+            # TODO: Reference to module
+            return None
+        else:
+            return make_refnode(builder, fromdocname, obj[0], name, contnode, name)
+
     def resolve_any_xref(
         self,
-        env: "BuildEnvironment",
+        env: BuildEnvironment,
         fromdocname: str,
-        builder: "Builder",
+        builder: Builder,
         target: str,
         node: pending_xref,
         contnode: Element,

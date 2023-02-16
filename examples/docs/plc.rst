@@ -6,6 +6,13 @@ Manually Typed PLC Commands
 Manually Typed PLC Functions
 ============================
 
+.. plc:function:: TestTypes(a, b, c, d)
+
+   :param a: UINT
+   :param b: LREAL
+   :param c: int
+   :param d: bool
+
 .. plc:function:: MyAtan2(y: LREAL, x: LREAL) : LREAL
 
    This is a regular function.

@@ -22,6 +22,7 @@ Regular Python Examples
    :param int z:
    :rtype: int
 
+.. py:class:: BaseClass
 
 .. py:class:: SomeClass(const_arg: int)
 
@@ -49,11 +50,13 @@ Above is some info about for example :py:func:`my_function`
    :type y: int
    :param z: Variable Z
    :param w: Variable W
-   :type w: herpaderp
+   :type w: str
 
 
 Regular C++ Examples
 ====================
+
+.. cpp:class:: BaseClass
 
 .. cpp:class:: MyClass : public BaseClass
 
