@@ -129,8 +129,6 @@ class PlcObjectDescription(ObjectDescription):
         domain: "StructuredTextDomain" = self.env.get_domain("plc")
         domain.note_object(fullname, self.objtype, node_id, location=signode)
 
-        return
-
     def before_content(self) -> None:
         """Called before parsing content.
 

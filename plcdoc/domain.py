@@ -82,7 +82,6 @@ class StructuredTextDomain(Domain):
         name: str,
         objtype: str,
         node_id: str,
-        aliased: bool = False,
         location: Any = None,
     ) -> None:
         """Note an object for cross reference."""
