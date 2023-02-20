@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple, Any, NamedTuple, Optional
+import re
 
 from docutils.nodes import Element
 from sphinx.addnodes import pending_xref
@@ -6,7 +7,7 @@ from sphinx.domains import Domain, ObjType
 from sphinx.builders import Builder
 from sphinx.environment import BuildEnvironment
 from sphinx.util import logging
-from sphinx.util.nodes import make_refnode
+from sphinx.util.nodes import make_refnode, find_pending_xref_condition
 
 from .directives import (
     PlcCallableDescription,
@@ -23,6 +24,13 @@ class ObjectEntry(NamedTuple):
     docname: str
     node_id: str
     objtype: str
+
+
+_builtin_types_re = re.compile(r"""
+    (L?)REAL
+    |BOOL
+    |(U?)(S|D?)INT
+""", re.VERBOSE)
 
 
 class StructuredTextDomain(Domain):
@@ -228,7 +236,36 @@ class StructuredTextDomain(Domain):
         node: pending_xref,
         contnode: Element,
     ) -> List[Tuple[str, Element]]:
-        return []
+        """Resolve cross reference but without a known type."""
+        modname = None
+        clsname = None
+        results: list[tuple[str, Element]] = []
+
+        # always search in "refspecific" mode with the :any: role
+        matches = self.find_obj(env, modname, clsname, target, typ=None, searchmode=1)
+        multiple_matches = len(matches) > 1
+
+        for name, obj in matches:
+            if obj[2] == "module":
+                pass  # TODO: Catch modules
+            else:
+                # determine the content of the reference by conditions
+                content = find_pending_xref_condition(node, "resolved")
+                if content:
+                    children = content.children
+                else:
+                    # if not found, use contnode
+                    children = [contnode]
+
+                results.append(
+                    (
+                        "plc:" + self.role_for_objtype(obj[2]),
+                        make_refnode(
+                            builder, fromdocname, obj[0], obj[1], children, name
+                        ),
+                    )
+                )
+        return results
 
     def merge_domaindata(self, docnames: List[str], otherdata: Dict):
         pass

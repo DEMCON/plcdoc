@@ -8,20 +8,21 @@ Manually Typed PLC Functions
 
 .. plc:function:: TestTypes(a, b, c, d)
 
-   :param a: UINT
-   :param b: LREAL
-   :param c: int
-   :param d: bool
+   :param UINT a:
+   :param LREAL b:
+   :param INT c:
+   :param BOOL d:
 
 .. plc:function:: MyAtan2(y: LREAL, x: LREAL) : LREAL
 
    This is a regular function.
 
-.. plc:function:: TestArgTypes(arg1, arg2)
+.. plc:function:: TestArgTypes(arg1, arg2, arg3)
 
    :param arg1: Content Arg1
    :type arg1: HERPDERP
    :param SCHERP arg2: Content Arg2
+   :param LREAL arg3: Content Arg3
 
 
 Manually Typed PLC Function Blocks
@@ -35,7 +36,7 @@ Manually Typed PLC Function Blocks
 
    This is a very cool function block!
 
-   :var_in int SomeInput: Description for SomeInput.
+   :var_in INT SomeInput: Description for SomeInput.
    :IN BOOL OtherInput: About OtherInput.
    :IN_OUT LREAL Buffer:
    :OUT BOOL IsReady: Whether it is ready.

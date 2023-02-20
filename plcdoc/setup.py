@@ -1,10 +1,12 @@
-import os
-from typing import Dict
+from typing import Dict, Optional
 from sphinx.application import Sphinx
+from docutils.nodes import Element
+from sphinx.addnodes import pending_xref
+from sphinx.environment import BuildEnvironment
 
 from .__version__ import __version__
 from .interpreter import PlcInterpreter
-from .domain import StructuredTextDomain
+from .domain import StructuredTextDomain, _builtin_types_re
 from .auto_directives import PlcAutodocDirective
 from .documenters import (
     PlcFunctionBlockDocumenter,
@@ -36,6 +38,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.registry.add_documenter("plc:method", PlcMethodDocumenter)
     app.add_directive_to_domain("plc", "automethod", PlcAutodocDirective)
+
+    # Insert a resolver for built-in types
+    app.connect("missing-reference", builtin_resolver, priority=900)
 
     return {
         "version": __version__,
@@ -71,3 +76,23 @@ def analyze(app: Sphinx):
         interpreter.parse_plc_project(project_file)
 
     setattr(app, "_interpreter", interpreter)
+
+
+def builtin_resolver(
+    app: Sphinx, env: BuildEnvironment, node: pending_xref, contnode: Element
+) -> Optional[Element]:
+    """Do not emit nitpicky warnings for built-in types.
+
+    Strongly based on :func:`python.builtin_resolver`.
+    """
+    # TODO: For some reason the built-in types are flagged as the 'py' domain
+    if node.get("refdomain") not in ("plc", "py"):
+        return None  # We can only deal with the PLC domain
+    elif node.get("reftype") in ("class", "obj") and node.get("reftarget") == "None":
+        return contnode
+    elif node.get("reftype") in ("class", "obj", "type"):
+        reftarget = node.get("reftarget")
+        if _builtin_types_re.match(reftarget):
+            return contnode
+
+    return None

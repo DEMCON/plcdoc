@@ -64,9 +64,11 @@ Regular C++ Examples
 
    .. cpp:function:: bool get_ready() const
 
-.. cpp:function:: bool my_funciton(const int& x)
+.. cpp:function:: bool my_cpp_function(const int& x)
 
    :param x: This is the only input to the function.
+
+.. cpp:function:: double function_with_types(int x, float y, bool z, MyClass my_object)
 
 .. cpp:struct:: MyStruct
 
@@ -75,3 +77,5 @@ Regular C++ Examples
    .. cpp:member:: int x
 
    .. cpp:member:: int y
+
+Reference to :cpp:func:`my_cpp_function`.
