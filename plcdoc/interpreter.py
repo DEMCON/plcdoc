@@ -88,9 +88,12 @@ class PlcInterpreter:
 
         # Files really only contain a single object per file anyway
         for item in root:
-            # plc_item = item.tag  # I.e. "POU"
+            plc_item = item.tag  # I.e. "POU"
 
-            # Name repeated inside the declaration, use it from there instead
+            if plc_item not in ["DUT", "POU"]:
+                continue
+
+            # Name is repeated inside the declaration, use it from there instead
             # name = item.attrib["Name"]
 
             object_model = self._parse_declaration(item)
@@ -189,9 +192,15 @@ class PlcDeclaration:
         """
         self._objtype = None
 
-        if hasattr(meta_model, "function"):
+        if meta_model.function is not None:
             self._model = meta_model.function
             self._objtype = self._model.function_type.lower().replace("_", "")
+
+        if meta_model.typedefs:
+            for typ in meta_model.typedefs:
+                self._model = typ
+                if "Enum" in typ.type._tx_fqn:
+                    self._objtype = "enum"
 
         self._name = self._model.name
         self._file: Optional[str] = file

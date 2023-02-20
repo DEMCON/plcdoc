@@ -7,6 +7,7 @@ Declaration:
 
 TypeDef:
     comment=CommentBlock?
+    attributes*=Attribute
     'TYPE' name=ID ('EXTENDS' extends=ID)? ':'
     (type=TypeStruct | type=TypeEnum)
     'END_TYPE'
@@ -46,6 +47,10 @@ Program:
     comment=CommentBlock?
     'PROGRAM' name=ID
     lists*=VariableList
+;
+
+Attribute :
+    '{attribute' '\'' attribute=ID '\'}'
 ;
 
 Listing :
