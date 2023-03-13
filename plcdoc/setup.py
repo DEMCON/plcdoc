@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+import logging
 from sphinx.application import Sphinx
 from docutils.nodes import Element
 from sphinx.addnodes import pending_xref
@@ -13,6 +14,8 @@ from .documenters import (
     PlcFunctionDocumenter,
     PlcMethodDocumenter,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def plcdoc_setup(app: Sphinx) -> Dict:
@@ -69,11 +72,13 @@ def analyze(app: Sphinx):
         else app.config.plc_sources
     )
     if source_paths:
-        interpreter.parse_source_files(source_paths)
+        if not interpreter.parse_source_files(source_paths):
+            logger.warning("Could not parse all files in `plc_sources` from conf.py")
 
     project_file = app.config.plc_project
     if project_file:
-        interpreter.parse_plc_project(project_file)
+        if not interpreter.parse_plc_project(project_file):
+            logger.warning(f"Could not parse all files found in project file {project_file}")
 
     setattr(app, "_interpreter", interpreter)
 
