@@ -1,11 +1,13 @@
 import os
 from typing import List, Dict, Any, Optional
 from glob import glob
+import logging
 import xml.etree.ElementTree as ET
 from textx import metamodel_from_file
 from textx.metamodel import TextXMetaModel
 
 PACKAGE_DIR = os.path.dirname(__file__)
+logger = logging.getLogger(__name__)
 
 
 class PlcInterpreter:
@@ -55,6 +57,10 @@ class PlcInterpreter:
         dir_path = os.path.dirname(path)
         source_files = [os.path.join(dir_path, item) for item in source_files]
 
+        if os.path.sep == "/":
+            # The project will likely contain Windows paths, which can cause issues on Linux
+            source_files = [path.replace("\\", "/") for path in source_files]
+
         return self.parse_source_files(source_files)
 
     def parse_source_files(self, paths: List[str]) -> bool:
@@ -68,9 +74,13 @@ class PlcInterpreter:
 
         for path in paths:
             source_files = glob(path)
-            for source_file in source_files:
-                if not self._parse_file(source_file):
-                    result = False
+
+            if not source_files:
+                logging.warning(f"Could find file(s) in: {path}")
+            else:
+                for source_file in source_files:
+                    if not self._parse_file(source_file):
+                        result = False
 
         return result
 
