@@ -111,7 +111,7 @@ class StructuredTextDomain(Domain):
         name: str,
         typ: Optional[str],
         searchmode: int = 0,
-    ) -> list[tuple[str, ObjectEntry]]:
+    ) -> List[Tuple[str, ObjectEntry]]:
         """Find an object for "name" in the database of objects.
 
         Returns a list of (name, object entry) tuples.
@@ -128,7 +128,7 @@ class StructuredTextDomain(Domain):
         if not name:
             return []
 
-        matches: list[tuple[str, ObjectEntry]] = []
+        matches: List[Tuple[str, ObjectEntry]] = []
 
         newname = None
         if searchmode == 1:
@@ -239,7 +239,7 @@ class StructuredTextDomain(Domain):
         """Resolve cross reference but without a known type."""
         modname = None
         clsname = None
-        results: list[tuple[str, Element]] = []
+        results: List[Tuple[str, Element]] = []
 
         # always search in "refspecific" mode with the :any: role
         matches = self.find_obj(env, modname, clsname, target, typ=None, searchmode=1)
