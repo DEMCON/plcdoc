@@ -99,8 +99,9 @@ class PlcObjectDescription(ObjectDescription):
                 _pseudo_parse_arglist(signode, arglist)
 
         if retann:
-            children = _parse_annotation(retann, self.env)
-            signode += addnodes.desc_returns(retann, "", *children)
+            # TODO: Add reference to retun type (like _parse_annotation but for PLC domain)
+            # children = _parse_annotation(retann, self.env)
+            signode += addnodes.desc_returns(retann, retann)
 
         return fullname, prefix
 
@@ -206,7 +207,7 @@ class PlcCallableDescription(PlcObjectDescription):
             has_arg=False,
             names=("returns", "return", "RETURNS", "RETURN"),
         ),
-        Field("returntype", label="Return type", has_arg=False, names=("rtype",)),
+        Field("returntype", label="Return type", has_arg=False, names=("rtype",), bodyrolename="type"),
     ]
     # fmt: on
 

@@ -16,3 +16,6 @@ def test_plc_ref_build(app, status, warning):
 
     assert "DoesNotExistEither" in warning_str
     assert "MyBlock" not in warning_str
+
+    assert "BlockReturn" not in warning_str
+    assert "BlockArg" not in warning_str

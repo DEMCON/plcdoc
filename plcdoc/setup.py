@@ -90,8 +90,8 @@ def builtin_resolver(
 
     Strongly based on :func:`python.builtin_resolver`.
     """
-    # TODO: For some reason the built-in types are flagged as the 'py' domain
-    if node.get("refdomain") not in ("plc", "py"):
+    # This seems to be the case when using the signature notation, e.g. `func(x: LREAL)`
+    if node.get("refdomain") not in ("plc"):
         return None  # We can only deal with the PLC domain
     elif node.get("reftype") in ("class", "obj") and node.get("reftarget") == "None":
         return contnode

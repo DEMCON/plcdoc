@@ -29,7 +29,7 @@ class ObjectEntry(NamedTuple):
 _builtin_types_re = re.compile(r"""
     (L?)REAL
     |BOOL
-    |(U?)(S|D?)INT
+    |(U?)(S|D|L?)INT
 """, re.VERBOSE)
 
 
