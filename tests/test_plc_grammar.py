@@ -11,10 +11,14 @@ from textx import metamodel_from_file
 tests_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_grammar_on_files():
+@pytest.fixture()
+def meta_model():
     txpath = os.path.realpath(tests_dir + "/../plcdoc/st_declaration.tx")
-    meta_model = metamodel_from_file(txpath)
+    return metamodel_from_file(txpath)
 
+
+def test_grammar_on_files(meta_model):
+    """Test if a range of files can all be parsed without errors."""
     files = [
         "FB_MyBlock.txt",
         "FB_MyBlockExtended.txt",
@@ -22,7 +26,8 @@ def test_grammar_on_files():
         "MyStructure.txt",
         "MyStructureExtended.txt",
         "E_Options.txt",
-        "Main.txt"
+        "E_Filter.txt",
+        "Main.txt",
     ]
 
     for filename in files:
@@ -34,3 +39,21 @@ def test_grammar_on_files():
         else:
             assert model is not None
             assert model.function is not None or model.typedefs
+
+
+def test_grammer_comments(meta_model):
+    """Test grammar on a file with a lot of comments.
+
+    Some comments are important while some can be discarded.
+    """
+    filename = "FBWithManyComments.txt"
+    filepath = os.path.realpath(tests_dir + "/plc_code/" + filename)
+    try:
+        model = meta_model.model_from_file(filepath)
+    except:
+        pytest.fail(f"Error when analyzing the file `{filename}`")
+    else:
+        assert model is not None
+        assert model.function is not None
+        assert len(model.typedefs) == 0
+        fb = model.function

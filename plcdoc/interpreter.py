@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional
 from glob import glob
 import logging
 import xml.etree.ElementTree as ET
-from textx import metamodel_from_file
+from textx import metamodel_from_file, TextXSyntaxError
 from textx.metamodel import TextXMetaModel
 
 PACKAGE_DIR = os.path.dirname(__file__)
@@ -28,6 +28,8 @@ class PlcInterpreter:
 
         # Library of processed models, keyed by the objtype and then by the name
         self._models: Dict[str, Dict[str, Any]] = {}
+
+        self._active_file = ""  # For better logging of errors
 
     def parse_plc_project(self, path: str) -> bool:
         """Parse a PLC project.
@@ -93,6 +95,8 @@ class PlcInterpreter:
         tree = ET.parse(filepath)
         root = tree.getroot()
 
+        self._active_file = filepath
+
         if root.tag != "TcPlcObject":
             return False
 
@@ -107,6 +111,8 @@ class PlcInterpreter:
             # name = item.attrib["Name"]
 
             object_model = self._parse_declaration(item)
+            if object_model is None:
+                continue
 
             obj = PlcDeclaration(object_model, filepath)
 
@@ -115,6 +121,8 @@ class PlcInterpreter:
                 if node.tag in ["Declaration", "Implementation"]:
                     continue
                 method_model = self._parse_declaration(node)
+                if method_model is None:
+                    continue
                 method = PlcDeclaration(method_model, filepath)
                 obj.add_child(method)
 
@@ -122,8 +130,16 @@ class PlcInterpreter:
 
     def _parse_declaration(self, item):
         declaration_node = item.find("Declaration")
-        meta_model = self._meta_model.model_from_str(declaration_node.text)
-        return meta_model
+        if declaration_node is None:
+            return None
+        try:
+            meta_model = self._meta_model.model_from_str(declaration_node.text)
+            return meta_model
+        except TextXSyntaxError as err:
+            name = item.attrib.get("Name", "<Unknown>")
+            logger.error("Error parsing node `%s` in file `%s`\n(%s)", name, self._active_file, str(err))
+
+        return None
 
     def reduce_type(self, key: str):
         """If key is one of multiple, return the main type.

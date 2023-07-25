@@ -99,7 +99,7 @@ class PlcObjectDescription(ObjectDescription):
                 _pseudo_parse_arglist(signode, arglist)
 
         if retann:
-            # TODO: Add reference to retun type (like _parse_annotation but for PLC domain)
+            # TODO: Add reference to return type (like _parse_annotation but for PLC domain)
             # children = _parse_annotation(retann, self.env)
             signode += addnodes.desc_returns(retann, retann)
 

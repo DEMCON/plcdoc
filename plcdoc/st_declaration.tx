@@ -6,8 +6,8 @@ Declaration:
 ;
 
 TypeDef:
-    comment=CommentBlock?
     attributes*=Attribute
+    comment=CommentBlock?
     'TYPE' name=ID ('EXTENDS' extends=ID)? ':'
     (type=TypeStruct | type=TypeEnum)
     'END_TYPE'
@@ -22,14 +22,13 @@ TypeStruct:
 
 TypeEnum:
     '('
-    values*=EnumOption
-    ');'
+    values*=EnumOption[',']
+    ')' base_type=ID? ';'
 ;
 
 EnumOption:
     name=ID
-    (':=' INT)?
-    ','?
+    (':=' number=INT)?
 ;
 
 Function:
@@ -50,7 +49,9 @@ Program:
 ;
 
 Attribute :
-    '{attribute' '\'' attribute=ID '\'}'
+    comment=CommentBlock?
+    '{' 'attribute' '\'' attribute=ID '\'' '}' /\s*/
+    // The extra match of whitespace is need to prevent issues with a following comment
 ;
 
 Listing :
@@ -94,5 +95,6 @@ CommentDescription:
 ;
 
 CommentBlock[noskipws]:
-    comment=/\(\*(.|\n)*\*\)/
+    comment=/\(\*(.|\n)*?\*\)/
+    // Use the non-greedy repetition `*?`
 ;

@@ -8,7 +8,7 @@ Regular Python Examples
 .. py:function:: my_function
 
 
-.. py:function:: python_function(arg1: str) -> bool
+.. py:function:: python_function(arg1: BaseClass) -> SomeClass
 
    This is a very cool function but then in Python.
 
