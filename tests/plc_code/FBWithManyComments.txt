@@ -1,0 +1,36 @@
+(*
+Ignored
+*)
+(*
+Important
+*)
+FUNCTION_BLOCK FB_MyBlock EXTENDS FB_MyBlock // Ignored
+// Ignored
+VAR_INPUT // Ignored
+    someInput       : LREAL;  // Important
+    // Ignored
+    otherInput      : BOOL;                    // Important
+END_VAR
+// Ignored
+VAR_OUTPUT
+    myOutput        : UINT; // Important
+END_VAR
+VAR_INPUT
+    secondClause    : LREAL; //Important
+// Ignored
+END_VAR
+VAR
+    some_string:STRING:='hoi';//Important
+    internal_variable : BOOL        := FALSE;
+END_VAR
+// Ignored
+// Ignored
+// Ignored
+(*
+Ignored
+*)
+// Ignored
+
+(*
+Ignored
+*)

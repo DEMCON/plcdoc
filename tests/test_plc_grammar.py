@@ -41,7 +41,7 @@ def test_grammar_on_files(meta_model):
             assert model.function is not None or model.typedefs
 
 
-def test_grammer_comments(meta_model):
+def test_grammar_comments(meta_model):
     """Test grammar on a file with a lot of comments.
 
     Some comments are important while some can be discarded.

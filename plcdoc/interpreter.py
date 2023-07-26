@@ -228,6 +228,10 @@ class PlcDeclaration:
                 if "Enum" in typ.type._tx_fqn:
                     self._objtype = "enum"
 
+        if meta_model.properties:
+            for prop in meta_model.properties:
+                self._model = prop
+
         self._name = self._model.name
         self._file: Optional[str] = file
         self._children: Dict[str, "PlcDeclaration"] = {}

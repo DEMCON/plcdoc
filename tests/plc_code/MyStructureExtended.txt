@@ -1,5 +1,6 @@
 TYPE MyStructureExtended EXTENDS MyStructure :
 STRUCT
     member2     : UDINT;            //          Another property
+    anArray     : ARRAY[0..10] OF BOOL;
 END_STRUCT
 END_TYPE

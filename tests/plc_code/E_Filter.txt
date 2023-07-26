@@ -1,0 +1,16 @@
+(*
+Qualified and strict are both important.
+*)
+{attribute 'qualified_only'}
+{attribute 'strict'}
+(*
+Different optical filters.
+*)
+TYPE E_Filter :
+(
+    NoFilter := 1,
+    // Pointless comment
+    Filter434nm := 2,
+    Filter697nm := 6    // Note: non-consecutive number!
+) USINT;                // Specify base type so API is explicit
+END_TYPE

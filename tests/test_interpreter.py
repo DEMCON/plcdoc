@@ -8,12 +8,12 @@ import os
 from plcdoc.interpreter import PlcInterpreter, PlcDeclaration
 
 
-PLC_DIR = os.path.join(os.path.dirname(__file__), "TwinCAT PLC", "MyPLC")
+CODE_DIR = os.path.join(os.path.dirname(__file__), "plc_code")
 
 
 @pytest.fixture()
 def interpreter():
-    yield PlcInterpreter()
+    return PlcInterpreter()
 
 
 class TestPlcInterpreter:
@@ -29,7 +29,7 @@ class TestPlcInterpreter:
 
     def test_files(self, interpreter):
         """Test content from files directly."""
-        files = [os.path.join(PLC_DIR, file) for file in self.FILES]
+        files = [os.path.join(CODE_DIR, "TwinCAT PLC", "MyPLC", file) for file in self.FILES]
         interpreter.parse_source_files(files)
 
         objects = [
@@ -51,6 +51,16 @@ class TestPlcInterpreter:
 
     def test_project(self, interpreter):
         """Test loading contents through a PLC project file."""
-        file = os.path.join(PLC_DIR, "MyPLC.plcproj")
+        file = os.path.join(CODE_DIR, "TwinCAT PLC", "MyPLC", "MyPLC.plcproj")
+        interpreter.parse_plc_project(file)
 
+    def test_large_external_project(self, interpreter):
+        """Test grammar on a big existing project.
+
+        The goal is not so much to check the results in detail but just to make sure there are no
+        errors, and we likely covered all possible syntax.
+        """
+        project = "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj"
+        file = os.path.join(CODE_DIR, project)
+        file = os.path.realpath(file)
         interpreter.parse_plc_project(file)

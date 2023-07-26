@@ -2,16 +2,21 @@
 Declaration:
     typedefs*=TypeDef
     (function=Function)?
-//    (program=Program)?
+    properties*=Property
+    CommentIgnored*
 ;
 
+Fqn: (ID '.')? ID;
+
 TypeDef:
+    CommentIgnored*
     attributes*=Attribute
+    CommentLineIgnored*
     comment=CommentBlock?
     'TYPE' name=ID ('EXTENDS' extends=ID)? ':'
     (type=TypeStruct | type=TypeEnum)
-    'END_TYPE'
     CommentIgnored*
+    'END_TYPE'
 ;
 
 TypeStruct:
@@ -27,74 +32,134 @@ TypeEnum:
 ;
 
 EnumOption:
+    CommentIgnored*
     name=ID
     (':=' number=INT)?
+    CommentIgnored*
 ;
 
 Function:
+    CommentLineIgnored*
     comment=CommentBlock?
-    function_type=FunctionType name=ID ('EXTENDS' extends=ID)? (':' return=ID)?
+    attributes*=Attribute
+    function_type=FunctionType (visibility=Visibility)? name=ID ('EXTENDS' extends=Fqn)? (':' return=ID)? CommentIgnored?
+    CommentIgnored*
+    lists*=VariableList
+;
+
+FunctionType:
+    'FUNCTION_BLOCK' | 'FUNCTION' | 'METHOD' | 'PROGRAM'
+;
+
+Visibility:
+    'PUBLIC' | 'PRIVATE'
+;
+
+Program:
+    'PROGRAM' name=ID
     lists*=VariableList
     CommentIgnored*
 ;
 
-FunctionType :
-    'FUNCTION_BLOCK' | 'FUNCTION' | 'METHOD' | 'PROGRAM'
-;
-
-Program:
-    comment=CommentBlock?
-    'PROGRAM' name=ID
-    lists*=VariableList
-;
-
 Attribute :
-    comment=CommentBlock?
-    '{' 'attribute' '\'' attribute=ID '\'' '}' /\s*/
+    '{' ID attribute=STRING (':=' value=STRING)? '}' /\s*/
     // The extra match of whitespace is need to prevent issues with a following comment
-;
-
-Listing :
-    VariableList | CommentIgnored
 ;
 
 VariableList:
     CommentIgnored*
-    name=VariableListType
+    attributes*=Attribute
+    name=VariableListType (modifiers='CONSTANT')? CommentIgnored?
     variables*=Variable
     'END_VAR'
-    CommentIgnored*
 ;
 
 VariableListType:
-    /VAR_.*/ | 'VAR'
+    (/VAR_\w+/ | 'VAR')
 ;
 
 // A single variable definition
 Variable:
     CommentIgnored*
-    name=ID ':' type=ID value=Value? ';' comment=CommentDescription?
+    attribute=Attribute?
+    CommentIgnored*
+    name=ID (address=VariableAddress)? ':' type=VariableType value=VariableValue? ';' comment=CommentDescription?
+    CommentIgnored*
+    attribute=Attribute?
     CommentIgnored*
 ;
 
+VariableType:
+    VariableTypeArray | VariableTypeString | ID+
+;
+
+VariableTypeArray:
+    'ARRAY' '[' range=ArrayRange ']' 'OF' type=ID
+;
+
+VariableTypeString:
+    ('STRING[' INT ']') | ('STRING(' INT ')')
+;
+
+ArrayRange:
+    //(INT '..' INT|Fqn) | ('*')
+    /[\w\.\s\*\-\+]+/
+;
+
+VariableAddress:
+    'AT' '%' /[A-Z%\.\*]/+
+;
+
 // Variable initial value
-Value:
+VariableValue:
     ':=' value=Literal
 ;
 
 // Catch literals for initialization
 Literal:
-    STRICTFLOAT|INT|STRING|ID
+    STRICTFLOAT|STRING|StructInit|Anything
+    // QualifiedName?
 ;
 
-// The `Comment` clause is reserved, create a custom clause that won't be processed
-CommentIgnored: /\/\/.*$/;
+StructInit:
+    '('
+    (ID ':=' Literal)*[',']
+    ')'
+;
+
+QualifiedName:
+    (ID '.')* ID
+;
+
+Anything:
+    /[\w#\.]+/
+;
+
+Property:
+    attributes*=Attribute
+    'PROPERTY' visibility=Visibility name=ID ':' VariableType
+;
+
+// The `Comment` clause is reserved, create a custom clause that won't be removed automatically
+
+CommentLineIgnored: /\/\/.*$/;
+CommentBlockIgnored: /\s*\(\*(.|\n)*?\*\)\s*/;
+
+CommentIgnored:
+    CommentLineIgnored | CommentBlockIgnored
+;
+
+// Built-in `Comment` - use to remove any line and block comments that remain in the end
+//Comment:
+//    CommentIgnored | CommentBlockIgnored
+//;
 
 CommentDescription:
     '//' comment=/.*$/
 ;
 
 CommentBlock[noskipws]:
-    comment=/\(\*(.|\n)*?\*\)/
+    /\s*/- comment=/\(\*(.|\n)*?\*\)/
     // Use the non-greedy repetition `*?`
+    // Search for leading/trailing whitespace (helps with adjoining commands), but unmatch them again from the result
 ;

@@ -1,3 +1,4 @@
+{attribute 'pack_mode' := '8'}
 TYPE MyStructure :
 STRUCT
     member1     : LREAL; // Some member
