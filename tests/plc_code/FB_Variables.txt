@@ -1,0 +1,32 @@
+FUNCTION_BLOCK FB_WithAllKindsOfVariableConstructors
+VAR
+myfloat_no_ws:REAL;
+    myfloat     : REAL   ;
+
+    mydoubleinit1       : LREAL:=1.0;
+    mydoubleinit2       : LREAL := 1.0;
+    mystring            : STRING := 'test';
+
+    my_object           : MyObject();
+    my_object1          : MyObject(7);
+    my_object2          : MyObject('hi', 23, FALSE);
+    my_object3          : MyObject(text := 'hi', number := 23, flag := FALSE);
+    my_object4          : MyObject(
+            text := 'hi',
+            number := 23,
+            flag := FALSE
+    );
+    mystring_size1      : STRING(15);
+    mystring_size2      : STRING[17];
+
+    myint               : INT := SomeConstant;
+    myint2              : INT := Module.Constant;
+
+    mylist              : ARRAY[0..4]OF BOOL;
+    mylist_ws           : ARRAY  [   0     ..  4]    OF BOOL;
+    mylist_var_idx      : ARRAY [Idx.start..Idx.end] OF BOOL;
+
+    mystruct            : MyStruct();
+    mystruct2           : MyStruct := (number := 1.0, text := 'hi');
+
+END_VAR

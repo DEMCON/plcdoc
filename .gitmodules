@@ -1,3 +1,6 @@
 [submodule "tests/plc_code/extern/lcls-twincat-general"]
 	path = tests/plc_code/extern/lcls-twincat-general
 	url = https://github.com/pcdshub/lcls-twincat-general.git
+[submodule "tests/plc_code/extern/lcls-twincat-motion"]
+	path = tests/plc_code/extern/lcls-twincat-motion
+	url = https://github.com/pcdshub/lcls-twincat-motion.git

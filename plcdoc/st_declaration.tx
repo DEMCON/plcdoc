@@ -1,21 +1,35 @@
-// Process complete declaration
+/*
+Parse the StructuredText declaration specifically.
+
+In practice all segments are in different XML leaves, but the syntax would allow for combinations. We pretend everything
+could be in a big file.
+
+Note: `FUNCTION*` does not have a closing call for some reason!
+
+There are a lot of `comments*=CommentAny`. This will offer a list of comments, the relevant docblocks need to be
+extracted later. There seems no better way to do this in TextX.
+Comment captures should be move down (= more basic elements) as much as possible to limit their usage.
+*/
 Declaration:
-    typedefs*=TypeDef
-    (function=Function)?
+    types*=TypeDef
     properties*=Property
-    CommentIgnored*
+    functions*=Function
+    CommentAny*
 ;
 
-Fqn: (ID '.')? ID;
-
+/*
+---------------------------------------------------
+*/
+/*
+One instance of an ENUM or STRUCTURE
+*/
 TypeDef:
-    CommentIgnored*
-    attributes*=Attribute
-    CommentLineIgnored*
-    comment=CommentBlock?
-    'TYPE' name=ID ('EXTENDS' extends=ID)? ':'
+    comments*=CommentAny
+    'TYPE'
+    name=ID
+    ('EXTENDS' extends=Fqn)?
+    ':'
     (type=TypeStruct | type=TypeEnum)
-    CommentIgnored*
     'END_TYPE'
 ;
 
@@ -28,22 +42,30 @@ TypeStruct:
 TypeEnum:
     '('
     values*=EnumOption[',']
-    ')' base_type=ID? ';'
+    ')' base_type=Fqn? ';'
 ;
 
 EnumOption:
-    CommentIgnored*
     name=ID
     (':=' number=INT)?
-    CommentIgnored*
 ;
 
+/*
+---------------------------------------------------
+*/
+/*
+One instance of a FUNCTION, FUNCTION_BLOCK, METHOD, ...
+*/
 Function:
-    CommentLineIgnored*
-    comment=CommentBlock?
-    attributes*=Attribute
-    function_type=FunctionType (visibility=Visibility)? name=ID ('EXTENDS' extends=Fqn)? (':' return=ID)? CommentIgnored?
-    CommentIgnored*
+    comments*=CommentAny
+    function_type=FunctionType
+    (abstract?='ABSTRACT')
+    (final?='FINAL')
+    (visibility=Visibility)?
+    name=ID
+    ('EXTENDS' extends=Fqn)?
+    ('IMPLEMENTS' implements=Fqn)?
+    (':' return=Fqn)?
     lists*=VariableList
 ;
 
@@ -52,114 +74,132 @@ FunctionType:
 ;
 
 Visibility:
-    'PUBLIC' | 'PRIVATE'
+    'PUBLIC' | 'PRIVATE' | 'PROTECTED' | 'INTERNAL'
 ;
 
-Program:
-    'PROGRAM' name=ID
-    lists*=VariableList
-    CommentIgnored*
+/*
+---------------------------------------------------
+*/
+
+Property:
+    'PROPERTY'
+    (visibility=Visibility)?
+    name=ID
+    ':'
+    type=VariableType
 ;
 
-Attribute :
-    '{' ID attribute=STRING (':=' value=STRING)? '}' /\s*/
-    // The extra match of whitespace is need to prevent issues with a following comment
-;
+/*
+---------------------------------------------------
+*/
+/*
+Variable declarations. There are many different notations, so this is tricky.
+*/
 
 VariableList:
-    CommentIgnored*
-    attributes*=Attribute
-    name=VariableListType (modifiers='CONSTANT')? CommentIgnored?
+    CommentAny*
+    name=VariableListType
+    (constant?='CONSTANT')?
     variables*=Variable
+    CommentAny*
+    // Catch trailing comments here, not at the end of `Variable`
     'END_VAR'
 ;
 
 VariableListType:
-    (/VAR_\w+/ | 'VAR')
+    /VAR_\w+/ | 'VAR'
 ;
 
-// A single variable definition
+/*
+Single variable declaration
+*/
 Variable:
-    CommentIgnored*
-    attribute=Attribute?
-    CommentIgnored*
-    name=ID (address=VariableAddress)? ':' type=VariableType value=VariableValue? ';' comment=CommentDescription?
-    CommentIgnored*
-    attribute=Attribute?
-    CommentIgnored*
+    CommentAny*
+    name=ID
+    (address=Address)?
+    ':'
+    type=VariableType
+    (arglist=ArgList)?
+    (':=' value=AssignmentValue)?
+    ';'
+    comment=CommentLine?
 ;
 
 VariableType:
-    VariableTypeArray | VariableTypeString | ID+
+    (array=VariableTypeArray)?
+    name=Fqn
 ;
 
 VariableTypeArray:
-    'ARRAY' '[' range=ArrayRange ']' 'OF' type=ID
+    'ARRAY'- '[' start=Value '.' '.' end=Value ']' 'OF'-
 ;
 
-VariableTypeString:
-    ('STRING[' INT ']') | ('STRING(' INT ')')
+AssignmentValue:
+    ArgList | Value
 ;
 
-ArrayRange:
-    //(INT '..' INT|Fqn) | ('*')
-    /[\w\.\s\*\-\+]+/
+ArgList:
+    ('(' fields*=Arg[','] ')') | ('[' fields*=Arg[','] ']')
+    // Match both `(..)` and `[...]` but brackets must match!
 ;
 
-VariableAddress:
+Arg:
+    (name=ID ':=')? value=Value
+;
+
+Address:
     'AT' '%' /[A-Z%\.\*]/+
 ;
 
-// Variable initial value
-VariableValue:
-    ':=' value=Literal
+/*
+Any variable name basically (do not skip whitespace because we don't want to match "first. second")
+*/
+Fqn[noskipws]:
+    /\s/*-
+    ID('.'ID)*
+    /\s/*-
 ;
 
-// Catch literals for initialization
-Literal:
-    STRICTFLOAT|STRING|StructInit|Anything
-    // QualifiedName?
+/*
+Single value, either a literal (69, 420.0, 'text') or another variable ("idx", "X.Y")
+*/
+Value:
+    STRING | NUMBER | Fqn
 ;
 
-StructInit:
-    '('
-    (ID ':=' Literal)*[',']
-    ')'
+/*
+---------------------------------------------------
+*/
+
+/*
+The `Comment` clause is reserved, which removes comments but then we cannot process them.
+
+We also put `Attribute` in the comment pile, because it can be placed just about everywhere
+
+A named field is added for comments so we can easily distinguish between comment lines and blocks.
+*/
+
+CommentAny:
+    CommentLine | CommentBlock | Attribute
 ;
 
-QualifiedName:
-    (ID '.')* ID
-;
-
-Anything:
-    /[\w#\.]+/
-;
-
-Property:
-    attributes*=Attribute
-    'PROPERTY' visibility=Visibility name=ID ':' VariableType
-;
-
-// The `Comment` clause is reserved, create a custom clause that won't be removed automatically
-
-CommentLineIgnored: /\/\/.*$/;
-CommentBlockIgnored: /\s*\(\*(.|\n)*?\*\)\s*/;
-
-CommentIgnored:
-    CommentLineIgnored | CommentBlockIgnored
-;
-
-// Built-in `Comment` - use to remove any line and block comments that remain in the end
-//Comment:
-//    CommentIgnored | CommentBlockIgnored
-//;
-
-CommentDescription:
-    '//' comment=/.*$/
+CommentLine:
+    '//'- text=/.*$/
 ;
 
 CommentBlock[noskipws]:
-    /\s*/- comment=/\(\*(.|\n)*?\*\)/
+    /\s*/- text=/\(\*(.|\n)*?\*\)/ /\s*/-
     // Use the non-greedy repetition `*?`
-    // Search for leading/trailing whitespace (helps with adjoining commands), but unmatch them again from the result
 ;
+
+Attribute:
+    '{'
+    field=ID
+    name=STRING
+    (':=' value=STRING)?
+    '}'
+;
+
+//Comment:
+//    CommentAny
+//;

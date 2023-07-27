@@ -1,3 +1,5 @@
+// Ignored
+{attribute 'naming' := 'on'}
 (*
 Ignored
 *)
@@ -15,7 +17,7 @@ END_VAR
 VAR_OUTPUT
     myOutput        : UINT; // Important
 END_VAR
-VAR_INPUT
+VAR CONSTANT
     secondClause    : LREAL; //Important
 // Ignored
 END_VAR
@@ -26,6 +28,7 @@ END_VAR
 // Ignored
 // Ignored
 // Ignored
+{attribute 'naming' := 'on'}
 (*
 Ignored
 *)
@@ -34,3 +37,5 @@ Ignored
 (*
 Ignored
 *)
+
+

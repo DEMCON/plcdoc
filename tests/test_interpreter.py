@@ -54,13 +54,17 @@ class TestPlcInterpreter:
         file = os.path.join(CODE_DIR, "TwinCAT PLC", "MyPLC", "MyPLC.plcproj")
         interpreter.parse_plc_project(file)
 
-    def test_large_external_project(self, interpreter):
+    def test_large_external_projects(self, interpreter):
         """Test grammar on a big existing project.
 
         The goal is not so much to check the results in detail but just to make sure there are no
         errors, and we likely covered all possible syntax.
         """
-        project = "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj"
-        file = os.path.join(CODE_DIR, project)
-        file = os.path.realpath(file)
-        interpreter.parse_plc_project(file)
+        projects = [
+            "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj",
+            "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj",
+        ]
+        for project in projects:
+            file = os.path.join(CODE_DIR, project)
+            file = os.path.realpath(file)
+            interpreter.parse_plc_project(file)
