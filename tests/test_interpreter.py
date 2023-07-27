@@ -4,8 +4,12 @@ Test the PLC interpreter on some TwinCAT source files.
 
 import pytest
 import os
+import logging
 
 from plcdoc.interpreter import PlcInterpreter, PlcDeclaration
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 CODE_DIR = os.path.join(os.path.dirname(__file__), "plc_code")
@@ -52,7 +56,8 @@ class TestPlcInterpreter:
     def test_project(self, interpreter):
         """Test loading contents through a PLC project file."""
         file = os.path.join(CODE_DIR, "TwinCAT PLC", "MyPLC", "MyPLC.plcproj")
-        interpreter.parse_plc_project(file)
+        result = interpreter.parse_plc_project(file)
+        assert result
 
     def test_large_external_projects(self, interpreter):
         """Test grammar on a big existing project.
@@ -64,7 +69,9 @@ class TestPlcInterpreter:
             "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj",
             "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj",
         ]
+        # TODO: Verify output of these projects - maybe interpreter is just empty?
         for project in projects:
             file = os.path.join(CODE_DIR, project)
             file = os.path.realpath(file)
-            interpreter.parse_plc_project(file)
+            result = interpreter.parse_plc_project(file)
+            assert result

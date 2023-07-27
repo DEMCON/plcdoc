@@ -160,3 +160,6 @@ def test_grammar_comments(meta_model):
         # Check attribute came over:
         attributes = [c for c in fb.comments if type(c).__name__ == "Attribute"]
         assert len(attributes) == 1 and attributes[0].name == "naming"
+
+
+# Also see `test_large_external_projects` for more massive tests

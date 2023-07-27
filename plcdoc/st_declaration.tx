@@ -30,6 +30,7 @@ TypeDef:
     ('EXTENDS' extends=Fqn)?
     ':'
     (type=TypeStruct | type=TypeEnum)
+    CommentAny*
     'END_TYPE'
 ;
 
@@ -41,13 +42,19 @@ TypeStruct:
 
 TypeEnum:
     '('
-    values*=EnumOption[',']
-    ')' base_type=Fqn? ';'
+    values*=EnumOption
+    CommentAny*
+    ')'
+    (base_type=Fqn)?
+    ';'
 ;
 
 EnumOption:
+    CommentAny*
     name=ID
     (':=' number=INT)?
+    (',')?
+    (comment=CommentLine)?
 ;
 
 /*

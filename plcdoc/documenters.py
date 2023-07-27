@@ -152,9 +152,9 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         # Also add VARs from meta-model
         args_block = []
         for var in self.object.get_args():
-            line_param = f":{var.kind} {var.type} {var.name}:"
-            if var.comment and var.comment.comment:
-                line_param += " " + var.comment.comment
+            line_param = f":{var.kind} {var.type.name} {var.name}:"
+            if var.comment and var.comment.text:
+                line_param += " " + var.comment.text
             args_block.append(line_param)
 
         if args_block:

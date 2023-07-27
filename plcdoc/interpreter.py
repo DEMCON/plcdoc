@@ -128,6 +128,8 @@ class PlcInterpreter:
 
             self._add_model(obj)
 
+        return True
+
     def _parse_declaration(self, item):
         declaration_node = item.find("Declaration")
         if declaration_node is None:
@@ -218,19 +220,17 @@ class PlcDeclaration:
         """
         self._objtype = None
 
-        if meta_model.function is not None:
-            self._model = meta_model.function
+        if meta_model.functions:
+            self._model = meta_model.functions[0]
             self._objtype = self._model.function_type.lower().replace("_", "")
 
-        if meta_model.typedefs:
-            for typ in meta_model.typedefs:
-                self._model = typ
-                if "Enum" in typ.type._tx_fqn:
-                    self._objtype = "enum"
+        if meta_model.types:
+            self._model = meta_model.types[0]
+            if "Enum" in type(self._model.type).__name__:
+                self._objtype = "enum"
 
         if meta_model.properties:
-            for prop in meta_model.properties:
-                self._model = prop
+            self._model = meta_model.properties[0]
 
         self._name = self._model.name
         self._file: Optional[str] = file
@@ -258,10 +258,27 @@ class PlcDeclaration:
         A list is created for each 'region' of comments. The first comment block above a declaration
         is the most common one.
         """
-        if not hasattr(self._model, "comment") or self._model.comment is None:
+        if hasattr(self._model, "comment") and self._model.comment is not None:
+            # Probably a comment line
+            big_block: str = self._model.comment.text
+        elif hasattr(self._model, "comments") and self._model.comments:
+            # Probably a comment block (amongst multiple maybe)
+            block_comment = None
+            for comment in reversed(self._model.comments):
+                # Find last block-comment
+                if type(comment).__name__ == "CommentBlock":
+                    block_comment = comment
+                    break
+
+            if block_comment is None:
+                return None
+
+            big_block: str = block_comment.text
+        else:
             return None
 
-        big_block: str = self._model.comment.comment.strip()  # Remove whitespace
+        big_block = big_block.strip()  # Get rid of whitespace
+
         # Remove comment indicators (cannot get rid of them by TextX)
         if big_block.startswith("(*"):
             big_block = big_block[2:]
