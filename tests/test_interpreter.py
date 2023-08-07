@@ -55,6 +55,7 @@ class TestPlcInterpreter:
         result = interpreter.parse_plc_project(file)
         assert result
 
+    @pytest.mark.skipif(not os.path.exists(os.path.join(CODE_DIR, "extern/lcls-twincat-general")), reason="External projects not present")
     def test_large_external_projects(self):
         """Test grammar on a big existing project.
 
