@@ -78,7 +78,7 @@ class PlcInterpreter:
             source_files = glob(path)
 
             if not source_files:
-                logging.warning(f"Could find file(s) in: {path}")
+                logging.warning(f"Could not find file(s) in: {path}")
             else:
                 for source_file in source_files:
                     if not self._parse_file(source_file):
