@@ -64,14 +64,23 @@ class TestPlcInterpreter:
         Do not use the `interpreter` fixture as we want the object fresh each time.
         """
         projects = {
-            "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj": (33, ),
-            # "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj": (),
+            "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj": {
+                "functionblock": 33,
+                "struct": 12,
+                "function": 5 + 20,
+                "property": 1,
+            },
+            "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj": {
+                "functionblock": 32,
+                "struct": 5,
+                "function": 10 + 3,
+            },
         }
-        # TODO: Verify output of these projects - maybe interpreter is just empty?
         for project, expected in projects.items():
             interpreter = PlcInterpreter()
             file = os.path.join(CODE_DIR, project)
             file = os.path.realpath(file)
             result = interpreter.parse_plc_project(file)
             assert result
-            assert len(interpreter._models["functionblock"]) == expected[0]
+            for key, number in expected.items():
+                assert len(interpreter._models[key]) == number

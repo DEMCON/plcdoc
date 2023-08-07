@@ -51,4 +51,6 @@ myfloat_no_ws:REAL;
     timeout1            : TIME := T#2S;
     timeout2            : TIME := T#12m13s14ms;
 
+    inline1, inlin2, inline3        : INT;
+
 END_VAR

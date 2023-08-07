@@ -230,16 +230,17 @@ class PlcDeclaration:
             type_str = type(self._model.type).__name__
             if "Enum" in type_str:
                 self._objtype = "enum"
-            if "Type" in type_str:
+            elif "Struct" in type_str:
                 self._objtype = "struct"
             else:
                 raise ValueError(f"Could not categorize type `{type_str}`")
 
-        if self._objtype is None:
-            raise ValueError(f"Unrecognized declaration in `{meta_model}`")
-
         if meta_model.properties:
             self._model = meta_model.properties[0]
+            self._objtype = "property"
+
+        if self._objtype is None:
+            raise ValueError(f"Unrecognized declaration in `{meta_model}`")
 
         self._name = self._model.name
         self._file: Optional[str] = file

@@ -33,6 +33,7 @@ TypeDef:
     name=ID
     ('EXTENDS' extends=Fqn)?
     ':'
+    CommentAny*
     (type=TypeStruct | type=TypeEnum)
     CommentAny*
     'END_TYPE'
@@ -78,7 +79,8 @@ Function:
     name=ID
     ('EXTENDS' extends=Fqn)?
     ('IMPLEMENTS' implements=Fqn)?
-    (':' return=Fqn)?
+    (':' return=BaseType)?
+    (';')?
     lists*=VariableList
 ;
 
@@ -95,6 +97,7 @@ Visibility:
 */
 
 Property:
+    comments*=CommentAny
     'PROPERTY'
     (visibility=Visibility)?
     name=ID
@@ -113,6 +116,7 @@ VariableList:
     CommentAny*
     name=VariableListType
     (constant?='CONSTANT')?
+    (persistent?='PERSISTENT')?
     variables*=Variable
     CommentAny*
     // Catch trailing comments here, not at the end of `Variable`
@@ -125,10 +129,13 @@ VariableListType:
 
 /*
 Single variable declaration
+
+Unfortunately, it is possible to define multiple variables inline - those are ignored for now
 */
 Variable:
     CommentAny*
     name=ID
+    (',' ID)*
     (address=Address)?
     ':'
     type=VariableType
@@ -141,7 +148,14 @@ Variable:
 VariableType:
     (array=VariableTypeArray)?
     (pointer=PointerLike 'TO')?
-    name=Fqn
+    name=BaseType
+;
+
+/*
+Specifically the string might also have a dimension attribute
+*/
+BaseType:
+    ( 'STRING(' NUMBER ')' ) | Fqn
 ;
 
 PointerLike:
@@ -215,11 +229,14 @@ CommentBlock[noskipws]:
     // Use the non-greedy repetition `*?`
 ;
 
+/*
+The attribute comment is nasty because there are basically no rules - hence just do a wildcard match
+*/
 Attribute:
     '{'
     field=ID
     name=STRING
-    (':=' value=STRING)?
+    (content=/[^}]+/)?
     '}'
 ;
 

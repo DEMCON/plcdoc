@@ -30,6 +30,7 @@ def test_grammar_on_files(meta_model):
         "MyStructureExtended.txt",
         "E_Options.txt",
         "E_Filter.txt",
+        "Properties.txt",
         "Main.txt",
     ]
 
@@ -41,7 +42,7 @@ def test_grammar_on_files(meta_model):
             pytest.fail(f"Error when analyzing the file `{filename}`")
         else:
             assert model is not None
-            assert model.functions or model.types
+            assert model.functions or model.types or model.properties
 
 
 def remove_whitespace(text):
@@ -58,13 +59,9 @@ def assert_variable(var, expected):
     """
     assert var.name == expected[0]
     assert var.type.name == expected[1]
-
     assert remove_whitespace(var.value) == expected[2]
-
     assert remove_whitespace(var.arglist) == expected[3]
-
     assert remove_whitespace(var.type.array) == expected[4]
-
     assert var.type.pointer == expected[5]
 
 
@@ -104,7 +101,7 @@ def test_grammar_variables(meta_model):
             ("my_object2", "MyObject", None, "('hi',23,FALSE)", None, None),
             ("my_object3", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
             ("my_object4", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
-            ("mystring_size1", "STRING", None, "(15)", None, None),
+            ("mystring_size1", "STRING(15)", None, None, None, None),
             ("mystring_size2", "STRING", None, "[17]", None, None),
 
             ("myint", "INT", "SomeConstant", None, None, None),
@@ -133,9 +130,11 @@ def test_grammar_variables(meta_model):
 
             ("timeout1", "TIME", "T#2S", None, None, None),
             ("timeout2", "TIME", "T#12m13s14ms", None, None, None),
+
+            ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 37
+        assert len(variables) == 38
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)
@@ -175,7 +174,7 @@ def test_grammar_comments(meta_model):
 
         for comment in list_important:
             assert "Important" in comment and "Ignored" not in comment
-        # We don't verify the content of ignored comments, they might dissappear in the future
+        # We don't verify the content of ignored comments, they might disappear in the future
 
         # Check attribute came over:
         attributes = [c for c in fb.comments if type(c).__name__ == "Attribute"]

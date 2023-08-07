@@ -15,6 +15,10 @@ VAR_INPUT // Ignored
 END_VAR
 // Ignored
 VAR_OUTPUT
+    {attribute 'stuff' := '
+        hello: how do you do
+        again: what's up
+    '}
     myOutput        : UINT; // Important
 END_VAR
 VAR CONSTANT
