@@ -9,6 +9,10 @@ Note: `FUNCTION*` does not have a closing call for some reason!
 There are a lot of `comments*=CommentAny`. This will offer a list of comments, the relevant docblocks need to be
 extracted later. There seems no better way to do this in TextX.
 Comment captures should be move down (= more basic elements) as much as possible to limit their usage.
+
+There can be dynamic expressions in variable declarations, which are very tricky to parse. Therefore expected
+expressions are parsed greedily as whole string. As a consequence, blocks like argument lists will result in a long
+string including the parentheses and commas.
 */
 Declaration:
     types*=TypeDef
@@ -145,24 +149,24 @@ PointerLike:
 ;
 
 VariableTypeArray:
-    'ARRAY'- '['- ArrayRange ']'- 'OF'-
+    'ARRAY'- ArrayRange 'OF'-
 ;
 
 ArrayRange:
-    ((Value '.' '.' Value)+[',']) | ('*'+[','])
+    '['-
+    /[^\]]+/
+    ']'-
+    // Match anything except the square bracket at the end
 ;
 
 AssignmentValue:
-    ArgList | Value
+    ArgList | Expression
 ;
 
 ArgList:
-    ('(' fields*=Arg[','] ')') | ('[' fields*=Arg[','] ']')
-    // Match both `(..)` and `[...]` but brackets must match!
-;
-
-Arg:
-    (name=ID ':=')? value=Value
+    ( '(' | '[' )
+    /[^;]*/
+    // Match anything, including parentheses, up to (but excluding) the semicolon
 ;
 
 Address:
@@ -179,32 +183,11 @@ Fqn[noskipws]:
 ;
 
 /*
-Single value, either a literal (69, 420.0, 'text') or another variable ("idx", "X.Y")
+Anything that is considered a value: a literal, a variable, or e.g. a sum
 */
-Value:
-    STRING | NumericHashtags | NumericUnderscores | NUMBER | Fqn
-;
-
-Arithmetic:
-    /[\-\+\*\/]/
-;
-
-/*
-Match the hashtag-based literals for integers and time
-*/
-NumericHashtags[noskipws]:
-    /\s/*-
-    /\w+(#\w+)?#\w+/
-    /\s/*-
-;
-
-/*
-Match numbers with underscores
-*/
-NumericUnderscores[noskipws]:
-    /\s/*-
-    /\d+_\d+(\d|_)+/
-    /\s/*-
+Expression:
+    /[^;]*/
+    // Match anything, including parentheses, up to (but excluding) the semicolon
 ;
 
 /*

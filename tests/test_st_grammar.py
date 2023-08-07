@@ -6,9 +6,12 @@ import pytest
 
 import os
 from textx import metamodel_from_file
+import re
 
 
 tests_dir = os.path.dirname(os.path.abspath(__file__))
+
+pattern_ws = re.compile(r"\s+")  # Match any whitespace
 
 
 @pytest.fixture()
@@ -41,35 +44,28 @@ def test_grammar_on_files(meta_model):
             assert model.functions or model.types
 
 
+def remove_whitespace(text):
+    if isinstance(text, str):
+        return re.sub(pattern_ws, "", text)
+
+    return text
+
+
 def assert_variable(var, expected):
-    assert var.name == expected[0] and var.type.name == expected[1]
+    """Verify the result of a declared variable.
 
-    if isinstance(expected[2], dict):
-        for i, (key, value) in enumerate(expected[2].items()):
-            assert var.value.fields[i].name == key
-            assert var.value.fields[i].value == value
-    else:
-        assert var.value == expected[2]
+    All whitespace is removed first.
+    """
+    assert var.name == expected[0]
+    assert var.type.name == expected[1]
 
-    if isinstance(expected[3], list):
-        assert len(var.arglist.fields) == len(expected[3])
-        for i, value in enumerate(expected[3]):
-            assert var.arglist.fields[i].name == ""
-            assert var.arglist.fields[i].value == value
-    elif isinstance(expected[3], dict):
-        assert len(var.arglist.fields) == len(expected[3])
-        for i, (key, value) in enumerate(expected[3].items()):
-            assert var.arglist.fields[i].name == key
-            assert var.arglist.fields[i].value == value
-    else:
-        assert var.arglist is None
+    assert remove_whitespace(var.value) == expected[2]
 
-    assert var.type.array == expected[4]
+    assert remove_whitespace(var.arglist) == expected[3]
 
-    if expected[5]:
-        assert var.type.pointer == expected[5]
-    else:
-        assert not var.type.pointer
+    assert remove_whitespace(var.type.array) == expected[4]
+
+    assert var.type.pointer == expected[5]
 
 
 def test_grammar_variables(meta_model):
@@ -94,18 +90,22 @@ def test_grammar_variables(meta_model):
             ("myfloat_no_ws", "REAL", None, None, None, None),
             ("myfloat", "REAL", None, None, None, None),
 
-            ("mydoubleinit1", "LREAL", 1.0, None, None, None),
-            ("mydoubleinit2", "LREAL", 1.0, None, None, None),
-            ("myinteger", "SINT", 420, None, None, None),
-            ("mystring", "STRING", "test", None, None, None),
+            ("mydoubleinit1", "LREAL", "1.0", None, None, None),
+            ("mydoubleinit2", "LREAL", "1.0", None, None, None),
+            ("myinteger", "SINT", "420", None, None, None),
+            ("mystring", "STRING", "'test'", None, None, None),
 
-            ("my_object", "MyObject", None, [], None, None),
-            ("my_object1", "MyObject", None, [7], None, None),
-            ("my_object2", "MyObject", None, ["hi", 23, "FALSE"], None, None),
-            ("my_object3", "MyObject", None, {"text": "hi", "number": 23, "flag": "FALSE"}, None, None),
-            ("my_object4", "MyObject", None, {"text": "hi", "number": 23, "flag": "FALSE"}, None, None),
-            ("mystring_size1", "STRING", None, [15], None, None),
-            ("mystring_size2", "STRING", None, [17], None, None),
+            ("int_arth_plus", "INT", "1+1", None, None, None),
+            ("int_arth_minus", "INT", "10-1", None, None, None),
+            ("int_arth_parent", "INT", "1+(LIM+1)*5", None, None, None),
+
+            ("my_object", "MyObject", None, "()", None, None),
+            ("my_object1", "MyObject", None, "(7)", None, None),
+            ("my_object2", "MyObject", None, "('hi',23,FALSE)", None, None),
+            ("my_object3", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
+            ("my_object4", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
+            ("mystring_size1", "STRING", None, "(15)", None, None),
+            ("mystring_size2", "STRING", None, "[17]", None, None),
 
             ("myint", "INT", "SomeConstant", None, None, None),
             ("myint2", "INT", "E_Error.NoError", None, None, None),
@@ -113,14 +113,14 @@ def test_grammar_variables(meta_model):
             ("mylist", "BOOL", None, None, "0..4", None),
             ("mylist_ws", "BOOL", None, None, "0..4", None),
             ("mylist_var_idx", "BOOL", None, None, "Idx.start..Idx.end", None),
-            ("mylist_sum", "BOOL", None, None, "0..MAX-1", None),
+            ("mylist_var_sum", "BOOL", None, None, "0..MAX-1", None),
             ("mylist_multi", "BOOL", None, None, "1..10,1..10", None),
             ("mylist_multi2", "BOOL", None, None, "1..10,1..10", None),
             ("mylist_dyn", "BOOL", None, None, "*", None),
             ("mylist_dyn_multi", "BOOL", None, None, "*,*,*", None),
 
-            ("mystruct", "MyStruct", None, [], None, None),
-            ("mystruct2", "MyStruct", {"number": 1.0, "text": "hi"}, None, None, None),
+            ("mystruct", "MyStruct", None, "()", None, None),
+            ("mystruct2", "MyStruct", "(number:=1.0,text:='hi')", None, None, None),
 
             ("specialint1", "UDINT", "2#1001_0110", None, None, None),
             ("specialint2", "UDINT", "8#67", None, None, None),
@@ -135,9 +135,7 @@ def test_grammar_variables(meta_model):
             ("timeout2", "TIME", "T#12m13s14ms", None, None, None),
         ]
 
-        # TODO: Test arithmetic in expressions
-
-        assert len(variables) == 34
+        assert len(variables) == 37
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

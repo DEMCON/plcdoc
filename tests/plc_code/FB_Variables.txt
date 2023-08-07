@@ -8,6 +8,10 @@ myfloat_no_ws:REAL;
     myinteger           : SINT := 420;
     mystring            : STRING := 'test';
 
+    int_arth_plus       : INT := 1 + 1;
+    int_arth_minus      : INT := 10-1;
+    int_arth_parent     : INT := 1 + (LIM + 1) * 5;
+
     my_object           : MyObject();
     my_object1          : MyObject(7);
     my_object2          : MyObject('hi', 23, FALSE);
