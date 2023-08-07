@@ -116,7 +116,8 @@ class PlcInterpreter:
 
             obj = PlcDeclaration(object_model, filepath)
 
-            # Methods are inside their own subtree with a `Declaration` - simply append them to the object
+            # Methods are inside their own subtree with a `Declaration` - simply append them to the
+            # object
             for node in item:
                 if node.tag in ["Declaration", "Implementation"]:
                     continue
@@ -130,7 +131,7 @@ class PlcInterpreter:
 
         return True
 
-    def _parse_declaration(self, item):
+    def _parse_declaration(self, item) -> Optional["TextXMetaClass"]:
         declaration_node = item.find("Declaration")
         if declaration_node is None:
             return None
@@ -226,8 +227,16 @@ class PlcDeclaration:
 
         if meta_model.types:
             self._model = meta_model.types[0]
-            if "Enum" in type(self._model.type).__name__:
+            type_str = type(self._model.type).__name__
+            if "Enum" in type_str:
                 self._objtype = "enum"
+            if "Type" in type_str:
+                self._objtype = "struct"
+            else:
+                raise ValueError(f"Could not categorize type `{type_str}`")
+
+        if self._objtype is None:
+            raise ValueError(f"Unrecognized declaration in `{meta_model}`")
 
         if meta_model.properties:
             self._model = meta_model.properties[0]

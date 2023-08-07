@@ -64,10 +64,12 @@ def assert_variable(var, expected):
     else:
         assert var.arglist is None
 
-    if expected[4] is None:
-        assert var.type.array is None
+    assert var.type.array == expected[4]
+
+    if expected[5]:
+        assert var.type.pointer == expected[5]
     else:
-        assert (var.type.array.start, var.type.array.end) == expected[4]
+        assert not var.type.pointer
 
 
 def test_grammar_variables(meta_model):
@@ -88,34 +90,54 @@ def test_grammar_variables(meta_model):
         variables = fb.lists[0].variables
 
         expected_list = [
-            # (Name, BaseType, Value, ArgList, Array)
-            ("myfloat_no_ws", "REAL", None, None, None),
-            ("myfloat", "REAL", None, None, None),
+            # (Name, BaseType, Value, ArgList, Array, Pointer)
+            ("myfloat_no_ws", "REAL", None, None, None, None),
+            ("myfloat", "REAL", None, None, None, None),
 
-            ("mydoubleinit1", "LREAL", 1.0, None, None),
-            ("mydoubleinit2", "LREAL", 1.0, None, None),
-            ("mystring", "STRING", "test", None, None),
+            ("mydoubleinit1", "LREAL", 1.0, None, None, None),
+            ("mydoubleinit2", "LREAL", 1.0, None, None, None),
+            ("myinteger", "SINT", 420, None, None, None),
+            ("mystring", "STRING", "test", None, None, None),
 
-            ("my_object", "MyObject", None, [], None),
-            ("my_object1", "MyObject", None, [7], None),
-            ("my_object2", "MyObject", None, ["hi", 23, "FALSE"], None),
-            ("my_object3", "MyObject", None, {"text": "hi", "number": 23, "flag": "FALSE"}, None),
-            ("my_object4", "MyObject", None, {"text": "hi", "number": 23, "flag": "FALSE"}, None),
-            ("mystring_size1", "STRING", None, [15], None),
-            ("mystring_size2", "STRING", None, [17], None),
+            ("my_object", "MyObject", None, [], None, None),
+            ("my_object1", "MyObject", None, [7], None, None),
+            ("my_object2", "MyObject", None, ["hi", 23, "FALSE"], None, None),
+            ("my_object3", "MyObject", None, {"text": "hi", "number": 23, "flag": "FALSE"}, None, None),
+            ("my_object4", "MyObject", None, {"text": "hi", "number": 23, "flag": "FALSE"}, None, None),
+            ("mystring_size1", "STRING", None, [15], None, None),
+            ("mystring_size2", "STRING", None, [17], None, None),
 
-            ("myint", "INT", "SomeConstant", None, None),
-            ("myint2", "INT", "Module.Constant", None, None),
+            ("myint", "INT", "SomeConstant", None, None, None),
+            ("myint2", "INT", "E_Error.NoError", None, None, None),
 
-            ("mylist", "BOOL", None, None, (0, 4)),
-            ("mylist_ws", "BOOL", None, None, (0, 4)),
-            ("mylist_var_idx", "BOOL", None, None, ("Idx.start", "Idx.end")),
+            ("mylist", "BOOL", None, None, "0..4", None),
+            ("mylist_ws", "BOOL", None, None, "0..4", None),
+            ("mylist_var_idx", "BOOL", None, None, "Idx.start..Idx.end", None),
+            ("mylist_sum", "BOOL", None, None, "0..MAX-1", None),
+            ("mylist_multi", "BOOL", None, None, "1..10,1..10", None),
+            ("mylist_multi2", "BOOL", None, None, "1..10,1..10", None),
+            ("mylist_dyn", "BOOL", None, None, "*", None),
+            ("mylist_dyn_multi", "BOOL", None, None, "*,*,*", None),
 
-            ("mystruct", "MyStruct", None, [], None),
-            ("mystruct2", "MyStruct", {"number": 1.0, "text": "hi"}, None, None),
+            ("mystruct", "MyStruct", None, [], None, None),
+            ("mystruct2", "MyStruct", {"number": 1.0, "text": "hi"}, None, None, None),
+
+            ("specialint1", "UDINT", "2#1001_0110", None, None, None),
+            ("specialint2", "UDINT", "8#67", None, None, None),
+            ("specialint3", "UDINT", "16#FF_FF_FF", None, None, None),
+            ("specialint4", "UDINT", "UDINT#16#1", None, None, None),
+            ("specialint5", "UDINT", "1_000_000", None, None, None),
+
+            ("mypointer1", "UDINT", None, None, None, "POINTER"),
+            ("mypointer2", "UDINT", None, None, None, "REFERENCE"),
+
+            ("timeout1", "TIME", "T#2S", None, None, None),
+            ("timeout2", "TIME", "T#12m13s14ms", None, None, None),
         ]
 
-        assert len(variables) == 19
+        # TODO: Test arithmetic in expressions
+
+        assert len(variables) == 34
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

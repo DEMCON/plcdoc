@@ -5,6 +5,7 @@ myfloat_no_ws:REAL;
 
     mydoubleinit1       : LREAL:=1.0;
     mydoubleinit2       : LREAL := 1.0;
+    myinteger           : SINT := 420;
     mystring            : STRING := 'test';
 
     my_object           : MyObject();
@@ -20,13 +21,30 @@ myfloat_no_ws:REAL;
     mystring_size2      : STRING[17];
 
     myint               : INT := SomeConstant;
-    myint2              : INT := Module.Constant;
+    myint2              : INT := E_Error.NoError;
 
     mylist              : ARRAY[0..4]OF BOOL;
     mylist_ws           : ARRAY  [   0     ..  4]    OF BOOL;
     mylist_var_idx      : ARRAY [Idx.start..Idx.end] OF BOOL;
+    mylist_var_sum      : ARRAY [0 .. MAX-1] OF BOOL;
+    mylist_multi        : ARRAY [1..10,1..10] OF BOOL;
+    mylist_multi2       : ARRAY [1 .. 10   ,    1 .. 10] OF BOOL;
+    mylist_dyn          : ARRAY [*] OF BOOL;
+    mylist_dyn_multi    : ARRAY [*,*,*] OF BOOL;
 
     mystruct            : MyStruct();
     mystruct2           : MyStruct := (number := 1.0, text := 'hi');
+
+    specialint1         : UDINT := 2#1001_0110;
+    specialint2         : UDINT := 8#67;
+    specialint3         : UDINT := 16#FF_FF_FF;
+    specialint4         : UDINT := UDINT#16#1;
+    specialint5         : UDINT := 1_000_000;
+
+    mypointer1          : POINTER TO UDINT;
+    mypointer2          : REFERENCE TO UDINT;
+
+    timeout1            : TIME := T#2S;
+    timeout2            : TIME := T#12m13s14ms;
 
 END_VAR

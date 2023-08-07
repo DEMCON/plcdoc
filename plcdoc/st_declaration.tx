@@ -37,6 +37,8 @@ TypeDef:
 TypeStruct:
     'STRUCT'
     properties*=Variable
+    CommentAny*
+    // Catch trailing comments here, not at the end of `Variable`
     'END_STRUCT'
 ;
 
@@ -134,11 +136,20 @@ Variable:
 
 VariableType:
     (array=VariableTypeArray)?
+    (pointer=PointerLike 'TO')?
     name=Fqn
 ;
 
+PointerLike:
+    'POINTER' | 'REFERENCE'
+;
+
 VariableTypeArray:
-    'ARRAY'- '[' start=Value '.' '.' end=Value ']' 'OF'-
+    'ARRAY'- '['- ArrayRange ']'- 'OF'-
+;
+
+ArrayRange:
+    ((Value '.' '.' Value)+[',']) | ('*'+[','])
 ;
 
 AssignmentValue:
@@ -171,7 +182,29 @@ Fqn[noskipws]:
 Single value, either a literal (69, 420.0, 'text') or another variable ("idx", "X.Y")
 */
 Value:
-    STRING | NUMBER | Fqn
+    STRING | NumericHashtags | NumericUnderscores | NUMBER | Fqn
+;
+
+Arithmetic:
+    /[\-\+\*\/]/
+;
+
+/*
+Match the hashtag-based literals for integers and time
+*/
+NumericHashtags[noskipws]:
+    /\s/*-
+    /\w+(#\w+)?#\w+/
+    /\s/*-
+;
+
+/*
+Match numbers with underscores
+*/
+NumericUnderscores[noskipws]:
+    /\s/*-
+    /\d+_\d+(\d|_)+/
+    /\s/*-
 ;
 
 /*
