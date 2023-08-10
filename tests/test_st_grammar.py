@@ -8,6 +8,8 @@ import os
 from textx import metamodel_from_file
 import re
 
+import plcdoc
+
 
 tests_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,7 +18,7 @@ pattern_ws = re.compile(r"\s+")  # Match any whitespace
 
 @pytest.fixture()
 def meta_model():
-    txpath = os.path.realpath(tests_dir + "/../plcdoc/st_declaration.tx")
+    txpath = os.path.realpath(tests_dir + "/../src/plcdoc/st_declaration.tx")
     return metamodel_from_file(txpath)
 
 
