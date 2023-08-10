@@ -237,6 +237,8 @@ class PlcDeclaration:
                 self._objtype = "enum"
             elif "Struct" in type_str:
                 self._objtype = "struct"
+            elif "Union" in type_str:
+                self._objtype = "union"
             else:
                 raise ValueError(f"Could not categorize type `{type_str}`")
 

@@ -34,17 +34,29 @@ TypeDef:
     ('EXTENDS' extends=Fqn)?
     ':'
     CommentAny*
-    (type=TypeStruct | type=TypeEnum)
+    type=AnyType
     CommentAny*
     'END_TYPE'
 ;
 
+AnyType:
+    TypeStruct | TypeUnion | TypeEnum
+;
+
 TypeStruct:
     'STRUCT'
-    properties*=Variable
+    members*=Variable
     CommentAny*
     // Catch trailing comments here, not at the end of `Variable`
     'END_STRUCT'
+;
+
+TypeUnion:
+    'UNION'
+    members*=Variable
+    CommentAny*
+    // Catch trailing comments here, not at the end of `Variable`
+    'END_UNION'
 ;
 
 TypeEnum:
@@ -155,7 +167,16 @@ VariableType:
 Specifically the string might also have a dimension attribute
 */
 BaseType:
-    ( 'STRING(' NUMBER ')' ) | Fqn
+    StringType | Fqn
+;
+
+/*
+Strings are very annoying because they have the size arg list but also assignment values.
+The very broad wildcard will then also match the assignment. So instead catch it specifically.
+*/
+StringType:
+    'STRING'
+    ( ( '(' (NUMBER | Fqn) ')' ) | ( '[' (NUMBER | Fqn) ']' ) )
 ;
 
 PointerLike:

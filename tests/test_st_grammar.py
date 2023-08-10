@@ -8,8 +8,6 @@ import os
 from textx import metamodel_from_file
 import re
 
-import plcdoc
-
 
 tests_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -33,6 +31,7 @@ def test_grammar_on_files(meta_model):
         "E_Options.txt",
         "E_Filter.txt",
         "Properties.txt",
+        "Unions.txt",
         "Main.txt",
     ]
 
@@ -60,7 +59,7 @@ def assert_variable(var, expected):
     All whitespace is removed first.
     """
     assert var.name == expected[0]
-    assert var.type.name == expected[1]
+    assert var.type.name.strip() == expected[1]
     assert remove_whitespace(var.value) == expected[2]
     assert remove_whitespace(var.arglist) == expected[3]
     assert remove_whitespace(var.type.array) == expected[4]
@@ -104,7 +103,11 @@ def test_grammar_variables(meta_model):
             ("my_object3", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
             ("my_object4", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
             ("mystring_size1", "STRING(15)", None, None, None, None),
-            ("mystring_size2", "STRING", None, "[17]", None, None),
+            ("mystring_size2", "STRING[17]", None, None, None, None),
+            ("mystring_size3", "STRING(Module.SIZE)", None, None, None, None),
+            ("mystring_size4", "STRING[SIZE]", None, None, None, None),
+            ("mystring_size5", "STRING(35)", "'Unknown'", None, None, None),
+            ("mystring_size6", "STRING[Module.SIZE]", "'Unknown'", None, None, None),
 
             ("myint", "INT", "SomeConstant", None, None, None),
             ("myint2", "INT", "E_Error.NoError", None, None, None),
@@ -136,7 +139,7 @@ def test_grammar_variables(meta_model):
             ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 38
+        assert len(variables) == 42
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

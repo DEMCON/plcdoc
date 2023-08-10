@@ -23,6 +23,10 @@ myfloat_no_ws:REAL;
     );
     mystring_size1      : STRING(15);
     mystring_size2      : STRING[17];
+    mystring_size3      : STRING(Module.SIZE);
+    mystring_size4      : STRING[SIZE];
+    mystring_size5      : STRING(35) := 'Unknown';
+    mystring_size6      : STRING[Module.SIZE] := 'Unknown';
 
     myint               : INT := SomeConstant;
     myint2              : INT := E_Error.NoError;
