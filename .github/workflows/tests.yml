@@ -2,7 +2,7 @@
 # This workflow will install the package and run the unittests.
 #
 
-name: Python application
+name: PyTest tests
 
 on:
   push:

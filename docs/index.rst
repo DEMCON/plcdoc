@@ -24,10 +24,11 @@ PLC Doc's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   quickstart
-   config
-   directives
-   examples
+   src/quickstart
+   src/config
+   src/directives
+   src/examples
+   src/internal
 
 
 ##################
