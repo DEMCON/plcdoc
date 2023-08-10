@@ -106,3 +106,17 @@ Run tests with `python -m pytest`.
 
 The structure is based on the Sphinx unittest principle. There are actual doc roots present which are processed as 
 normal during a test.
+
+Run with coverage with `python -m pytest --cov`. Add `--cov-report=html` to produce an HTML test report.
+
+### Basis and inspirations
+
+There are a bunch of projects linking new languages to Sphinx:
+
+ * C++: https://github.com/breathe-doc/breathe (language, typing and auto-doc)
+ * MATLAB: https://github.com/sphinx-contrib/matlabdomain (language, typing and auto-doc)
+ * JavaScript: https://github.com/mozilla/sphinx-js (language, typing and auto-doc)
+ * Python (`autodoc`): https://github.com/sphinx-doc/sphinx/tree/master/sphinx/ext/autodoc (auto-doc)
+
+`breathe` is the biggest and most complete, but very abstract. `sphinxcontrib-matlabdomain` was the main inspiration for
+the package layout. The auto-documentation however mimics the default Python `autodoc` extension very closely.
