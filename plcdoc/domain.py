@@ -14,6 +14,8 @@ from .directives import (
     PlcFunctionBlockDescription,
     PlcObjectDescription,
     PlcEnumeratorDescription,
+    PlcMemberDescription,
+    PlcPropertyDescription,
 )
 from .roles import PlcXRefRole
 
@@ -26,11 +28,14 @@ class ObjectEntry(NamedTuple):
     objtype: str
 
 
-_builtin_types_re = re.compile(r"""
+_builtin_types_re = re.compile(
+    r"""
     (L?)REAL
     |BOOL
     |(U?)(S|D|L?)INT
-""", re.VERBOSE)
+""",
+    re.VERBOSE,
+)
 
 
 class StructuredTextDomain(Domain):
@@ -61,7 +66,8 @@ class StructuredTextDomain(Domain):
         "enum":             PlcObjectDescription,
         "enumerator":       PlcEnumeratorDescription,
         "struct":           PlcObjectDescription,
-        "property":         PlcObjectDescription,
+        "member":           PlcMemberDescription,
+        "property":         PlcPropertyDescription,
     }
 
     # Roles are used to reference objects and are used like :rolename:`content`

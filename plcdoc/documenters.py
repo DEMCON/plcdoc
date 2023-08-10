@@ -20,12 +20,13 @@ logger = logging.getLogger(__name__)
 # Regex for unofficial PLC signatures -- this is used for non-auto
 # directives for example.
 plc_signature_re = re.compile(
-    r"""^ ([\w.]*\.)?                   # class name(s)
-          (\w+)  \s*                    # thing name
-          (?: \(\s*(.*)\s*\)            # optional: arguments
-          (?:\s* : \s* (.*))?           #           return annotation
-          (?:\s* EXTENDS \s* (.*))?     #           extends
-          )? $                          # and nothing more
+    r"""^ ([\w.]*\.)?                       # class name(s)
+          (\w+)  \s*                        # thing name
+          (?:
+                (?:\(\s*(.*)\s*\))?         # optional: arguments
+                (?:\s* : \s* (.*))?         #           return annotation
+                (?:\s* EXTENDS \s* (.*))?   #           extends
+          )? $                              # and nothing more
     """,
     re.VERBOSE,
 )
@@ -36,13 +37,16 @@ class PlcDocumenter(AutodocDocumenter, ABC):
 
     These documenters are added to the registry in the extension ``setup`` callback.
 
-    The purpose of a documenter is to generate literal reST code, that can be rendered into the docs, based
-    on source code analysis.
+    The purpose of a documenter is to generate literal reST code, that can be rendered into the
+    docs, based on source code analysis.
 
-    :cvar objtype: The object name as used for generating a directive (should be overriden by different types)
+    :cvar objtype: The object name as used for generating a directive
+                   (should be overriden by different types)
     """
 
     domain = "plc"
+
+    priority = 10
 
     def generate(
         self,
@@ -107,6 +111,33 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         self.fullname = ".".join(self.objpath)
 
         return True
+
+    def resolve_name(
+        self, modname: str, parents: Any, path: str, base: Any
+    ) -> Tuple[Optional[str], List[str]]:
+        """Using the regex result, identify this object.
+
+        Also use the environment if necessary.
+        This is similar for most objects: there can be a class-like prefix followed by the name.
+        """
+        if path:
+            mod_cls = path.rstrip(".")
+        else:
+            # No full path is given, search in:
+            # An autodoc directive
+            mod_cls = self.env.temp_data.get("plc_autodoc:class")
+            # Nested class-like directive:
+            if mod_cls is None:
+                # TODO: Make sure `ref_context` can actually work
+                mod_cls = self.env.ref_context.get("plc:functionblock")
+            # Cannot be found at all
+            if mod_cls is None:
+                return None, parents + [base]
+
+        _, sep, cls = mod_cls.rpartition(".")
+        parents = [cls]
+
+        return None, parents + [base]
 
     def format_name(self) -> str:
         """Get name to put in generated directive.
@@ -225,38 +256,12 @@ class PlcFunctionDocumenter(PlcDocumenter):
 
     @classmethod
     def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
+        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
     ) -> bool:
         if hasattr(member, "objtype"):
             return member.objtype in ["function", "method"]
 
         return False
-
-    def resolve_name(
-        self, modname: str, parents: Any, path: str, base: Any
-    ) -> Tuple[str, List[str]]:
-        """Using the regex result, identify this object.
-
-        Also use the environment if necessary.
-        """
-        if path:
-            mod_cls = path.rstrip(".")
-        else:
-            # No full path is given, search in:
-            # An autodoc directive
-            mod_cls = self.env.temp_data.get("plc_autodoc:class")
-            # Nested class-like directive:
-            if mod_cls is None:
-                # TODO: Make sure `ref_context` can actually work
-                mod_cls = self.env.ref_context.get("plc:functionblock")
-            # Cannot be found at all
-            if mod_cls is None:
-                return None, parents + [base]
-
-        _, sep, cls = mod_cls.rpartition(".")
-        parents = [cls]
-
-        return None, parents + [base]
 
 
 class PlcMethodDocumenter(PlcFunctionDocumenter):
@@ -267,6 +272,7 @@ class PlcMethodDocumenter(PlcFunctionDocumenter):
 
     objtype = "method"
     priority = PlcFunctionDocumenter.priority + 1
+    # Methods and Functions can be documented the same, but we should prefer a method when possible
 
 
 class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
@@ -280,7 +286,7 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
 
     @classmethod
     def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
+        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
     ) -> bool:
         if hasattr(member, "objtype"):
             return member.objtype in ["functionblock"]
@@ -328,3 +334,18 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
         # Reset context
         self.env.temp_data["plc_autodoc:module"] = None
         self.env.temp_data["plc_autodoc:class"] = None
+
+
+class PlcPropertyDocumenter(PlcDocumenter):
+    """Document a functionblock Property."""
+
+    objtype = "property"
+
+    @classmethod
+    def can_document_member(
+        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        if hasattr(member, "objtype"):
+            return member.objtype in ["property"]
+
+        return False

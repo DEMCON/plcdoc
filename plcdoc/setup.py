@@ -13,6 +13,7 @@ from .documenters import (
     PlcFunctionBlockDocumenter,
     PlcFunctionDocumenter,
     PlcMethodDocumenter,
+    PlcPropertyDocumenter,
 )
 
 logger = logging.getLogger(__name__)
@@ -21,8 +22,8 @@ logger = logging.getLogger(__name__)
 def plcdoc_setup(app: Sphinx) -> Dict:
     """Initialize Sphinx extension."""
 
-    # We place a callback for Sphinx for when the builder is about ready to start to index the PLC files
-    # The moment of reading the PLC files could probably be anything.
+    # We place a callback for Sphinx for when the builder is about ready to start to index the PLC
+    # files. The moment of reading the PLC files could probably be anything.
 
     app.setup_extension("sphinx.ext.autodoc")  # Require the autodoc extension
 
@@ -41,6 +42,8 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.registry.add_documenter("plc:method", PlcMethodDocumenter)
     app.add_directive_to_domain("plc", "automethod", PlcAutodocDirective)
+
+    app.registry.add_documenter("plc:property", PlcPropertyDocumenter)
 
     # Insert a resolver for built-in types
     app.connect("missing-reference", builtin_resolver, priority=900)
@@ -78,7 +81,9 @@ def analyze(app: Sphinx):
     project_file = app.config.plc_project
     if project_file:
         if not interpreter.parse_plc_project(project_file):
-            logger.warning(f"Could not parse all files found in project file {project_file}")
+            logger.warning(
+                f"Could not parse all files found in project file {project_file}"
+            )
 
     setattr(app, "_interpreter", interpreter)
 

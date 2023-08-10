@@ -34,7 +34,7 @@ class PlcObjectDescription(ObjectDescription):
         "module": directives.unchanged,
     }
 
-    # None: determine automatically, False: do not use, str: use literal value
+    # ``None``: determine automatically, ``False``: do not use, ``str``: use literal value
     object_display_type = None
 
     allow_nesting = False
@@ -106,7 +106,10 @@ class PlcObjectDescription(ObjectDescription):
         return fullname, prefix
 
     def get_signature_prefix(self, sig: str) -> List[nodes.Node]:
-        """Return a prefix to put before the object name in the signature."""
+        """Return a prefix to put before the object name in the signature.
+
+        E.g. "FUNCTION_BLOCK" or "METHOD".
+        """
 
         if self.object_display_type is None:
             objtype = self.objtype.upper()
@@ -229,3 +232,16 @@ class PlcEnumeratorDescription(PlcObjectDescription):
         # Do not index
         # TODO: Fix indexing for enums
         return
+
+
+class PlcMemberDescription(PlcObjectDescription):
+    """Directive specifically for (struct) members."""
+
+    object_display_type = False
+
+
+class PlcPropertyDescription(PlcObjectDescription):
+    """Directive specifically for properties of e.g. FBs.
+
+    Not to be confused with attributes of a STRUCT or enumerators of an ENUM.
+    """

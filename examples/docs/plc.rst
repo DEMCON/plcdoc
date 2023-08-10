@@ -58,6 +58,16 @@ This should be a reference: :plc:funcblock:`MyFunctionBlock`.
 
 .. plc:method:: ImaginedFunctionBlock.SomeMethodStandAlone()
 
+.. plc:functionblock:: FunctionBlockWithProperty
+
+   This function block has properties, defined in multiple ways.
+
+   .. plc:property:: Param : LREAL
+
+   .. plc:property:: FunctionBlockWithProperty.ParamWithPrefix : LREAL
+
+.. plc:property:: ImaginedFunctionBlock.ParamStandAlone : LREAL
+
 
 Manually Typed PLC Enums
 ========================
@@ -84,6 +94,6 @@ Manually Typed PLC Structs
 
 .. plc:struct:: ST_MyStruct2
 
-   .. plc:property:: \
+   .. plc:member:: \
       FaceUp
       FaceDown

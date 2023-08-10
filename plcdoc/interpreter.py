@@ -140,7 +140,12 @@ class PlcInterpreter:
             return meta_model
         except TextXSyntaxError as err:
             name = item.attrib.get("Name", "<Unknown>")
-            logger.error("Error parsing node `%s` in file `%s`\n(%s)", name, self._active_file, str(err))
+            logger.error(
+                "Error parsing node `%s` in file `%s`\n(%s)",
+                name,
+                self._active_file,
+                str(err),
+            )
 
         return None
 
@@ -245,6 +250,13 @@ class PlcDeclaration:
         self._name = self._model.name
         self._file: Optional[str] = file
         self._children: Dict[str, "PlcDeclaration"] = {}
+
+    def __repr__(self):
+        type_ = type(self)
+        return (
+            f"<{type_.__module__}.{type_.__qualname__} object, name `{self.name}`, "
+            f"at {hex(id(self))}>"
+        )
 
     @property
     def name(self) -> str:
