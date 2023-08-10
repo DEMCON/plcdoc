@@ -210,7 +210,11 @@ class PlcCallableDescription(PlcObjectDescription):
             has_arg=False,
             names=("returns", "return", "RETURNS", "RETURN"),
         ),
-        Field("returntype", label="Return type", has_arg=False, names=("rtype",), bodyrolename="type"),
+        Field(
+            "returntype",
+            label="Return type",
+            has_arg=False,
+            names=("rtype",), bodyrolename="type"),
     ]
     # fmt: on
 
