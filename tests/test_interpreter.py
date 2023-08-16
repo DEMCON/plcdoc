@@ -76,6 +76,13 @@ class TestPlcInterpreter:
                 "struct": 5,
                 "function": 10 + 3,
             },
+            "extern/TcUnit/TcUnit/TcUnit/TcUnit.plcproj": {
+                "enum": 2,
+                "struct": 8,
+                "union": 1,
+                "functionblock": 14,
+                "function": 36 + 138,
+            },
         }
         for project, expected in projects.items():
             interpreter = PlcInterpreter()

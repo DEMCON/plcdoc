@@ -104,7 +104,7 @@ class PlcInterpreter:
         for item in root:
             plc_item = item.tag  # I.e. "POU"
 
-            if plc_item not in ["DUT", "POU"]:
+            if plc_item not in ["DUT", "POU", "Itf"]:
                 continue
 
             # Name is repeated inside the declaration, use it from there instead

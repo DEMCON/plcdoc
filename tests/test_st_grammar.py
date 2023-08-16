@@ -129,6 +129,7 @@ def test_grammar_variables(meta_model):
             ("specialint3", "UDINT", "16#FF_FF_FF", None, None, None),
             ("specialint4", "UDINT", "UDINT#16#1", None, None, None),
             ("specialint5", "UDINT", "1_000_000", None, None, None),
+            ("specialint6", "USINT", "(1..Module.MAX)", None, None, None),
 
             ("mypointer1", "UDINT", None, None, None, "POINTER"),
             ("mypointer2", "UDINT", None, None, None, "REFERENCE"),
@@ -140,7 +141,7 @@ def test_grammar_variables(meta_model):
             ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 43
+        assert len(variables) == 44
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

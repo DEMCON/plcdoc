@@ -89,13 +89,13 @@ Function:
     name=ID
     ('EXTENDS' extends=Fqn)?
     ('IMPLEMENTS' implements=Fqn)?
-    (':' return=VariableType)?
+    (':' return=VariableType (arglist=ArgList)?)?
     (';')?
     lists*=VariableList
 ;
 
 FunctionType:
-    'FUNCTION_BLOCK' | 'FUNCTION' | 'METHOD' | 'PROGRAM'
+    'FUNCTION_BLOCK' | 'FUNCTION' | 'INTERFACE' | 'METHOD' | 'PROGRAM'
 ;
 
 Visibility:

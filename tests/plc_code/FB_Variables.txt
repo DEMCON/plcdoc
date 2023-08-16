@@ -48,6 +48,7 @@ myfloat_no_ws:REAL;
     specialint3         : UDINT := 16#FF_FF_FF;
     specialint4         : UDINT := UDINT#16#1;
     specialint5         : UDINT := 1_000_000;
+    specialint6         : USINT := (1..Module.MAX);
 
     mypointer1          : POINTER TO UDINT;
     mypointer2          : REFERENCE TO UDINT;
