@@ -32,3 +32,6 @@ autosectionlabel_prefix_document = True
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+# -- Options for PLC-doc -------------------------------------------------
+plc_project = "plc_code/TwinCAT Project/MyPlcProject/MyPlcProject.plcproj"

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="F_ExampleFunction" Id="{ec89adbf-53cf-4c93-9c16-994673a19690}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+This is an example function block.
+
+Here follows a longer description. 
+*)
+FUNCTION F_ExampleFunction : LREAL
+VAR_INPUT
+    inputVar1               : UDINT;                // Description of first input
+    inputVar2               : REAL := 3.14;         // Description of second input
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[F_ExampleFunction := 0.0;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

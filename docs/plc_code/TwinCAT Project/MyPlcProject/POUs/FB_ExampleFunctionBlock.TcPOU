@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_ExampleFunctionBlock" Id="{1d0f4647-a00a-42ef-8676-21cd880f317c}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Here we describe a function block, including some children.
+*)
+FUNCTION_BLOCK FB_ExampleFunctionBlock
+VAR_INPUT
+    input       : BOOL;
+END_VAR
+VAR_OUTPUT
+    output      : STRING(15);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="ExampleMethod" Id="{82381e22-448a-47e8-b264-9b857f411a3f}">
+      <Declaration><![CDATA[(*
+Child method of our FB.
+*)
+METHOD ExampleMethod
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="ExmapleProperty" Id="{cdcba121-a220-4eb8-8f4d-8924b3a02f60}">
+      <Declaration><![CDATA[(*
+Reference to a variable that might be read-only.
+*)
+PROPERTY ExmapleProperty : REFERENCE TO LREAL
+]]></Declaration>
+      <Get Name="Get" Id="{fe3cd6e4-aa00-4539-98af-b9fb9586655f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{80addca4-0610-47c4-8a76-38191658e0bd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>
