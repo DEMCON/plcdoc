@@ -132,6 +132,7 @@ def test_grammar_variables(meta_model):
 
             ("mypointer1", "UDINT", None, None, None, "POINTER"),
             ("mypointer2", "UDINT", None, None, None, "REFERENCE"),
+            ("mypointer3", "FB_Motor", "_motor", None, None, "REFERENCE"),
 
             ("timeout1", "TIME", "T#2S", None, None, None),
             ("timeout2", "TIME", "T#12m13s14ms", None, None, None),
@@ -139,7 +140,7 @@ def test_grammar_variables(meta_model):
             ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 42
+        assert len(variables) == 43
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

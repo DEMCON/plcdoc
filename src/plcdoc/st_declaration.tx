@@ -85,13 +85,11 @@ One instance of a FUNCTION, FUNCTION_BLOCK, METHOD, ...
 Function:
     comments*=CommentAny
     function_type=FunctionType
-    (abstract?='ABSTRACT')
-    (final?='FINAL')
-    (visibility=Visibility)?
+    (abstract?='ABSTRACT' final?='FINAL' (visibility=Visibility)?)#
     name=ID
     ('EXTENDS' extends=Fqn)?
     ('IMPLEMENTS' implements=Fqn)?
-    (':' return=BaseType)?
+    (':' return=VariableType)?
     (';')?
     lists*=VariableList
 ;
@@ -152,9 +150,13 @@ Variable:
     ':'
     type=VariableType
     (arglist=ArgList)?
-    (':=' value=AssignmentValue)?
+    (AssignmentSymbol value=AssignmentValue)?
     ';'
     comment=CommentLine?
+;
+
+AssignmentSymbol:
+    (':=') | ('REF=')
 ;
 
 VariableType:
