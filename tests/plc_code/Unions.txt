@@ -1,0 +1,7 @@
+TYPE U_MsgMetaData :
+UNION
+    a       : LREAL;
+    b       : LINTT;
+    c       : WORD;
+END_UNION
+END_TYPE
