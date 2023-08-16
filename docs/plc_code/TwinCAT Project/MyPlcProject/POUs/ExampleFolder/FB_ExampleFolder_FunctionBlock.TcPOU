@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_ExampleFolder_FunctionBlock" Id="{81b96abf-7769-4713-a272-841abc23375b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ExampleFolder_FunctionBlock
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

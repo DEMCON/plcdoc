@@ -27,11 +27,11 @@ END_VAR
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Property Name="ExmapleProperty" Id="{cdcba121-a220-4eb8-8f4d-8924b3a02f60}">
+    <Property Name="ExampleProperty" Id="{cdcba121-a220-4eb8-8f4d-8924b3a02f60}">
       <Declaration><![CDATA[(*
 Reference to a variable that might be read-only.
 *)
-PROPERTY ExmapleProperty : REFERENCE TO LREAL
+PROPERTY ExampleProperty : REFERENCE TO LREAL
 ]]></Declaration>
       <Get Name="Get" Id="{fe3cd6e4-aa00-4539-98af-b9fb9586655f}">
         <Declaration><![CDATA[VAR

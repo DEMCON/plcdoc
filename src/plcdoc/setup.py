@@ -44,6 +44,7 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     app.add_directive_to_domain("plc", "automethod", PlcAutodocDirective)
 
     app.registry.add_documenter("plc:property", PlcPropertyDocumenter)
+    app.add_directive_to_domain("plc", "autoproperty", PlcAutodocDirective)
 
     # Insert a resolver for built-in types
     app.connect("missing-reference", builtin_resolver, priority=900)

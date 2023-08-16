@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="F_ExampleFolder_Function" Id="{a8054540-25f8-4f51-9203-ddc488e3ec02}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_ExampleFolder_Function : BOOL
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

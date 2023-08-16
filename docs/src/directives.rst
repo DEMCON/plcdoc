@@ -9,6 +9,8 @@ Directives
 Manual Directives
 =================
 
+Use manual directives to describe PLC objects, without referencing to real source code.
+
 function
 --------
 
@@ -196,6 +198,14 @@ struct
 Auto Directives
 ===============
 
+Use auto directives to describe PLC objects through source code.
+Simply mention the object or a parent by name to retrieve the information.
+
+Relevant sources must be configured first.
+See :ref:`src/config:Config Variables` on how to do this.
+
+Most of the examples below are generated directly from ``docs/plc_code/TwinCAT Project/MyPlcProject``.
+
 autofunction
 ------------
 
@@ -280,3 +290,76 @@ And the result looks like:
 
 .. autofunctionblock:: FB_ExampleFunctionBlock
    :members:
+
+automethod
+----------
+
+.. code-block:: rst
+
+   .. automethod:: <parent>.<name>
+
+Specific methods (of function blocks) can also be built directly, without their parent.
+Use a dot to include the parent name.
+
+**Examples:**
+
+The method above could be rendered stand-alone with:
+
+.. code-block:: rst
+
+   .. automethod:: FB_ExampleFunctionBlock.ExampleMethod
+
+And the result would look like:
+
+.. automethod:: FB_ExampleFunctionBlock.ExampleMethod
+   :noindex:
+
+autoproperty
+------------
+
+.. code-block:: rst
+
+   .. autoproperty:: <parent>.<name>
+
+Like methods, properties can also be built alone (see :ref:`src/directives:automethod`).
+
+**Examples:**
+
+The property above could be rendered stand-alone with:
+
+.. code-block:: rst
+
+   .. autoproperty:: FB_ExampleFunctionBlock.ExampleProperty
+
+And the result would look like:
+
+.. autoproperty:: FB_ExampleFunctionBlock.ExampleProperty
+   :noindex:
+
+autofolder
+----------
+
+.. code-block:: rst
+
+   .. autofolder:: <name>
+
+Use ``autofolder`` to create references for all contents of a folder.
+It can be useful to quickly create content for a module, or simply all project content.
+
+Note that PLC in TwinCAT has no concept of modules or packages.
+Namespace of objects are not affected by their location inside your PLC project.
+So this concept of folders is purely imagined by ``plc-doc``.
+
+**Examples:**
+
+For the example project, the following could be used:
+
+.. code-block:: rst
+
+   .. autofolder:: ExampleFolder
+
+To render the following:
+
+.. .. autofolder:: ExampleFolder
+
+TODO
