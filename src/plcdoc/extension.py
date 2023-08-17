@@ -14,13 +14,17 @@ from .documenters import (
     PlcFunctionDocumenter,
     PlcMethodDocumenter,
     PlcPropertyDocumenter,
+    PlcFolderDocumenter,
 )
 
 logger = logging.getLogger(__name__)
 
 
 def plcdoc_setup(app: Sphinx) -> Dict:
-    """Initialize Sphinx extension."""
+    """Initialize the plcdoc extension.
+
+    Real setup function is put in the module ``__init__``.
+    """
 
     # We place a callback for Sphinx for when the builder is about ready to start to index the PLC
     # files. The moment of reading the PLC files could probably be anything.
@@ -45,6 +49,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.registry.add_documenter("plc:property", PlcPropertyDocumenter)
     app.add_directive_to_domain("plc", "autoproperty", PlcAutodocDirective)
+
+    app.registry.add_documenter("plc:folder", PlcFolderDocumenter)
+    app.add_directive_to_domain("plc", "autofolder", PlcAutodocDirective)
 
     # Insert a resolver for built-in types
     app.connect("missing-reference", builtin_resolver, priority=900)

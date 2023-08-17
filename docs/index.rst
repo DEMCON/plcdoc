@@ -28,7 +28,7 @@ PLC Doc's documentation!
    src/config
    src/directives
    src/examples
-   src/internal
+   src/modules
 
 
 ##################

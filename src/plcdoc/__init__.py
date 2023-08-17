@@ -1,5 +1,9 @@
+"""
+Extension for Sphinx to integrate TwinCAT PLC code.
+"""
+
 from sphinx.application import Sphinx
-from .setup import plcdoc_setup
+from .extension import plcdoc_setup
 from .__version__ import __version__
 
 

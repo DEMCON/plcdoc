@@ -11,6 +11,7 @@ __pycache__/
 
 build/
 _build/
+_autosummary/
 
 # Model display files
 *.dot

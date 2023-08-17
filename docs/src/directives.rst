@@ -360,6 +360,4 @@ For the example project, the following could be used:
 
 To render the following:
 
-.. .. autofolder:: ExampleFolder
-
-TODO
+.. autofolder:: ExampleFolder
