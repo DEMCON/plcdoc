@@ -1,7 +1,6 @@
 from typing import List, Type
 
 from sphinx.ext.autodoc.directive import (
-    SphinxDirective,
     AutodocDirective,
     DummyOptionSpec,
     DocumenterBridge,
@@ -80,13 +79,3 @@ class PlcAutodocDirective(AutodocDirective):
 
         result = parse_generated_content(self.state, params.result, documenter)
         return result
-
-
-class PlcAutoFolderDirective(SphinxDirective):
-    """Directive to recursively produce other auto-directives."""
-
-    option_spec = DummyOptionSpec()
-    has_content = True
-    required_arguments = 1
-    optional_arguments = 0
-    final_argument_whitespace = True

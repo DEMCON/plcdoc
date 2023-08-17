@@ -1,10 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="FB_ExampleFolder_FunctionBlock" Id="{81b96abf-7769-4713-a272-841abc23375b}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_ExampleFolder_FunctionBlock
+    <Declaration><![CDATA[(*
+FB indside folder `ExampleFolder`.
+*)
+FUNCTION_BLOCK FB_ExampleFolder_FunctionBlock
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
+    <Method Name="ExampleFolder_FunctionBlock_Method" Id="{b6c539eb-1440-4463-b6f6-d4f38e958956}">
+      <Declaration><![CDATA[METHOD ExampleFolder_FunctionBlock_Method : BOOL
+VAR_INPUT
+    input           : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

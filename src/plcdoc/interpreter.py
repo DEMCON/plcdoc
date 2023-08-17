@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from glob import glob
 import logging
 import xml.etree.ElementTree as ET
@@ -27,9 +27,14 @@ class PlcInterpreter:
         )
 
         # Library of processed models, keyed by the objtype and then by the name
-        self._models: Dict[str, Dict[str, Any]] = {}
+        self._models: Dict[str, Dict[str, "PlcDeclaration"]] = {}
+
+        # List of relative folders with model key,name
+        self._folders: Dict[str, List["PlcDeclaration"]] = {}
 
         self._active_file = ""  # For better logging of errors
+
+        self._root_folder: Optional[str] = None  # For folder references
 
     def parse_plc_project(self, path: str) -> bool:
         """Parse a PLC project.
@@ -45,6 +50,9 @@ class PlcInterpreter:
         if not root.tag.endswith("Project"):
             return False
 
+        # Find project root
+        self._root_folder = os.path.dirname(os.path.normpath(path))
+
         source_files = []
 
         for item_group in root:
@@ -57,7 +65,9 @@ class PlcInterpreter:
 
         # The paths in the PLC Project are relative to the project file itself:
         dir_path = os.path.dirname(path)
-        source_files = [os.path.join(dir_path, item) for item in source_files]
+        source_files = [
+            os.path.normpath(os.path.join(dir_path, item)) for item in source_files
+        ]
 
         if os.path.sep == "/":
             # The project will likely contain Windows paths, which can cause issues on Linux
@@ -184,6 +194,14 @@ class PlcInterpreter:
             for child in obj.children.values():
                 self._add_model(child, obj)
 
+            # Build a lookup of the folders (but skip child items!)
+            if self._root_folder and obj.file.startswith(self._root_folder):
+                file_relative = obj.file[len(self._root_folder) :]  # Remove common path
+                folder = os.path.dirname(file_relative).lstrip(os.sep)
+                if folder not in self._folders:
+                    self._folders[folder] = []
+                self._folders[folder].append(obj)
+
     def get_object(self, name: str, objtype: Optional[str] = None) -> "PlcDeclaration":
         """Search for an object by name in parsed models.
 
@@ -205,7 +223,19 @@ class PlcInterpreter:
                 if name in models_set:
                     return models_set[name]
 
-        raise KeyError(f"Failed to find model for `{name}`")
+        raise KeyError(f"Failed to find object `{name}` for the type `{objtype}`")
+
+    def get_objects_in_folder(self, folder: str) -> List["PlcDeclaration"]:
+        """Search for objects inside a folder.
+
+        Currently no recursion is possible!
+
+        :param folder: Folder name
+        """
+        if folder in self._folders:
+            return self._folders[folder]
+
+        raise KeyError(f"Found no models in the folder `{folder}`")
 
 
 class PlcDeclaration:

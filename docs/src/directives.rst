@@ -386,8 +386,9 @@ For the example project, the following could be used:
 
 .. code-block:: rst
 
-   .. autofolder:: ExampleFolder
+   .. autofolder:: POUs/ExampleFolder
 
 To render the following:
 
-.. autofolder:: ExampleFolder
+.. autofolder:: POUs/ExampleFolder
+   :noindex:

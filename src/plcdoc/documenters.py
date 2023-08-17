@@ -1,3 +1,4 @@
+import os.path
 from abc import ABC
 from typing import Any, Tuple, List, Dict, Optional, Any
 import re
@@ -165,10 +166,8 @@ class PlcDocumenter(AutodocDocumenter, ABC):
             self.object: PlcDeclaration = interpreter.get_object(
                 self.fullname, self.objtype
             )
-        except KeyError:
-            logger.warning(
-                f"Failed to find object `{self.name}` for the type `{self.objtype}`"
-            )
+        except KeyError as err:
+            logger.warning(err)
             return False
 
         return True
@@ -225,6 +224,22 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         """
         return None
 
+    def get_member_documenter(self, child: PlcDeclaration):
+        """Put together a documenter for a child.
+
+        This method is not used out of the box - call it from :meth:`document_members`.
+        """
+        # Find suitable documenters for this member
+        classes = [
+            cls
+            for documenter_name, cls in self.documenters.items()
+            if documenter_name.startswith("plc:")
+            and cls.can_document_member(child, child.name, True, self)
+        ]
+        # Prefer the documenter with the highest priority
+        classes.sort(key=lambda cls: cls.priority)
+        return classes[-1](self.directive, child.name, self.indent)
+
     def get_sourcename(self) -> str:
         """Get origin of info for tracing purposes."""
         return f"{self.object.file}:declaration of {self.fullname}"
@@ -274,6 +289,15 @@ class PlcMethodDocumenter(PlcFunctionDocumenter):
     priority = PlcFunctionDocumenter.priority + 1
     # Methods and Functions can be documented the same, but we should prefer a method when possible
 
+    @classmethod
+    def can_document_member(
+        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        if hasattr(member, "objtype"):
+            return member.objtype == cls.objtype
+
+        return False
+
 
 class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
     """Documenter for the Function Block type."""
@@ -294,7 +318,7 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
         return False
 
     def document_members(self, all_members: bool = False) -> None:
-        """Cannot document members."""
+        """Document nested members."""
         # TODO: Add documenting for members
 
         # Set current namespace for finding members
@@ -306,30 +330,19 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
             all_members or self.options.inherited_members or self.options.members is ALL
         )
 
-        memberdocumenters: List[Tuple[PlcDocumenter, bool]] = []
-
-        for child in self.get_object_children(want_all).values():
-            # Find suitable documenters for this member
-            classes = [
-                cls
-                for documenter_name, cls in self.documenters.items()
-                if documenter_name.startswith("plc:")
-                and cls.can_document_member(child, child.name, True, self)
-            ]
-            # Prefer the documenter with the highest priority
-            classes.sort(key=lambda cls: cls.priority)
-            documenter = classes[-1](self.directive, child.name, self.indent)
-            memberdocumenters.append((documenter, False))
+        member_documenters = [
+            (self.get_member_documenter(child), False)
+            for child in self.get_object_children(want_all).values()
+        ]
 
         # TODO: Sort members
 
-        for documenter, isattr in memberdocumenters:
+        for documenter, isattr in member_documenters:
             documenter.generate(
                 all_members=True,
                 real_modname="",
                 check_module=False,
             )
-            # TODO: CONTINUE HERE! Pick up generating of members
 
         # Reset context
         self.env.temp_data["plc_autodoc:module"] = None
@@ -354,8 +367,65 @@ class PlcPropertyDocumenter(PlcDocumenter):
 class PlcFolderDocumenter(PlcDocumenter):
     """Document a folder and its contents."""
 
+    objtype = "folder"
+
     @classmethod
     def can_document_member(
         cls, member: Any, membername: str, isattr: bool, parent: Any
     ) -> bool:
         return False
+
+    def parse_name(self) -> bool:
+        # Input is in ``self.name``
+        self.modname = None
+        self.objpath = self.name
+
+        self.args = None
+        self.retann = None
+        self.fullname = self.name
+
+        return True
+
+    def format_signature(self, **kwargs: Any) -> str:
+        return ""
+
+    def get_sourcename(self) -> str:
+        return f"{self.fullname}:folder"
+
+    def add_content(self, more_content: Optional[StringList]) -> None:
+        if more_content:
+            for line, src in zip(more_content.data, more_content.items):
+                self.add_line(line, src[0], src[1])
+
+    def import_object(self, raiseerror: bool = False) -> bool:
+        """Override import to process the folder name."""
+
+        interpreter: PlcInterpreter = self.env.app._interpreter
+
+        folder = os.path.normpath(self.fullname)
+        folder.strip(os.sep)
+
+        try:
+            self._contents: List[PlcDeclaration] = interpreter.get_objects_in_folder(
+                folder
+            )
+        except KeyError as err:
+            logger.warning(err)
+            return False
+
+        return True
+
+    def document_members(self, all_members: bool = False) -> None:
+        member_documenters = [
+            (self.get_member_documenter(child), False)
+            for child in self._contents
+        ]
+
+        # TODO: Sort content
+
+        for documenter, isattr in member_documenters:
+            documenter.generate(
+                all_members=True,
+                real_modname="",
+                check_module=False,
+            )
