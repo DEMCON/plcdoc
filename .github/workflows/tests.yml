@@ -4,9 +4,7 @@
 
 name: PyTest tests
 
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 permissions:
   contents: read

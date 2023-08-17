@@ -417,8 +417,7 @@ class PlcFolderDocumenter(PlcDocumenter):
 
     def document_members(self, all_members: bool = False) -> None:
         member_documenters = [
-            (self.get_member_documenter(child), False)
-            for child in self._contents
+            (self.get_member_documenter(child), False) for child in self._contents
         ]
 
         # TODO: Sort content

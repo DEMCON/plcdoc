@@ -1,0 +1,32 @@
+#
+# Test the source for Black reformatting (pass/fail)
+#
+
+name: Linting
+
+on: [push, pull_request]
+
+jobs:
+
+  black-format:
+    runs-on: ubuntu-latest
+    name: Black formatting
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "./src"
+
+  flake8-lint:
+    runs-on: ubuntu-latest
+    name: Flake8 code check
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: flake8 Lint
+        uses: py-actions/flake8@v2
