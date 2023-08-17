@@ -8,7 +8,7 @@ from sphinx.environment import BuildEnvironment
 from .__version__ import __version__
 from .interpreter import PlcInterpreter
 from .domain import StructuredTextDomain, _builtin_types_re
-from .auto_directives import PlcAutodocDirective, PlcAutoFolderDirective
+from .auto_directives import PlcAutodocDirective
 from .documenters import (
     PlcFunctionBlockDocumenter,
     PlcFunctionDocumenter,
