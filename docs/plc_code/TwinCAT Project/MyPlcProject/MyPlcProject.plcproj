@@ -20,6 +20,12 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\ExampleFolder\FB_ExampleFolder_FunctionBlock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\ExampleFolder\F_ExampleFolder_Function.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\FB_ExampleFunctionBlock.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -33,6 +39,7 @@
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\ExampleFolder" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

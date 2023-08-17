@@ -15,7 +15,7 @@ from .directives import (
     PlcObjectDescription,
     PlcEnumeratorDescription,
     PlcMemberDescription,
-    PlcPropertyDescription,
+    PlcFolderDescription,
 )
 from .roles import PlcXRefRole
 
@@ -67,7 +67,8 @@ class StructuredTextDomain(Domain):
         "enumerator":       PlcEnumeratorDescription,
         "struct":           PlcObjectDescription,
         "member":           PlcMemberDescription,
-        "property":         PlcPropertyDescription,
+        "property":         PlcObjectDescription,
+        "folder":           PlcFolderDescription,
     }
 
     # Roles are used to reference objects and are used like :rolename:`content`

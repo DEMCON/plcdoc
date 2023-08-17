@@ -349,3 +349,13 @@ class PlcPropertyDocumenter(PlcDocumenter):
             return member.objtype in ["property"]
 
         return False
+
+
+class PlcFolderDocumenter(PlcDocumenter):
+    """Document a folder and its contents."""
+
+    @classmethod
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        return False

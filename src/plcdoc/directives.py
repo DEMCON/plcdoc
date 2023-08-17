@@ -34,8 +34,7 @@ class PlcObjectDescription(ObjectDescription):
         "module": directives.unchanged,
     }
 
-    # ``None``: determine automatically, ``False``: do not use, ``str``: use literal value
-    object_display_type = None
+    object_display_type = True  #: ``True``: determine automatically, ``False``: do not use, ``str``: use literal value
 
     allow_nesting = False
 
@@ -110,11 +109,10 @@ class PlcObjectDescription(ObjectDescription):
 
         E.g. "FUNCTION_BLOCK" or "METHOD".
         """
-
-        if self.object_display_type is None:
+        if self.object_display_type is True:
             objtype = self.objtype.upper()
             objtype = objtype.replace("BLOCK", "_BLOCK")
-        elif self.object_display_type:
+        elif self.object_display_type is not False:
             objtype = self.object_display_type
         else:
             return []
@@ -244,8 +242,19 @@ class PlcMemberDescription(PlcObjectDescription):
     object_display_type = False
 
 
-class PlcPropertyDescription(PlcObjectDescription):
-    """Directive specifically for properties of e.g. FBs.
+class PlcFolderDescription(PlcObjectDescription):
+    """Directive specifically for a folder and contents."""
 
-    Not to be confused with attributes of a STRUCT or enumerators of an ENUM.
-    """
+    allow_nesting = True
+
+    def handle_signature(
+        self, sig: str, signode: addnodes.desc_signature
+    ) -> Tuple[str, str]:
+        # Folder name does not require any parsing
+        signode["fullname"] = sig
+
+        sig_prefix = self.get_signature_prefix("folder")
+        signode += addnodes.desc_annotation(str(sig_prefix), "", *sig_prefix)
+        signode += addnodes.desc_name("", "", addnodes.desc_sig_name(sig, sig))
+
+        return sig, ""

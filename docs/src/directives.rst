@@ -69,6 +69,8 @@ functionblock
    .. functionblock:: <signature>
       <...>
 
+      <children>
+
 The same options from `function <#function>`_ are available.
 
 **Examples:**
@@ -193,6 +195,34 @@ struct
    .. member:: Minute
       :noindex:
    .. member:: Second
+      :noindex:
+
+folder
+------
+
+.. code-block:: rst
+
+   .. folder:: <path>
+
+      <children>
+
+Use to indicate a group of objects belong together in a folder.
+
+**Examples:**
+
+.. code-block:: rst
+
+   .. folder:: POUs/ExampleFolder
+
+      .. function:: F_Example1 : BOOL
+      .. function:: F_Example2 : BOOL
+
+.. folder:: POUs/ExampleFolder
+
+   .. function:: F_Example1 : BOOL
+      :noindex:
+
+   .. function:: F_Example2 : BOOL
       :noindex:
 
 Auto Directives
