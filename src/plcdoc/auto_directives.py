@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List
 
 from sphinx.ext.autodoc.directive import (
     AutodocDirective,
@@ -73,7 +73,8 @@ class PlcAutodocDirective(AutodocDirective):
 
         logger.debug("[plcdoc] output:\n%s", "\n".join(params.result))
 
-        # Record all filenames as dependencies -- this will at least partially make automatic invalidation possible
+        # Record all filenames as dependencies -- this will at least partially make
+        # automatic invalidation possible
         for fn in params.record_dependencies:
             self.state.document.settings.record_dependencies.add(fn)
 

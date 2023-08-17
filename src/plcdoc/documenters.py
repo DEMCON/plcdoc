@@ -1,14 +1,12 @@
 import os.path
 from abc import ABC
-from typing import Any, Tuple, List, Dict, Optional, Any
+from typing import Tuple, List, Dict, Optional, Any
 import re
 
 from sphinx.util import logging
 from sphinx.ext.autodoc import (
     Documenter as AutodocDocumenter,
     members_option,
-    ObjectMember,
-    ObjectMembers,
     ALL,
 )
 from docutils.statemachine import StringList
@@ -38,8 +36,8 @@ class PlcDocumenter(AutodocDocumenter, ABC):
 
     These documenters are added to the registry in the extension ``setup`` callback.
 
-    The purpose of a documenter is to generate literal reST code, that can be rendered into the
-    docs, based on source code analysis.
+    The purpose of a documenter is to generate literal reST code, that can be rendered
+    into the docs, based on source code analysis.
 
     :cvar objtype: The object name as used for generating a directive
                    (should be overriden by different types)
@@ -88,8 +86,8 @@ class PlcDocumenter(AutodocDocumenter, ABC):
     def parse_name(self) -> bool:
         """Determine the full name of the target and what modules to import.
 
-        We are going to get info from already processed content, so we don't actually have to import
-        any files (this is terminology from the original ``autodoc``).
+        We are going to get info from already processed content, so we don't actually
+        have to import any files (this is terminology from the original ``autodoc``).
 
         Sets the properties `fullname`, `modname`, `retann`, `args`
         """
@@ -119,7 +117,8 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         """Using the regex result, identify this object.
 
         Also use the environment if necessary.
-        This is similar for most objects: there can be a class-like prefix followed by the name.
+        This is similar for most objects: there can be a class-like prefix followed by
+        the name.
         """
         if path:
             mod_cls = path.rstrip(".")
@@ -157,8 +156,10 @@ class PlcDocumenter(AutodocDocumenter, ABC):
     def import_object(self, raiseerror: bool = False) -> bool:
         """Imports the object given by ``self.modname``.
 
-        Processing of source files is already done in :func:`analyse``, we look for the result here.
-        In the original Python ``autodoc`` this is where target files are loaded and read.
+        Processing of source files is already done in :func:`analyse``, we look for the
+        result here.
+        In the original Python ``autodoc`` this is where target files are loaded and
+        read.
         """
         interpreter: PlcInterpreter = self.env.app._interpreter
 
@@ -287,7 +288,8 @@ class PlcMethodDocumenter(PlcFunctionDocumenter):
 
     objtype = "method"
     priority = PlcFunctionDocumenter.priority + 1
-    # Methods and Functions can be documented the same, but we should prefer a method when possible
+    # Methods and Functions can be documented the same, but we should prefer a method
+    # when possible
 
     @classmethod
     def can_document_member(
@@ -337,7 +339,7 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
 
         # TODO: Sort members
 
-        for documenter, isattr in member_documenters:
+        for documenter, _ in member_documenters:
             documenter.generate(
                 all_members=True,
                 real_modname="",
@@ -422,7 +424,7 @@ class PlcFolderDocumenter(PlcDocumenter):
 
         # TODO: Sort content
 
-        for documenter, isattr in member_documenters:
+        for documenter, _ in member_documenters:
             documenter.generate(
                 all_members=True,
                 real_modname="",

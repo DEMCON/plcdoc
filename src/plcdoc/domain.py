@@ -41,8 +41,8 @@ _builtin_types_re = re.compile(
 class StructuredTextDomain(Domain):
     """Sphinx domain for the PLC language.
 
-    This provides a namespace for the new PLC-specific directives, and a way of describing
-    a new syntax.
+    This provides a namespace for the new PLC-specific directives, and a way of
+    describing a new syntax.
     """
 
     name = "plc"
@@ -103,8 +103,8 @@ class StructuredTextDomain(Domain):
         if name in self.objects:  # Duplicated
             other = self.objects[name]
             logger.warning(
-                f"Duplicate object description of {name}, other instance in {other.docname},"
-                f"use :noindex: for one of them",
+                f"Duplicate object description of {name}, other instance in "
+                f"{other.docname}, use :noindex: for one of them",
                 location=location,
             )
 
@@ -125,8 +125,8 @@ class StructuredTextDomain(Domain):
 
         The implementation is almost identical to :meth:`PythonDomain.find_obj`.
 
-        If `searchmode` is equal to 1, the search is relaxed. The full path does not need
-        to be specified.
+        If `searchmode` is equal to 1, the search is relaxed. The full path does not
+        needto be specified.
         If `searchmode` is 0, only the full path is checked.
         """
         if name[-2:] == "()":
@@ -250,7 +250,6 @@ class StructuredTextDomain(Domain):
 
         # always search in "refspecific" mode with the :any: role
         matches = self.find_obj(env, modname, clsname, target, typ=None, searchmode=1)
-        multiple_matches = len(matches) > 1
 
         for name, obj in matches:
             if obj[2] == "module":

@@ -9,6 +9,8 @@ from textx.metamodel import TextXMetaModel
 PACKAGE_DIR = os.path.dirname(__file__)
 logger = logging.getLogger(__name__)
 
+TextXMetaClass = object
+
 
 class PlcInterpreter:
     """Class to perform the PLC file parsing.
@@ -46,7 +48,8 @@ class PlcInterpreter:
         tree = ET.parse(path)
         root = tree.getroot()
 
-        # The items in the project XML are namespaced, so addressing each item by name does not work
+        # The items in the project XML are namespaced, so addressing each item by name
+        # does not work
         if not root.tag.endswith("Project"):
             return False
 
@@ -70,7 +73,8 @@ class PlcInterpreter:
         ]
 
         if os.path.sep == "/":
-            # The project will likely contain Windows paths, which can cause issues on Linux
+            # The project will likely contain Windows paths, which can cause issues
+            # on Linux
             source_files = [path.replace("\\", "/") for path in source_files]
 
         return self.parse_source_files(source_files)
@@ -126,8 +130,8 @@ class PlcInterpreter:
 
             obj = PlcDeclaration(object_model, filepath)
 
-            # Methods are inside their own subtree with a `Declaration` - simply append them to the
-            # object
+            # Methods are inside their own subtree with a `Declaration` - simply append
+            # them to the object
             for node in item:
                 if node.tag in ["Declaration", "Implementation"]:
                     continue
@@ -309,8 +313,8 @@ class PlcDeclaration:
     def get_comment(self) -> Optional[str]:
         """Process main block comment from model into a neat list.
 
-        A list is created for each 'region' of comments. The first comment block above a declaration
-        is the most common one.
+        A list is created for each 'region' of comments. The first comment block above
+        a declaration is the most common one.
         """
         if hasattr(self._model, "comment") and self._model.comment is not None:
             # Probably a comment line
@@ -365,7 +369,7 @@ class PlcDeclaration:
                 continue  # Skip internal variables `VAR`
 
             for var in var_list.variables:
-                setattr(var, "kind", var_kind)
+                var.kind = var_kind
                 args.append(var)
 
         return args

@@ -1,6 +1,7 @@
 """
 This file contains the static directives for the PLC domain.
-They are added into ``StructuredText``, they are not registered manually inside the Sphinx ``setup`` callback.
+They are added into ``StructuredText``, they are not registered manually inside the
+Sphinx ``setup`` callback.
 """
 
 from typing import List, Tuple, TYPE_CHECKING
@@ -12,7 +13,7 @@ from sphinx import addnodes
 from sphinx.directives import ObjectDescription
 from sphinx.util.docfields import Field, TypedField
 from sphinx.util.nodes import make_id
-from sphinx.domains.python import _pseudo_parse_arglist, _parse_annotation
+from sphinx.domains.python import _pseudo_parse_arglist
 
 from .documenters import plc_signature_re
 
@@ -23,7 +24,9 @@ if TYPE_CHECKING:
 class PlcObjectDescription(ObjectDescription):
     """Base class for description directives (e.g. for `function`).
 
-    :cvar has_arguments: True if this type of description has a list of arguments
+    :cvar has_arguments: ``True`` if this type of description has a list of arguments
+    :cvar object_display_type: ``True``: determine automatically, ``False``: do not use,
+                               ``str``: use literal value
     """
 
     has_arguments = False
@@ -34,7 +37,7 @@ class PlcObjectDescription(ObjectDescription):
         "module": directives.unchanged,
     }
 
-    object_display_type = True  #: ``True``: determine automatically, ``False``: do not use, ``str``: use literal value
+    object_display_type = True
 
     allow_nesting = False
 
@@ -43,15 +46,18 @@ class PlcObjectDescription(ObjectDescription):
     ) -> Tuple[str, str]:
         """Break down Structured Text signatures.
 
-        This often won't be enough, because IN, OUT and IN_OUT variables are not defined with the block declaration.
+        This often won't be enough, because IN, OUT and IN_OUT variables are not defined
+        with the block declaration.
         Further declaration will have to rely on commands like `:var_in:`.
-        Even though not valid PLC syntax, an argument list after the name is processed in Python style.
+        Even though not valid PLC syntax, an argument list after the name is processed
+        in Python style.
 
         If inside a class (i.e. function block), the current class is handled like:
         * It is stripped from the displayed name if present
         * It is added to the full name if not present
 
-        Like ``autodoc`` a nesting stack is tracked to know if we're currently inside a class.
+        Like ``autodoc`` a nesting stack is tracked to know if we're currently inside a
+        class.
         """
         m = plc_signature_re.match(sig)
         if m is None:
@@ -98,7 +104,8 @@ class PlcObjectDescription(ObjectDescription):
                 _pseudo_parse_arglist(signode, arglist)
 
         if retann:
-            # TODO: Add reference to return type (like _parse_annotation but for PLC domain)
+            # TODO: Add reference to return type (like _parse_annotation but for PLC
+            # domain)
             # children = _parse_annotation(retann, self.env)
             signode += addnodes.desc_returns(retann, retann)
 
@@ -134,8 +141,8 @@ class PlcObjectDescription(ObjectDescription):
     def before_content(self) -> None:
         """Called before parsing content.
 
-        For nested objects (like methods inside a function block), this method will build up a stack
-        of the nesting hierarchy.
+        For nested objects (like methods inside a function block), this method will
+        build up a stack of the nesting hierarchy.
         """
         prefix = None
         if self.names:
@@ -181,7 +188,8 @@ class PlcCallableDescription(PlcObjectDescription):
         TypedField(
             "var_in",
             label="VAR_IN",
-            names=("var_in", "VAR_IN", "var_input", "VAR_INPUT", "in", "IN", "param", "parameter", "arg", "argument"),
+            names=("var_in", "VAR_IN", "var_input", "VAR_INPUT", "in", "IN", "param",
+                   "parameter", "arg", "argument"),
             typerolename="type",
             typenames=("paramtype", "type", "var_in_type", "type_in"),
             can_collapse=False,
@@ -197,7 +205,8 @@ class PlcCallableDescription(PlcObjectDescription):
         TypedField(
             "var_in_out",
             label="VAR_IN_OUT",
-            names=("var_in_out", "VAR_IN_OUT", "var_input_output", "VAR_INPUT_OUTPUT", "in_out", "IN_OUT"),
+            names=("var_in_out", "VAR_IN_OUT", "var_input_output", "VAR_INPUT_OUTPUT",
+                   "in_out", "IN_OUT"),
             typerolename="type",
             typenames=("var_in_out_type", "type_in_out"),
             can_collapse=False,

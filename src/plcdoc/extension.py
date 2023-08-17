@@ -26,8 +26,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     Real setup function is put in the module ``__init__``.
     """
 
-    # We place a callback for Sphinx for when the builder is about ready to start to index the PLC
-    # files. The moment of reading the PLC files could probably be anything.
+    # We place a callback for Sphinx for when the builder is about ready to start to
+    # index the PLC files. The moment of reading the PLC files could probably be
+    # anything.
 
     app.setup_extension("sphinx.ext.autodoc")  # Require the autodoc extension
 
@@ -68,13 +69,13 @@ def analyze(app: Sphinx):
 
     The sources to be scoured are listed in the user's ``conf.py``.
 
-    The analysed results need to be available throughout the rest of the extension. To accomplish that, we just insert
-    a new property into ``app``.
+    The analysed results need to be available throughout the rest of the extension. To
+    accomplish that, we just insert a new property into ``app``.
     """
 
-    # Inserting the shared interpreter into an existing object is not the neatest, but it's the best way
-    # to keep an instance linked to an `app` object. The alternative would be the `app.env.temp_data` dict, which is
-    # also nasty.
+    # Inserting the shared interpreter into an existing object is not the neatest, but
+    # it's the best way to keep an instance linked to an `app` object. The alternative
+    # would be the `app.env.temp_data` dict, which is also nasty.
     interpreter = PlcInterpreter()
 
     source_paths = (
@@ -93,7 +94,7 @@ def analyze(app: Sphinx):
                 f"Could not parse all files found in project file {project_file}"
             )
 
-    setattr(app, "_interpreter", interpreter)
+    app._interpreter = interpreter
 
 
 def builtin_resolver(
