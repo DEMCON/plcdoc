@@ -50,6 +50,22 @@ class PlcDocumenter(AutodocDocumenter, ABC):
 
     priority = 10
 
+    @classmethod
+    def can_document_member(
+        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
+    ) -> bool:
+        """Test if this documenter is suitable to document a source object.
+
+        This is used specifically when source analysis shows an object as members
+        (= children), e.g. a FUNCTION_BLOCK with methods and properties.
+
+        This base implementation simply relies on ``self.objtype``.
+        """
+        if hasattr(member, "objtype"):
+            return member.objtype == cls.objtype
+
+        return False
+
     def generate(
         self,
         more_content: Optional[StringList] = None,
@@ -279,15 +295,6 @@ class PlcFunctionDocumenter(PlcDocumenter):
 
     objtype = "function"
 
-    @classmethod
-    def can_document_member(
-        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        if hasattr(member, "objtype"):
-            return member.objtype in ["function", "method"]
-
-        return False
-
 
 class PlcMethodDocumenter(PlcFunctionDocumenter):
     """Documenter for the Method type.
@@ -300,15 +307,6 @@ class PlcMethodDocumenter(PlcFunctionDocumenter):
     # Methods and Functions can be documented the same, but we should prefer a method
     # when possible
 
-    @classmethod
-    def can_document_member(
-        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        if hasattr(member, "objtype"):
-            return member.objtype == cls.objtype
-
-        return False
-
 
 class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
     """Documenter for the Function Block type."""
@@ -318,15 +316,6 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
     option_spec = {
         "members": members_option,
     }
-
-    @classmethod
-    def can_document_member(
-        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        if hasattr(member, "objtype"):
-            return member.objtype in ["functionblock"]
-
-        return False
 
     def document_members(self, all_members: bool = False) -> None:
         """Document nested members."""
@@ -361,22 +350,20 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
         self.env.temp_data["plc_autodoc:class"] = None
 
 
-class PlcPropertyDocumenter(PlcDocumenter):
+class PlcDataDocumenter(PlcDocumenter):
+    """Intermediate base class to be used for all data types (non-callables).
+
+    E.g. structs, enums and properties should extend from this.
+    """
+
+
+class PlcPropertyDocumenter(PlcDataDocumenter):
     """Document a functionblock Property."""
 
     objtype = "property"
 
-    @classmethod
-    def can_document_member(
-        cls, member: PlcDeclaration, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        if hasattr(member, "objtype"):
-            return member.objtype in ["property"]
 
-        return False
-
-
-class PlcStructDocumenter(PlcDocumenter):
+class PlcStructDocumenter(PlcDataDocumenter):
     """Document a struct."""
 
     objtype = "struct"
@@ -388,16 +375,10 @@ class PlcStructDocumenter(PlcDocumenter):
         return False
 
 
-class PlcFolderDocumenter(PlcDocumenter):
+class PlcFolderDocumenter(PlcDataDocumenter):
     """Document a folder and its contents."""
 
     objtype = "folder"
-
-    @classmethod
-    def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        return False
 
     def parse_name(self) -> bool:
         # Input is in ``self.name``
