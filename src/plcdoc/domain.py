@@ -1,3 +1,5 @@
+"""Contains the new PLC domain."""
+
 from typing import List, Dict, Tuple, Any, NamedTuple, Optional
 import re
 

@@ -1,7 +1,7 @@
-"""
-This file contains the static directives for the PLC domain.
-They are added into ``StructuredText``, they are not registered manually inside the
-Sphinx ``setup`` callback.
+"""Contains the static directives for the PLC domain.
+
+They are added into :class:`~plcdoc.StructuredTextDomain`, they are not registered
+manually inside the Sphinx :func:`~plcdoc.setup` callback.
 """
 
 from typing import List, Tuple, TYPE_CHECKING

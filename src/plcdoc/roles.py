@@ -1,3 +1,5 @@
+"""Contains Spinx-referencable objects."""
+
 from sphinx.roles import XRefRole
 
 

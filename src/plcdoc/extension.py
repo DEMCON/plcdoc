@@ -1,3 +1,5 @@
+"""Contains the technical Sphinx extension stuff."""
+
 from typing import Dict, Optional
 import logging
 from sphinx.application import Sphinx
@@ -14,6 +16,7 @@ from .documenters import (
     PlcFunctionDocumenter,
     PlcMethodDocumenter,
     PlcPropertyDocumenter,
+    PlcStructDocumenter,
     PlcFolderDocumenter,
 )
 
@@ -50,6 +53,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
 
     app.registry.add_documenter("plc:property", PlcPropertyDocumenter)
     app.add_directive_to_domain("plc", "autoproperty", PlcAutodocDirective)
+
+    app.registry.add_documenter("plc:struct", PlcStructDocumenter)
+    app.add_directive_to_domain("plc", "autostruct", PlcAutodocDirective)
 
     app.registry.add_documenter("plc:folder", PlcFolderDocumenter)
     app.add_directive_to_domain("plc", "autofolder", PlcAutodocDirective)

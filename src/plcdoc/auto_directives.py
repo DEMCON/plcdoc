@@ -1,3 +1,5 @@
+"""Contains the directives used to extract info real source."""
+
 from typing import List
 
 from sphinx.ext.autodoc.directive import (

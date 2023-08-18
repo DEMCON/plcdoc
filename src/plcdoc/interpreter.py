@@ -1,3 +1,5 @@
+"""Contains the PLC StructuredText interpreter."""
+
 import os
 from typing import List, Dict, Optional
 from glob import glob

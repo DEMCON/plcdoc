@@ -1,3 +1,5 @@
+"""Contains the documenters used to bridge the source extracted data."""
+
 import os.path
 from abc import ABC
 from typing import Tuple, List, Dict, Optional, Any
@@ -34,7 +36,8 @@ plc_signature_re = re.compile(
 class PlcDocumenter(AutodocDocumenter, ABC):
     """Derived documenter base class for the PLC domain.
 
-    These documenters are added to the registry in the extension ``setup`` callback.
+    These documenters are added to the registry in the extension :func:`~plcdoc.setup`
+    callback.
 
     The purpose of a documenter is to generate literal reST code, that can be rendered
     into the docs, based on source code analysis.
@@ -237,6 +240,12 @@ class PlcDocumenter(AutodocDocumenter, ABC):
             if documenter_name.startswith("plc:")
             and cls.can_document_member(child, child.name, True, self)
         ]
+        if not classes:
+            logger.warning(
+                f"Could not found a suitable documenter for `{child.name}` "
+                f"(`{child.objtype}`)"
+            )
+            return None
         # Prefer the documenter with the highest priority
         classes.sort(key=lambda cls: cls.priority)
         return classes[-1](self.directive, child.name, self.indent)
@@ -340,11 +349,12 @@ class PlcFunctionBlockDocumenter(PlcFunctionDocumenter):
         # TODO: Sort members
 
         for documenter, _ in member_documenters:
-            documenter.generate(
-                all_members=True,
-                real_modname="",
-                check_module=False,
-            )
+            if documenter:
+                documenter.generate(
+                    all_members=True,
+                    real_modname="",
+                    check_module=False,
+                )
 
         # Reset context
         self.env.temp_data["plc_autodoc:module"] = None
@@ -363,6 +373,18 @@ class PlcPropertyDocumenter(PlcDocumenter):
         if hasattr(member, "objtype"):
             return member.objtype in ["property"]
 
+        return False
+
+
+class PlcStructDocumenter(PlcDocumenter):
+    """Document a struct."""
+
+    objtype = "struct"
+
+    @classmethod
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
         return False
 
 
@@ -425,8 +447,9 @@ class PlcFolderDocumenter(PlcDocumenter):
         # TODO: Sort content
 
         for documenter, _ in member_documenters:
-            documenter.generate(
-                all_members=True,
-                real_modname="",
-                check_module=False,
-            )
+            if documenter:
+                documenter.generate(
+                    all_members=True,
+                    real_modname="",
+                    check_module=False,
+                )
