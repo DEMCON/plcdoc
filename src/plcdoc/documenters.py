@@ -413,7 +413,8 @@ class PlcStructDocumenter(PlcDataDocumenter):
         # This work, but maybe a new documenter is better:
         # for member in self.object.members:
         #     # TODO: Get proper member inserted
-        #     self.add_line(f".. member:: {member.name} : {member.type}", self.object.file)
+        #     self.add_line(f".. member:: {member.name} : {member.type}",
+        #     self.object.file)
 
 
 class PlcStructMemberDocumenter(PlcDataDocumenter):
