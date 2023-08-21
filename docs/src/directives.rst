@@ -181,20 +181,20 @@ struct
 
 .. code-block:: rst
 
-   .. struct:: Time
+   .. struct:: Duration
 
-      .. member:: Hour
-      .. member:: Minute
-      .. member:: Second
+      .. member:: Hour : UDINT
+      .. member:: Minute : USINT
+      .. member:: Second : LREAL
 
-.. struct:: Time
+.. struct:: Duration
    :noindex:
 
-   .. member:: Hour
+   .. member:: Hour : UDINT
       :noindex:
-   .. member:: Minute
+   .. member:: Minute : USINT
       :noindex:
-   .. member:: Second
+   .. member:: Second : LREAL
       :noindex:
 
 folder
@@ -364,6 +364,22 @@ The property above could be rendered stand-alone with:
 And the result would look like:
 
 .. autoproperty:: FB_ExampleFunctionBlock.ExampleProperty
+   :noindex:
+
+autostruct
+----------
+
+.. code-block:: rst
+
+   .. autostruct:: <name>
+
+**Examples:**
+
+.. code-block:: rst
+
+   .. autostruct:: ST_ExampleStruct
+
+.. autostruct:: ST_ExampleStruct
    :noindex:
 
 autofolder

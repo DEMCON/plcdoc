@@ -17,6 +17,7 @@ from .documenters import (
     PlcMethodDocumenter,
     PlcPropertyDocumenter,
     PlcStructDocumenter,
+    PlcStructMemberDocumenter,
     PlcFolderDocumenter,
 )
 
@@ -55,6 +56,7 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     app.add_directive_to_domain("plc", "autoproperty", PlcAutodocDirective)
 
     app.registry.add_documenter("plc:struct", PlcStructDocumenter)
+    app.registry.add_documenter("plc:member", PlcStructMemberDocumenter)
     app.add_directive_to_domain("plc", "autostruct", PlcAutodocDirective)
 
     app.registry.add_documenter("plc:folder", PlcFolderDocumenter)

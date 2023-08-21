@@ -1,17 +1,22 @@
 """Contains the PLC StructuredText interpreter."""
 
 import os
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from glob import glob
 import logging
 import xml.etree.ElementTree as ET
 from textx import metamodel_from_file, TextXSyntaxError
-from textx.metamodel import TextXMetaModel
 
 PACKAGE_DIR = os.path.dirname(__file__)
 logger = logging.getLogger(__name__)
 
-TextXMetaClass = object
+
+TextXMetaClass = Any
+"""Stub for the result of a TextX interpretation.
+
+The result are nested classes. But there is no useful inheritance to use for type
+checking.
+"""
 
 
 class PlcInterpreter:
@@ -254,7 +259,7 @@ class PlcDeclaration:
     The `objtype` is as they appear in :class:`StructuredTextDomain`.
     """
 
-    def __init__(self, meta_model: TextXMetaModel, file=None):
+    def __init__(self, meta_model: TextXMetaClass, file=None):
         """
 
         :param meta_model: Parsing result
@@ -311,6 +316,12 @@ class PlcDeclaration:
     @property
     def children(self) -> Dict[str, "PlcDeclaration"]:
         return self._children
+
+    @property
+    def members(self) -> List[TextXMetaClass]:
+        if not self._model.type:
+            return []
+        return self._model.type.members
 
     def get_comment(self) -> Optional[str]:
         """Process main block comment from model into a neat list.

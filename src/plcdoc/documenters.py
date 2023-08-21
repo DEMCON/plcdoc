@@ -2,7 +2,7 @@
 
 import os.path
 from abc import ABC
-from typing import Tuple, List, Dict, Optional, Any
+from typing import Tuple, List, Dict, Optional, Any, Union
 import re
 
 from sphinx.util import logging
@@ -13,7 +13,7 @@ from sphinx.ext.autodoc import (
 )
 from docutils.statemachine import StringList
 
-from .interpreter import PlcInterpreter, PlcDeclaration
+from .interpreter import PlcInterpreter, PlcDeclaration, TextXMetaClass
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +65,10 @@ class PlcDocumenter(AutodocDocumenter, ABC):
             return member.objtype == cls.objtype
 
         return False
+
+    def get_object_members(self, want_all: bool) -> Tuple:
+        """Method used by ``autodoc`` get object members, not used here."""
+        return False, []
 
     def generate(
         self,
@@ -244,7 +248,9 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         """
         return None
 
-    def get_member_documenter(self, child: PlcDeclaration):
+    def get_member_documenter(
+        self, child: PlcDeclaration
+    ) -> Optional[AutodocDocumenter]:
         """Put together a documenter for a child.
 
         This method is not used out of the box - call it from :meth:`document_members`.
@@ -356,6 +362,19 @@ class PlcDataDocumenter(PlcDocumenter):
     E.g. structs, enums and properties should extend from this.
     """
 
+    def format_signature(self, **kwargs: Any) -> str:
+        """
+
+        Overload signature to remove redundant function brackets. This is not the most
+        neat solution, but it works while staying DRY.
+        """
+        result = super().format_signature(**kwargs)
+
+        if result == "()":
+            return ""
+
+        return result
+
 
 class PlcPropertyDocumenter(PlcDataDocumenter):
     """Document a functionblock Property."""
@@ -368,11 +387,90 @@ class PlcStructDocumenter(PlcDataDocumenter):
 
     objtype = "struct"
 
+    def document_members(self, all_members: bool = False) -> None:
+        """Add directives for the struct properties."""
+
+        member_documenters = [
+            PlcStructMemberDocumenter(
+                self.directive,
+                member.name,
+                self.indent,
+                parent=self.object,
+                member=member,
+            )
+            for member in self.object.members
+        ]
+
+        # TODO: Sort members
+
+        for documenter in member_documenters:
+            documenter.generate(
+                all_members=True,
+                real_modname="",
+                check_module=False,
+            )
+
+        # This work, but maybe a new documenter is better:
+        # for member in self.object.members:
+        #     # TODO: Get proper member inserted
+        #     self.add_line(f".. member:: {member.name} : {member.type}", self.object.file)
+
+
+class PlcStructMemberDocumenter(PlcDataDocumenter):
+    """Document a struct member (field).
+
+    This documenter is slightly different, because it does not receive a full
+    :class:`PlcDeclaration`, instead it gets a bit of raw TextX output.
+    """
+
+    # TODO: Remove this class?
+
+    objtype = "member"
+
+    def __init__(
+        self,
+        directive,
+        name: str,
+        indent: str = "",
+        parent: PlcDeclaration = None,
+        member: Optional[TextXMetaClass] = None,
+    ) -> None:
+        super().__init__(directive, name, indent)
+
+        self.object = parent
+        self.member = member
+
     @classmethod
     def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
+        cls,
+        member: Union[PlcDeclaration, Any],
+        membername: str,
+        isattr: bool,
+        parent: Any,
     ) -> bool:
-        return False
+        return type(member).__name__ == "Variable"
+        # Note: a TextX variable class is passed, not a complete PlcDeclaration
+
+    def import_object(self, raiseerror: bool = False) -> bool:
+        return self.member is not None  # Expect member through constructor
+
+    def get_doc(self) -> Optional[List[List[str]]]:
+        # Read main docblock
+        if self.member is None or self.member.comment is None:
+            return []
+
+        comment_str = self.member.comment.text
+        if not comment_str:
+            return []
+
+        return [[comment_str]]
+
+    def format_signature(self, **kwargs: Any) -> str:
+        if not self.member:
+            return ""
+
+        # Insert the known variable type
+        return f" : {self.member.type.name}"
 
 
 class PlcFolderDocumenter(PlcDataDocumenter):
