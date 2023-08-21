@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AutoFunction" Id="{f80a8020-3966-4dae-a6c7-7aceb360dfeb}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Short description of the function.
+
+Long description of the function, spanning multiple
+rows even.
+*)
+FUNCTION AutoFunction : LREAL
+VAR_INPUT
+    input       : LREAL;            // This is an in-code description of some variable
+    other_arg   : UDINT;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

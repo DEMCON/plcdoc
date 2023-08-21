@@ -1,5 +1,7 @@
 """
 Test the PLC auto-doc directives.
+
+The structure of these tests is largely copied from the tests of sphinx.ext.autodoc.
 """
 
 import pytest
@@ -66,9 +68,9 @@ def test_autodoc_build(app, status, warning):
 def test_autodoc_function(app, status, warning):
     """Test building a document with the PLC autodoc features."""
 
-    actual = do_autodoc(app, "plc:function", "RegularFunction")
+    actual = do_autodoc(app, "plc:function", "AutoFunction")
 
-    assert ".. plc:function:: RegularFunction(input, other_arg)" in actual
+    assert ".. plc:function:: AutoFunction(input, other_arg)" in actual
 
     expected_end = [
         "   Short description of the function.",
@@ -82,3 +84,63 @@ def test_autodoc_function(app, status, warning):
     ]
 
     assert expected_end == actual[-8:]
+
+
+@pytest.mark.sphinx("html", testroot="plc-autodoc")
+def test_autodoc_functionblock(app, status, warning):
+    """Test building a document with the PLC autodoc features."""
+
+    options = {"members": None}
+    actual = do_autodoc(app, "plc:functionblock", "AutoFunctionBlock", options)
+
+    assert (
+        ".. plc:functionblock:: AutoFunctionBlock(someInput, someOutput)" == actual[1]
+    )
+    assert "   .. plc:method:: AutoMethod(methodInput)" == actual[10]
+    assert "   .. plc:property:: AutoProperty" == actual[18]
+
+    assert [
+        "   Some short description.",
+        "",
+        "   :var_input BOOL someInput: Important description",
+        "   :var_output BOOL someOutput:",
+        "",
+    ] == actual[4:9]
+
+    assert [
+        "      Method description!",
+        "",
+        "      :var_input UDINT methodInput:",
+        "",
+    ] == actual[13:17]
+
+    assert [
+        "      Reference to a variable that might be read-only.",
+        "",
+    ] == actual[21:]
+
+
+@pytest.mark.sphinx("html", testroot="plc-autodoc")
+def test_autodoc_struct(app, status, warning):
+    """Test building a document with the PLC autodoc features."""
+
+    actual = do_autodoc(app, "plc:struct", "AutoStruct")
+
+    assert ".. plc:struct:: AutoStruct" == actual[1]
+    assert "   .. plc:member:: someDouble : LREAL" == actual[7]
+    assert "   .. plc:member:: someBoolean : BOOL" == actual[13]
+
+    assert [
+        "   A definition of a struct.",
+        "",
+    ] == actual[4:6]
+
+    assert [
+        "      Use to store a number",
+        "",
+    ] == actual[10:12]
+
+    assert [
+        "      Use as a flag",
+        "",
+    ] == actual[16:]

@@ -29,7 +29,9 @@ class TestPlcInterpreter:
 
     def test_files(self, interpreter):
         """Test content from files directly."""
-        files = [os.path.join(CODE_DIR, "TwinCAT PLC", "MyPLC", file) for file in self.FILES]
+        files = [
+            os.path.join(CODE_DIR, "TwinCAT PLC", "MyPLC", file) for file in self.FILES
+        ]
         interpreter.parse_source_files(files)
 
         objects = [
@@ -55,7 +57,12 @@ class TestPlcInterpreter:
         result = interpreter.parse_plc_project(file)
         assert result
 
-    @pytest.mark.skipif(not os.path.exists(os.path.join(CODE_DIR, "extern/lcls-twincat-general/LCLSGeneral")), reason="External projects not present")
+    @pytest.mark.skipif(
+        not os.path.exists(
+            os.path.join(CODE_DIR, "extern/lcls-twincat-general/LCLSGeneral")
+        ),
+        reason="External projects not present",
+    )
     def test_large_external_projects(self):
         """Test grammar on a big existing project.
 

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AutoFunctionBlock" Id="{e9c77de4-fb3d-4077-ade3-01c3e8e43ca3}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Some short description.
+*)FUNCTION_BLOCK AutoFunctionBlock
+VAR_INPUT
+    someInput       : BOOL;         // Important description
+END_VAR
+VAR_OUTPUT
+    someOutput      : BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="AutoMethod" Id="{1b9475da-fcfe-487e-a0dd-df8806a0c2df}">
+      <Declaration><![CDATA[(*
+Method description!
+*)
+METHOD PRIVATE AutoMethod : BOOL;
+VAR_INPUT
+    methodInput     : UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="AutoProperty" Id="{cdcba121-a220-4eb8-8f4d-8924b3a02f60}">
+      <Declaration><![CDATA[(*
+Reference to a variable that might be read-only.
+*)
+PROPERTY AutoProperty : REFERENCE TO LREAL
+]]></Declaration>
+      <Get Name="Get" Id="{fe3cd6e4-aa00-4539-98af-b9fb9586655f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{80addca4-0610-47c4-8a76-38191658e0bd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+  </POU>
+</TcPlcObject>

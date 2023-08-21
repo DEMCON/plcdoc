@@ -16,7 +16,7 @@ def test_project_interpret(app, status, warning):
     expected = {
         "functionblock": ["FB_MyBlock", "FB_SecondBlock", "PlainFunctionBlock"],
         "function": ["PlainFunction", "RegularFunction"],
-        "program": ["MAIN"]
+        "program": ["MAIN"],
     }
 
     for objtype, objects in expected.items():

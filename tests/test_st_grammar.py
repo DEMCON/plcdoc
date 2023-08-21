@@ -87,31 +87,40 @@ def test_grammar_variables(meta_model):
             # (Name, BaseType, Value, ArgList, Array, Pointer)
             ("myfloat_no_ws", "REAL", None, None, None, None),
             ("myfloat", "REAL", None, None, None, None),
-
             ("mydoubleinit1", "LREAL", "1.0", None, None, None),
             ("mydoubleinit2", "LREAL", "1.0", None, None, None),
             ("myinteger", "SINT", "420", None, None, None),
             ("mystring", "STRING", "'test'", None, None, None),
-
             ("int_arth_plus", "INT", "1+1", None, None, None),
             ("int_arth_minus", "INT", "10-1", None, None, None),
             ("int_arth_parent", "INT", "1+(LIM+1)*5", None, None, None),
-
             ("my_object", "MyObject", None, "()", None, None),
             ("my_object1", "MyObject", None, "(7)", None, None),
             ("my_object2", "MyObject", None, "('hi',23,FALSE)", None, None),
-            ("my_object3", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
-            ("my_object4", "MyObject", None, "(text:='hi',number:=23,flag:=FALSE)", None, None),
+            (
+                "my_object3",
+                "MyObject",
+                None,
+                "(text:='hi',number:=23,flag:=FALSE)",
+                None,
+                None,
+            ),
+            (
+                "my_object4",
+                "MyObject",
+                None,
+                "(text:='hi',number:=23,flag:=FALSE)",
+                None,
+                None,
+            ),
             ("mystring_size1", "STRING(15)", None, None, None, None),
             ("mystring_size2", "STRING[17]", None, None, None, None),
             ("mystring_size3", "STRING(Module.SIZE)", None, None, None, None),
             ("mystring_size4", "STRING[SIZE]", None, None, None, None),
             ("mystring_size5", "STRING(35)", "'Unknown'", None, None, None),
             ("mystring_size6", "STRING[Module.SIZE]", "'Unknown'", None, None, None),
-
             ("myint", "INT", "SomeConstant", None, None, None),
             ("myint2", "INT", "E_Error.NoError", None, None, None),
-
             ("mylist", "BOOL", None, None, "0..4", None),
             ("mylist_ws", "BOOL", None, None, "0..4", None),
             ("mylist_var_idx", "BOOL", None, None, "Idx.start..Idx.end", None),
@@ -120,24 +129,19 @@ def test_grammar_variables(meta_model):
             ("mylist_multi2", "BOOL", None, None, "1..10,1..10", None),
             ("mylist_dyn", "BOOL", None, None, "*", None),
             ("mylist_dyn_multi", "BOOL", None, None, "*,*,*", None),
-
             ("mystruct", "MyStruct", None, "()", None, None),
             ("mystruct2", "MyStruct", "(number:=1.0,text:='hi')", None, None, None),
-
             ("specialint1", "UDINT", "2#1001_0110", None, None, None),
             ("specialint2", "UDINT", "8#67", None, None, None),
             ("specialint3", "UDINT", "16#FF_FF_FF", None, None, None),
             ("specialint4", "UDINT", "UDINT#16#1", None, None, None),
             ("specialint5", "UDINT", "1_000_000", None, None, None),
             ("specialint6", "USINT", "(1..Module.MAX)", None, None, None),
-
             ("mypointer1", "UDINT", None, None, None, "POINTER"),
             ("mypointer2", "UDINT", None, None, None, "REFERENCE"),
             ("mypointer3", "FB_Motor", "_motor", None, None, "REFERENCE"),
-
             ("timeout1", "TIME", "T#2S", None, None, None),
             ("timeout2", "TIME", "T#12m13s14ms", None, None, None),
-
             ("inline1", "INT", None, None, None, None),
         ]
 
@@ -165,8 +169,12 @@ def test_grammar_comments(meta_model):
 
         # Make sure the real code came through properly:
         assert fb.name == "FB_MyBlock" and fb.function_type == "FUNCTION_BLOCK"
-        assert len(fb.lists) == 4 and \
-               [l.name for l in fb.lists] == ["VAR_INPUT", "VAR_OUTPUT", "VAR", "VAR"]
+        assert len(fb.lists) == 4 and [l.name for l in fb.lists] == [
+            "VAR_INPUT",
+            "VAR_OUTPUT",
+            "VAR",
+            "VAR",
+        ]
         assert [l.constant for l in fb.lists] == [False, False, True, False]
 
         # All the fields containing a doc-comment:
