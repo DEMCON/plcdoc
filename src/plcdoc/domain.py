@@ -3,7 +3,8 @@
 from typing import List, Dict, Tuple, Any, NamedTuple, Optional
 import re
 
-from docutils.nodes import Element
+from docutils.nodes import Element, Node, Text
+
 from sphinx.addnodes import pending_xref
 from sphinx.domains import Domain, ObjType
 from sphinx.builders import Builder
@@ -20,6 +21,7 @@ from .directives import (
     PlcFolderDescription,
 )
 from .roles import PlcXRefRole
+from .common import _builtin_types_re
 
 logger = logging.getLogger(__name__)
 
@@ -28,16 +30,6 @@ class ObjectEntry(NamedTuple):
     docname: str
     node_id: str
     objtype: str
-
-
-_builtin_types_re = re.compile(
-    r"""
-    (L?)REAL
-    |BOOL
-    |(U?)(S|D|L?)INT
-""",
-    re.VERBOSE,
-)
 
 
 class StructuredTextDomain(Domain):

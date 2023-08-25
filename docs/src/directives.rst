@@ -408,3 +408,20 @@ To render the following:
 
 .. autofolder:: POUs/ExampleFolder
    :noindex:
+
+Referencing
+===========
+
+Refer to code objects as you would in other domains.
+
+**Example:**
+
+.. code-block:: rst
+
+   .. plc:function:: F_ToReferenceTo()
+
+   Link to :plc:func:`F_ToReferenceTo`.
+
+.. plc:function:: F_ToReferenceTo()
+
+Link to :plc:func:`F_ToReferenceTo`.

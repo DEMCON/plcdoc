@@ -69,6 +69,17 @@ This should be a reference: :plc:funcblock:`MyFunctionBlock`.
 .. plc:property:: ImaginedFunctionBlock.ParamStandAlone : LREAL
 
 
+Type Links
+==========
+
+.. plc:function:: FunctionCustomTypes(input: E_Options) : ST_MyStruct2
+
+.. plc:function:: FunctionCustomTypes2
+
+   :var_in E_Options input:
+   :rtype: ST_MyStruct2
+
+
 Manually Typed PLC Enums
 ========================
 

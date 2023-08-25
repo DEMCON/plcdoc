@@ -16,6 +16,7 @@ from sphinx.util.nodes import make_id
 from sphinx.domains.python import _pseudo_parse_arglist
 
 from .documenters import plc_signature_re
+from .common import _parse_annotation
 
 if TYPE_CHECKING:
     from .domain import StructuredTextDomain
@@ -98,16 +99,17 @@ class PlcObjectDescription(ObjectDescription):
         signode += addnodes.desc_name("", "", addnodes.desc_sig_name(name, name))
 
         if self.has_arguments:
+            # TODO: Add type link from annotation (like return type)
             if not arglist:
                 signode += addnodes.desc_parameterlist()
             else:
                 _pseudo_parse_arglist(signode, arglist)
 
         if retann:
-            # TODO: Add reference to return type (like _parse_annotation but for PLC
-            # domain)
-            # children = _parse_annotation(retann, self.env)
-            signode += addnodes.desc_returns(retann, retann)
+            children = _parse_annotation(retann, self.env)
+            signode += addnodes.desc_returns(
+                retann, "" if children else retann, *children
+            )
 
         return fullname, prefix
 
@@ -215,13 +217,13 @@ class PlcCallableDescription(PlcObjectDescription):
             "returnvalue",
             label="Returns",
             has_arg=False,
-            names=("returns", "return", "RETURNS", "RETURN"),
+            names=("returnvalue", "returns", "return", "RETURNS", "RETURN"),
         ),
         Field(
             "returntype",
             label="Return type",
             has_arg=False,
-            names=("rtype",), bodyrolename="type"),
+            names=("returntype", "rtype",), bodyrolename="type"),
     ]
     # fmt: on
 
