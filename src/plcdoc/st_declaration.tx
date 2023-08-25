@@ -18,6 +18,7 @@ Declaration:
     types*=TypeDef
     properties*=Property
     functions*=Function
+    variable_lists*=VariableList
     CommentAny*
 ;
 
@@ -258,7 +259,7 @@ The attribute comment is nasty because there are basically no rules - hence just
 Attribute:
     '{'
     field=ID
-    name=STRING
+    (name=STRING)?
     (content=/[^}]+/)?
     '}'
 ;

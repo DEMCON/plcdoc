@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="GVL_Main" Id="{9152e619-d007-496a-af45-dac633c85ad6}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+(*
+Some global variable list.
+
+Access must include the file name!
+*)
+VAR_GLOBAL
+    someGlobal      : LREAL;    // Descritpion 1
+    otherGlobal     : INT;      // Description 2
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

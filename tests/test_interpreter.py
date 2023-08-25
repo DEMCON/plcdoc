@@ -25,6 +25,7 @@ class TestPlcInterpreter:
         "POUs/FB_SecondBlock.TcPOU",
         "POUs/MAIN.TcPOU",
         "DUTs/E_Options.TcDUT",
+        "GVL/GVL_Main.TcGVL",
     ]
 
     def test_files(self, interpreter):
@@ -63,7 +64,7 @@ class TestPlcInterpreter:
         ),
         reason="External projects not present",
     )
-    def test_large_external_projects(self):
+    def test_large_external_projects(self, caplog):
         """Test grammar on a big existing project.
 
         The goal is not so much to check the results in detail but just to make sure there are no
@@ -75,20 +76,23 @@ class TestPlcInterpreter:
             "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj": {
                 "functionblock": 33,
                 "struct": 12,
-                "function": 5 + 20,
+                "function": 5 + 20,  # Functions + Methods
                 "property": 1,
+                "variable_list": 4,
             },
             "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj": {
                 "functionblock": 32,
                 "struct": 5,
                 "function": 10 + 3,
+                "variable_list": 2,
             },
             "extern/TcUnit/TcUnit/TcUnit/TcUnit.plcproj": {
                 "enum": 2,
                 "struct": 8,
                 "union": 1,
-                "functionblock": 14,
+                "functionblock": 14 + 3,  # Blocks + Interfaces
                 "function": 36 + 138,
+                "variable_list": 3,
             },
         }
         for project, expected in projects.items():
@@ -96,6 +100,14 @@ class TestPlcInterpreter:
             file = os.path.join(CODE_DIR, project)
             file = os.path.realpath(file)
             result = interpreter.parse_plc_project(file)
+
+            errors = [
+                record.message
+                for record in caplog.records
+                if "Error parsing" in record.message
+            ]
+            assert len(errors) == 0  # Make sure no parsing errors were logged
+
             assert result
             for key, number in expected.items():
                 assert len(interpreter._models[key]) == number

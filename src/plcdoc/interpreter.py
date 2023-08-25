@@ -28,7 +28,13 @@ class PlcInterpreter:
     """
 
     # Some object types are documented the same
-    EQUIVALENT_TYPES = {"function": ["function", "method"]}
+    EQUIVALENT_TYPES = {
+        "function": ["function", "method"],
+        "functionblock": ["functionblock", "interface"],
+    }
+
+    # Document types (as XML nodes) that can be processed
+    XML_TYPES = ["POU", "DUT", "GVL", "Itf"]
 
     def __init__(self):
         self._meta_model = metamodel_from_file(
@@ -125,7 +131,7 @@ class PlcInterpreter:
         for item in root:
             plc_item = item.tag  # I.e. "POU"
 
-            if plc_item not in ["DUT", "POU", "Itf"]:
+            if plc_item not in self.XML_TYPES:
                 continue
 
             # Name is repeated inside the declaration, use it from there instead
@@ -266,6 +272,7 @@ class PlcDeclaration:
         :param file: Path to the file this model originates from
         """
         self._objtype = None
+        self._name = None
 
         if meta_model.functions:
             self._model = meta_model.functions[0]
@@ -287,10 +294,23 @@ class PlcDeclaration:
             self._model = meta_model.properties[0]
             self._objtype = "property"
 
+        if meta_model.variable_lists:
+            if file is None:
+                raise ValueError(
+                    "Cannot parse GVL without file as no naming is present"
+                )
+            self._name, _ = os.path.splitext(os.path.basename(file))
+            # GVL are annoying because no naming is present in source - we need to
+            # extract it from the file name
+
+            self._model = meta_model.variable_lists[0]
+            self._objtype = "variable_list"
+
         if self._objtype is None:
             raise ValueError(f"Unrecognized declaration in `{meta_model}`")
 
-        self._name = self._model.name
+        if self._name is None:
+            self._name = self._model.name
         self._file: Optional[str] = file
         self._children: Dict[str, "PlcDeclaration"] = {}
 

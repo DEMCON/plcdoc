@@ -32,6 +32,7 @@ def test_grammar_on_files(meta_model):
         "E_Filter.txt",
         "Properties.txt",
         "Unions.txt",
+        "GlobalVariableList.txt",
         "Main.txt",
     ]
 
@@ -43,7 +44,12 @@ def test_grammar_on_files(meta_model):
             pytest.fail(f"Error when analyzing the file `{filename}`")
         else:
             assert model is not None
-            assert model.functions or model.types or model.properties
+            assert (
+                model.functions
+                or model.types
+                or model.properties
+                or model.variable_lists
+            )
 
 
 def remove_whitespace(text):

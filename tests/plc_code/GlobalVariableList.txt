@@ -1,0 +1,8 @@
+{attribute 'qualified_only'}
+(*
+List of global variables.
+*)
+VAR_GLOBAL
+    someGlobal      : LREAL;        // Entry 1
+    otherGlobal     : INT;          // Entry 2
+END_VAR
