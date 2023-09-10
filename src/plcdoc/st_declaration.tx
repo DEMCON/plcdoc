@@ -90,7 +90,7 @@ Function:
     name=ID
     ('EXTENDS' extends=Fqn)?
     ('IMPLEMENTS' implements=Fqn)?
-    (':' return=VariableType (arglist=ArgList)?)?
+    (':' return=VariableType)?
     (';')?
     lists*=VariableList
 ;
@@ -150,8 +150,7 @@ Variable:
     (address=Address)?
     ':'
     type=VariableType
-    (arglist=ArgList)?
-    (AssignmentSymbol value=AssignmentValue)?
+    (AssignmentSymbol value=Expression)?
     ';'
     comment=CommentLine?
 ;
@@ -166,46 +165,26 @@ VariableType:
     name=BaseType
 ;
 
-/*
-Specifically the string might also have a dimension attribute
-*/
 BaseType:
-    StringType | Fqn
+    StringType | Fqn (CallSuffix)?
 ;
 
-/*
-Strings are very annoying because they have the size arg list but also assignment values.
-The very broad wildcard will then also match the assignment. So instead catch it specifically.
-*/
-StringType:
-    'STRING'
-    ( ( '(' (NUMBER | Fqn) ')' ) | ( '[' (NUMBER | Fqn) ']' ) )
-;
+CallSuffix: '(' (LabeledArguments | Arguments)? ')';
+
+StringType: 'STRING' StringSize;
+StringSize: '[' Expression ']'
+          | '(' Expression ')';
 
 PointerLike:
     'POINTER' | 'REFERENCE'
 ;
 
-VariableTypeArray:
-    'ARRAY'- ArrayRange 'OF'-
-;
+VariableTypeArray: 'ARRAY'- '['- dimensions+=ArrayDimension[','] ']'- 'OF'- ;
 
-ArrayRange:
-    '['-
-    /[^\]]+/
-    ']'-
-    // Match anything except the square bracket at the end
-;
-
-AssignmentValue:
-    ArgList | Expression
-;
-
-ArgList:
-    ( '(' | '[' )
-    /[^;]*/
-    // Match anything, including parentheses, up to (but excluding) the semicolon
-;
+ArrayDimension: Expression '..' Expression
+              | Expression
+              | '*'
+              ;
 
 Address:
     'AT' '%' /[A-Z%\.\*]/+
@@ -220,13 +199,44 @@ Fqn[noskipws]:
     /\s/*-
 ;
 
-/*
-Anything that is considered a value: a literal, a variable, or e.g. a sum
-*/
-Expression:
-    /[^;]*/
-    // Match anything, including parentheses, up to (but excluding) the semicolon
+Arguments: arguments*=Expression[','];
+LabeledArguments: arguments*=LabeledArgument[','];
+LabeledArgument: ID ':=' Expression;
+
+Expression: Factor (AddOp Factor)*;
+AddOp: '+' | '-' ;
+Factor: Primary (MulOp Primary)*;
+MulOp: '*' | '/';
+Primary: Atom Suffix*;
+Suffix: '.' ID
+      | '[' Expression ']'
 ;
+Atom: Literal
+    | ID
+    | '(' Expression ')'
+;
+
+Literal: StringLiteral
+       | StructLiteral
+       | RangeLiteral
+       | BinaryLiteral
+       | OctalLiteral
+       | 'UDINT#'? HexLiteral
+       | TimeLiteral
+       | NUMBER
+       | FLOAT
+       | IntegerLiteral
+;
+
+BinaryLiteral: /2#[01_]+/;
+OctalLiteral: /8#[0-7_]+/;
+HexLiteral: /16#[0-9a-fA-F_]+/;
+TimeLiteral: /T#[0-9mMsS]+/;
+IntegerLiteral: /[0-9][0-9_]*/;
+StringLiteral: /'.*?'/;
+StructLiteral: '(' fields+=StructLiteralItem[','] ')';
+StructLiteralItem: ID ':=' Expression;
+RangeLiteral: '(' Expression '..' Expression ')';
 
 /*
 ---------------------------------------------------
