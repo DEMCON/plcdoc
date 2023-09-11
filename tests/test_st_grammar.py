@@ -124,6 +124,7 @@ def test_grammar_variables(meta_model):
             ("mystring_size6", "STRING[Module.SIZE]", "'Unknown'", None, None, None),
             ("myint", "INT", "SomeConstant", None, None, None),
             ("myint2", "INT", "E_Error.NoError", None, None, None),
+            ("myint3", "INT", "SIZEOF(Something.Else)", None, None, None),
             ("mylist", "BOOL", None, None, "0..4", None),
             ("mylist_ws", "BOOL", None, None, "0..4", None),
             ("mylist_var_idx", "BOOL", None, None, "Idx.start..Idx.end", None),
@@ -148,7 +149,7 @@ def test_grammar_variables(meta_model):
             ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 44
+        assert len(variables) == 45
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

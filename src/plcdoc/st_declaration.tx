@@ -166,25 +166,30 @@ VariableType:
 ;
 
 BaseType:
-    StringType | Fqn (CallSuffix)?
+    StringType | Fqn
+    (CallSuffix)?
 ;
 
-CallSuffix: '(' (LabeledArguments | Arguments)? ')';
+CallSuffix: '(' AnyArguments? ')';
 
 StringType: 'STRING' StringSize;
-StringSize: '[' Expression ']'
-          | '(' Expression ')';
+StringSize:
+    '[' Expression ']'
+    | '(' Expression ')'
+;
 
 PointerLike:
     'POINTER' | 'REFERENCE'
 ;
 
-VariableTypeArray: 'ARRAY'- '['- dimensions+=ArrayDimension[','] ']'- 'OF'- ;
+VariableTypeArray:
+    'ARRAY'- '['- dimensions+=ArrayDimension[','] ']'- 'OF'-
+;
 
-ArrayDimension: Expression '..' Expression
-              | Expression
-              | '*'
-              ;
+ArrayDimension:
+    Expression '..' Expression
+    | '*'
+;
 
 Address:
     'AT' '%' /[A-Z%\.\*]/+
@@ -199,6 +204,8 @@ Fqn[noskipws]:
     /\s/*-
 ;
 
+AnyArguments: Range | LabeledArguments | Arguments;
+Range: Expression '..' Expression;
 Arguments: arguments*=Expression[','];
 LabeledArguments: arguments*=LabeledArgument[','];
 LabeledArgument: ID ':=' Expression;
@@ -207,36 +214,41 @@ Expression: Factor (AddOp Factor)*;
 AddOp: '+' | '-' ;
 Factor: Primary (MulOp Primary)*;
 MulOp: '*' | '/';
-Primary: Atom Suffix*;
-Suffix: '.' ID
-      | '[' Expression ']'
-;
-Atom: Literal
-    | ID
+
+Primary:
+    Literal
+    | FunctionCall
+    | Atom
     | '(' Expression ')'
 ;
 
+FunctionCall:
+    Fqn CallSuffix
+;
+
+Atom: Fqn Index*;
+Index: '[' Expression ']';
+
 Literal: StringLiteral
        | StructLiteral
-       | RangeLiteral
        | BinaryLiteral
        | OctalLiteral
+       | DecaLiteral
        | 'UDINT#'? HexLiteral
        | TimeLiteral
-       | NUMBER
        | FLOAT
        | IntegerLiteral
 ;
 
 BinaryLiteral: /2#[01_]+/;
 OctalLiteral: /8#[0-7_]+/;
+DecaLiteral: /10#[0-9_]+/;
 HexLiteral: /16#[0-9a-fA-F_]+/;
-TimeLiteral: /T#[0-9mMsS]+/;
+TimeLiteral: /T#[0-9hHmMsS]+/;
 IntegerLiteral: /[0-9][0-9_]*/;
 StringLiteral: /'.*?'/;
 StructLiteral: '(' fields+=StructLiteralItem[','] ')';
 StructLiteralItem: ID ':=' Expression;
-RangeLiteral: '(' Expression '..' Expression ')';
 
 /*
 ---------------------------------------------------

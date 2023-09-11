@@ -30,6 +30,7 @@ myfloat_no_ws:REAL;
 
     myint               : INT := SomeConstant;
     myint2              : INT := E_Error.NoError;
+    myint3              : INT := SIZEOF(Something.Else);
 
     mylist              : ARRAY[0..4]OF BOOL;
     mylist_ws           : ARRAY  [   0     ..  4]    OF BOOL;
@@ -48,7 +49,7 @@ myfloat_no_ws:REAL;
     specialint3         : UDINT := 16#FF_FF_FF;
     specialint4         : UDINT := UDINT#16#1;
     specialint5         : UDINT := 1_000_000;
-    specialint6         : USINT := (1..Module.MAX);
+    specialint6         : USINT(1..Module.MAX) := 0;
 
     mypointer1          : POINTER TO UDINT;
     mypointer2          : REFERENCE TO UDINT;
