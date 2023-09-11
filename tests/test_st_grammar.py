@@ -20,36 +20,37 @@ def meta_model():
     return metamodel_from_file(txpath)
 
 
-def test_grammar_on_files(meta_model):
-    """Test if a range of files can all be parsed without errors."""
-    files = [
-        "FB_MyBlock.txt",
-        "FB_MyBlockExtended.txt",
-        "RegularFunction.txt",
-        "MyStructure.txt",
-        "MyStructureExtended.txt",
-        "E_Options.txt",
-        "E_Filter.txt",
-        "Properties.txt",
-        "Unions.txt",
-        "GlobalVariableList.txt",
-        "Main.txt",
-    ]
+grammar_files = [
+    "FB_MyBlock.txt",
+    "FB_MyBlockExtended.txt",
+    "RegularFunction.txt",
+    "MyStructure.txt",
+    "MyStructureExtended.txt",
+    "E_Options.txt",
+    "E_Filter.txt",
+    "Properties.txt",
+    "Unions.txt",
+    "GlobalVariableList.txt",
+    "Main.txt",
+]
 
-    for filename in files:
-        filepath = os.path.realpath(tests_dir + "/plc_code/" + filename)
-        try:
-            model = meta_model.model_from_file(filepath)
-        except:
-            pytest.fail(f"Error when analyzing the file `{filename}`")
-        else:
-            assert model is not None
-            assert (
-                model.functions
-                or model.types
-                or model.properties
-                or model.variable_lists
-            )
+
+@pytest.mark.parametrize("file", grammar_files)
+def test_grammar_on_files(meta_model, file):
+    """Test if a range of files can all be parsed without errors."""
+    filepath = os.path.realpath(tests_dir + "/plc_code/" + file)
+    try:
+        model = meta_model.model_from_file(filepath)
+    except:
+        pytest.fail(f"Error when analyzing the file `{file}`")
+    else:
+        assert model is not None
+        assert (
+            model.functions
+            or model.types
+            or model.properties
+            or model.variable_lists
+        )
 
 
 def remove_whitespace(text):
@@ -195,7 +196,8 @@ def test_grammar_comments(meta_model):
 
         for comment in list_important:
             assert "Important" in comment and "Ignored" not in comment
-        # We don't verify the content of ignored comments, they might disappear in the future
+        # We don't verify the content of ignored comments, they might disappear in the
+        # future
 
         # Check attribute came over:
         attributes = [c for c in fb.comments if type(c).__name__ == "Attribute"]

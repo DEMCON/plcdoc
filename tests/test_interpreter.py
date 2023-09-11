@@ -58,35 +58,29 @@ class TestPlcInterpreter:
         result = interpreter.parse_plc_project(file)
         assert result
 
-    @pytest.mark.skipif(
-        not os.path.exists(
-            os.path.join(CODE_DIR, "extern/lcls-twincat-general/LCLSGeneral")
-        ),
-        reason="External projects not present",
-    )
-    def test_large_external_projects(self, caplog):
-        """Test grammar on a big existing project.
-
-        The goal is not so much to check the results in detail but just to make sure there are no
-        errors, and we likely covered all possible syntax.
-
-        Do not use the `interpreter` fixture as we want the object fresh each time.
-        """
-        projects = {
-            "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj": {
+    external_projects = [
+        (
+            "extern/lcls-twincat-general/LCLSGeneral/LCLSGeneral/LCLSGeneral.plcproj",
+            {
                 "functionblock": 33,
                 "struct": 12,
                 "function": 5 + 20,  # Functions + Methods
                 "property": 1,
                 "variable_list": 4,
             },
-            "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj": {
+        ),
+        (
+            "extern/lcls-twincat-motion/lcls-twincat-motion/Library/Library.plcproj",
+            {
                 "functionblock": 32,
                 "struct": 5,
                 "function": 10 + 3,
                 "variable_list": 2,
             },
-            "extern/TcUnit/TcUnit/TcUnit/TcUnit.plcproj": {
+        ),
+        (
+            "extern/TcUnit/TcUnit/TcUnit/TcUnit.plcproj",
+            {
                 "enum": 2,
                 "struct": 8,
                 "union": 1,
@@ -94,20 +88,37 @@ class TestPlcInterpreter:
                 "function": 36 + 138,
                 "variable_list": 3,
             },
-        }
-        for project, expected in projects.items():
-            interpreter = PlcInterpreter()
-            file = os.path.join(CODE_DIR, project)
-            file = os.path.realpath(file)
-            result = interpreter.parse_plc_project(file)
+        ),
+    ]
 
-            errors = [
-                record.message
-                for record in caplog.records
-                if "Error parsing" in record.message
-            ]
-            assert len(errors) == 0  # Make sure no parsing errors were logged
+    @pytest.mark.skipif(
+        not os.path.exists(
+            os.path.join(CODE_DIR, "extern/lcls-twincat-general/LCLSGeneral")
+        ),
+        reason="External projects not present",
+    )
+    @pytest.mark.parametrize("project,expected", external_projects)
+    def test_large_external_projects(self, caplog, project, expected):
+        """Test grammar on a big existing project.
 
-            assert result
-            for key, number in expected.items():
-                assert len(interpreter._models[key]) == number
+        The goal is not so much to check the results in detail but just to make sure there are no
+        errors, and we likely covered all possible syntax.
+
+        Do not use the `interpreter` fixture as we want the object fresh each time.
+        """
+
+        interpreter = PlcInterpreter()
+        file = os.path.join(CODE_DIR, project)
+        file = os.path.realpath(file)
+        result = interpreter.parse_plc_project(file)
+
+        errors = [
+            record.message
+            for record in caplog.records
+            if "Error parsing" in record.message
+        ]
+        assert len(errors) == 0  # Make sure no parsing errors were logged
+
+        assert result
+        for key, number in expected.items():
+            assert len(interpreter._models[key]) == number
