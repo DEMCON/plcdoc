@@ -46,10 +46,7 @@ def test_grammar_on_files(meta_model, file):
     else:
         assert model is not None
         assert (
-            model.functions
-            or model.types
-            or model.properties
-            or model.variable_lists
+            model.functions or model.types or model.properties or model.variable_lists
         )
 
 

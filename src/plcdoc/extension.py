@@ -9,7 +9,7 @@ from sphinx.environment import BuildEnvironment
 
 from .__version__ import __version__
 from .interpreter import PlcInterpreter
-from .domain import StructuredTextDomain, _builtin_types_re
+from .domain import StructuredTextDomain
 from .auto_directives import PlcAutodocDirective
 from .documenters import (
     PlcFunctionBlockDocumenter,
@@ -20,6 +20,7 @@ from .documenters import (
     PlcStructMemberDocumenter,
     PlcFolderDocumenter,
 )
+from .common import _builtin_types_re
 
 logger = logging.getLogger(__name__)
 

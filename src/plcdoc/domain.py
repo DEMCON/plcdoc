@@ -1,9 +1,8 @@
 """Contains the new PLC domain."""
 
 from typing import List, Dict, Tuple, Any, NamedTuple, Optional
-import re
 
-from docutils.nodes import Element, Node, Text
+from docutils.nodes import Element
 
 from sphinx.addnodes import pending_xref
 from sphinx.domains import Domain, ObjType
@@ -21,7 +20,7 @@ from .directives import (
     PlcFolderDescription,
 )
 from .roles import PlcXRefRole
-from .common import _builtin_types_re
+
 
 logger = logging.getLogger(__name__)
 
