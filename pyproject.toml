@@ -23,8 +23,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/RobertoRoos/sphinx-plc-wip"
-"Bug Tracker" = "https://github.com/RobertoRoos/sphinx-plc-wip/issues"
+"Homepage" = "https://github.com/RobertoRoos/sphinx-plc"
+"Bug Tracker" = "https://github.com/RobertoRoos/sphinx-plc/issues"
 
 [tool.setuptools.package-data]
 "*" = ["*.tx"]
