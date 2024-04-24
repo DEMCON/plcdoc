@@ -10,7 +10,7 @@ jobs:
 
  flake8-black-lint:
     runs-on: ubuntu-latest
-    name: Flake8 code check
+    name: Flake8 / Black code check
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
