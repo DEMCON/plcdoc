@@ -4,21 +4,11 @@
 
 name: Linting
 
-on: [push, pull_request]
+on: push
 
 jobs:
 
-  black-format:
-    runs-on: ubuntu-latest
-    name: Black formatting
-    steps:
-      - uses: actions/checkout@v3
-      - uses: psf/black@stable
-        with:
-          options: "--check"
-          src: "./src"
-
-  flake8-lint:
+ flake8-black-lint:
     runs-on: ubuntu-latest
     name: Flake8 code check
     steps:

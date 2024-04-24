@@ -1,4 +1,5 @@
 [flake8]
-# Match with Black
-max-line-length = 88
-extend-ignore = E203
+# Match with black (using flake8-bugbear)
+max-line-length = 80
+extend-select = B950
+extend-ignore = E203,E501,E701

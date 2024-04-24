@@ -24,6 +24,13 @@ integration. This way you can focus exclusively on your code while up-to-date do
 
 ## How to use
 
+### Install
+
+Install with:
+```
+pip install <repository url>
+```
+
 ### Configuration
 
 In your `conf.py`, add the extension:
@@ -104,9 +111,16 @@ as a sum, involving other variables, and include various literal notations. This
 
 ## Developing
 
+### Setup
+
+Get the development tools and make your install editable by running:
+```
+pip install -e .[test,doc]
+```
+
 ### Tests
 
-Run tests with `python -m pytest`.
+Run all tests with `python -m pytest`.
 
 The structure is based on the Sphinx unittest principle. There are actual doc roots present which are processed as 
 normal during a test.
@@ -124,3 +138,15 @@ There are a bunch of projects linking new languages to Sphinx:
 
 `breathe` is the biggest and most complete, but very abstract. `sphinxcontrib-matlabdomain` was the main inspiration for
 the package layout. The auto-documentation however mimics the default Python `autodoc` extension very closely.
+
+## References
+
+Other useful projects: 
+
+ * [TcTools](https://github.com/DEMCON/TcTools):
+   * A package with helper tools for developing TwinCAT PLC code (also made by us).
+ * [Blark](https://github.com/klauer/blark):
+   * Parsing of PLC Structured Text code in Python using Lark.  
+     Very impressive and much more complete than the PLC parsing done here, but slight overkill for the purpose here.
+ * [TcBlack](https://github.com/Roald87/TcBlack):
+   * Black-inspired formatting tool for PLC Structured Text.
