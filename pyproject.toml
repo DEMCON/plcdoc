@@ -34,8 +34,9 @@ doc = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/RobertoRoos/sphinx-plc"
-"Bug Tracker" = "https://github.com/RobertoRoos/sphinx-plc/issues"
+"Homepage" = "https://github.com/DEMCON/plcdoc"
+"Bug Tracker" = "https://github.com/DEMCON/plcdoc/issues"
+"Documentation" = "https://plc-doc.readthedocs.io/latest/"
 
 [tool.setuptools.package-data]
 "*" = ["*.tx"]
