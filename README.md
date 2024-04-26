@@ -1,8 +1,8 @@
 # PLC Sphinx Parser
 
-[![Documentation Status](https://readthedocs.org/projects/plc-doc/badge/?version=latest)](https://plc-doc.readthedocs.io/en/latest/?badge=latest)
-[![Unit tests](https://github.com/RobertoRoos/sphinx-plc/actions/workflows/tests.yml/badge.svg)](https://github.com/RobertoRoos/sphinx-plc/actions)
-[![codecov](https://codecov.io/github/RobertoRoos/sphinx-plc/graph/badge.svg?token=LS0LECRP58)](https://codecov.io/github/RobertoRoos/sphinx-plc)
+[![Documentation Status](https://readthedocs.org/projects/plc-doc/badge/?version=latest)](https://plc-doc.readthedocs.io/latest/?badge=latest)
+[![Unit tests](https://github.com/DEMCON/plcdoc/actions/workflows/tests.yml/badge.svg)](https://github.com/DEMCON/plcdoc/actions)
+[![codecov](https://codecov.io/github/DEMCON/plcdoc/graph/badge.svg?token=LS0LECRP58)](https://codecov.io/DEMCON/plcdoc)
 
 This is a work-in-progress of a tool to get documentation with Sphinx from TwinCAT PLC.
 The focus is on PLC code made with Structured Text (ST), i.e. the IEC 61131-3 standard.
@@ -24,11 +24,13 @@ integration. This way you can focus exclusively on your code while up-to-date do
 
 ## How to use
 
+**Warning:** `plcdoc` is still in development and although some documentation can be made, you will likely run into many warnings and errors.
+
 ### Install
 
-Install with:
+Install from [pypi.org](https://pypi.org/project/plcdoc/) with:
 ```
-pip install <repository url>
+pip install plcdoc
 ```
 
 ### Configuration
@@ -113,7 +115,7 @@ as a sum, involving other variables, and include various literal notations. This
 
 ### Setup
 
-Get the development tools and make your install editable by running:
+Get the development tools and make your installation editable by running:
 ```
 pip install -e .[test,doc]
 ```
@@ -143,7 +145,7 @@ the package layout. The auto-documentation however mimics the default Python `au
 
 Other useful projects: 
 
- * [TcTools](https://github.com/DEMCON/TcTools):
+ * [TcTools](https://github.com/DEMCON/twincat-tools):
    * A package with helper tools for developing TwinCAT PLC code (also made by us).
  * [Blark](https://github.com/klauer/blark):
    * Parsing of PLC Structured Text code in Python using Lark.  
