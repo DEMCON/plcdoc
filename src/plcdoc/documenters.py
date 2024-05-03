@@ -13,7 +13,7 @@ from sphinx.ext.autodoc import (
 )
 from docutils.statemachine import StringList
 
-from .interpreter import PlcInterpreter, PlcDeclaration, TextXMetaClass
+from .interpreter import PlcInterpreter, PlcDeclaration, PlcVariableDeclaration
 
 logger = logging.getLogger(__name__)
 
@@ -172,7 +172,7 @@ class PlcDocumenter(AutodocDocumenter, ABC):
     def format_args(self, **kwargs: Any) -> Optional[str]:
         """Format arguments for signature, based on auto-data."""
 
-        arg_strs = [f"{var.name}" for var in self.object.get_args()]
+        arg_strs = [f"{var.name}" for var in self.object.args]
 
         return "(" + ", ".join(arg_strs) + ")"
 
@@ -205,10 +205,10 @@ class PlcDocumenter(AutodocDocumenter, ABC):
 
         # Also add VARs from meta-model
         args_block = []
-        for var in self.object.get_args():
-            line_param = f":{var.kind} {var.type.name} {var.name}:"
-            if var.comment and var.comment.text:
-                line_param += " " + var.comment.text
+        for var in self.object.args:
+            line_param = f":{var.kind} {var.ty} {var.name}:"
+            if var.comment:
+                line_param += " " + var.comment
             args_block.append(line_param)
 
         if args_block:
@@ -230,7 +230,7 @@ class PlcDocumenter(AutodocDocumenter, ABC):
         """Get docstring from the meta-model."""
 
         # Read main docblock
-        comment_str = self.object.get_comment()
+        comment_str = self.object.comment
         if not comment_str:
             return []
 
@@ -393,10 +393,9 @@ class PlcStructDocumenter(PlcDataDocumenter):
         member_documenters = [
             PlcStructMemberDocumenter(
                 self.directive,
-                member.name,
-                self.indent,
-                parent=self.object,
                 member=member,
+                indent=self.indent,
+                parent=self.object,
             )
             for member in self.object.members
         ]
@@ -431,12 +430,11 @@ class PlcStructMemberDocumenter(PlcDataDocumenter):
     def __init__(
         self,
         directive,
-        name: str,
+        member: PlcVariableDeclaration,
         indent: str = "",
         parent: PlcDeclaration = None,
-        member: Optional[TextXMetaClass] = None,
     ) -> None:
-        super().__init__(directive, name, indent)
+        super().__init__(directive, member.name, indent)
 
         self.object = parent
         self.member = member
@@ -444,23 +442,22 @@ class PlcStructMemberDocumenter(PlcDataDocumenter):
     @classmethod
     def can_document_member(
         cls,
-        member: Union[PlcDeclaration, Any],
+        member: PlcVariableDeclaration,
         membername: str,
         isattr: bool,
         parent: Any,
     ) -> bool:
-        return type(member).__name__ == "Variable"
-        # Note: a TextX variable class is passed, not a complete PlcDeclaration
+        return isinstance(member, PlcVariableDeclaration) and member.kind == "member"
 
     def import_object(self, raiseerror: bool = False) -> bool:
         return self.member is not None  # Expect member through constructor
 
     def get_doc(self) -> Optional[List[List[str]]]:
         # Read main docblock
-        if self.member is None or self.member.comment is None:
+        if self.member is None:
             return []
 
-        comment_str = self.member.comment.text
+        comment_str = self.member.comment
         if not comment_str:
             return []
 
@@ -471,7 +468,7 @@ class PlcStructMemberDocumenter(PlcDataDocumenter):
             return ""
 
         # Insert the known variable type
-        return f" : {self.member.type.name}"
+        return f" : {self.member.ty}"
 
 
 class PlcFolderDocumenter(PlcDataDocumenter):
