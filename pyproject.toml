@@ -18,6 +18,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "lark>=1",
     "sphinx>=5.0,<7.0",
     "textX>=3.0",
 ]
