@@ -10,6 +10,9 @@ import xml.etree.ElementTree as ET
 
 from textx import metamodel_from_file, TextXSyntaxError
 
+USE_TEXTX = False
+# USE_TEXTX = True
+
 PACKAGE_DIR = os.path.dirname(__file__)
 logger = logging.getLogger(__name__)
 
@@ -163,8 +166,7 @@ class PlcInterpreter:
         if declaration_node is None:
             return None
 
-        use_textx = True
-        if use_textx:
+        if USE_TEXTX:
             try:
                 meta_model = self._meta_model.model_from_str(declaration_node.text)
                 return textx_model_to_declaration(meta_model, filepath)
@@ -264,14 +266,39 @@ class PlcInterpreter:
 def ast_node_to_plc_declaration(node, file) -> "PlcDeclaration":
     objtype = None
     name = None
+    args = []
+    members = []
+    comment = ""
 
     if isinstance(node, ast.Function):
         name = node.name
         objtype = node.kind
+        comment = process_comment(node.comment)
+        for vl in node.variable_lists:
+            for v in vl.variables:
+                arg = PlcVariableDeclaration(
+                    kind=vl.kind.lower(),
+                    name=v.name,
+                    ty=ast.type_to_text(v.ty),
+                    comment=v.comment,
+                )
+                args.append(arg)
+
     elif isinstance(node, ast.TypeDef):
         name = node.name
-        objtype = str(node.ty)
+        comment = process_comment(node.comment)
+        if isinstance(node.ty, ast.Struct):
+            objtype = "struct"
+            for f in node.ty.fields:
+                members.append(lark_field_to_var(f))
+        elif isinstance(node.ty, ast.Union):
+            objtype = "union"
+        elif isinstance(node.ty, ast.Enum):
+            objtype = "enum"
+        else:
+            raise ValueError(f"typedef not supported for type: {node.ty}")
     elif isinstance(node, ast.Property):
+        comment = process_comment(node.comment)
         objtype = "property"
         name = node.name
     elif isinstance(node, ast.VariableList):
@@ -283,7 +310,18 @@ def ast_node_to_plc_declaration(node, file) -> "PlcDeclaration":
         raise ValueError(f"Unrecognized declaration in `{node}`")
 
     assert name is not None
-    return PlcDeclaration(objtype, name, file)
+
+    return PlcDeclaration(
+        objtype, name=name, comment=comment, args=args, members=members, file=file
+    )
+
+
+def lark_field_to_var(field: ast.StructField) -> "PlcVariableDeclaration":
+    comment = field.comment
+    ty = ast.type_to_text(field.ty)
+    return PlcVariableDeclaration(
+        kind="member", name=field.name, ty=ty, comment=comment
+    )
 
 
 def textx_model_to_declaration(
@@ -381,7 +419,10 @@ def get_comment(_model) -> Optional[str]:
         return None
 
     big_block = big_block.strip()  # Get rid of whitespace
+    return process_comment(big_block)
 
+
+def process_comment(big_block):
     # Remove comment indicators (cannot get rid of them by TextX)
     if big_block.startswith("(*"):
         big_block = big_block[2:]

@@ -2,7 +2,7 @@
 
 import os.path
 from abc import ABC
-from typing import Tuple, List, Dict, Optional, Any, Union
+from typing import Tuple, List, Dict, Optional, Any
 import re
 
 from sphinx.util import logging
