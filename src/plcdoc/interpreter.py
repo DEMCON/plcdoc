@@ -2,10 +2,16 @@
 
 import os
 from typing import List, Dict, Optional, Any
+from dataclasses import dataclass
 from glob import glob
 import logging
+from .parsing import parse_new, nodes as ast
 import xml.etree.ElementTree as ET
+
 from textx import metamodel_from_file, TextXSyntaxError
+
+USE_TEXTX = False
+# USE_TEXTX = True
 
 PACKAGE_DIR = os.path.dirname(__file__)
 logger = logging.getLogger(__name__)
@@ -137,42 +143,44 @@ class PlcInterpreter:
             # Name is repeated inside the declaration, use it from there instead
             # name = item.attrib["Name"]
 
-            object_model = self._parse_declaration(item)
-            if object_model is None:
+            obj = self._parse_declaration(item, filepath)
+            if obj is None:
                 continue
-
-            obj = PlcDeclaration(object_model, filepath)
 
             # Methods are inside their own subtree with a `Declaration` - simply append
             # them to the object
             for node in item:
                 if node.tag in ["Declaration", "Implementation"]:
                     continue
-                method_model = self._parse_declaration(node)
-                if method_model is None:
+                method = self._parse_declaration(node, filepath)
+                if method is None:
                     continue
-                method = PlcDeclaration(method_model, filepath)
                 obj.add_child(method)
 
             self._add_model(obj)
 
         return True
 
-    def _parse_declaration(self, item) -> Optional["TextXMetaClass"]:
+    def _parse_declaration(self, item, filepath) -> Optional["TextXMetaClass"]:
         declaration_node = item.find("Declaration")
         if declaration_node is None:
             return None
-        try:
-            meta_model = self._meta_model.model_from_str(declaration_node.text)
-            return meta_model
-        except TextXSyntaxError as err:
-            name = item.attrib.get("Name", "<Unknown>")
-            logger.error(
-                "Error parsing node `%s` in file `%s`\n(%s)",
-                name,
-                self._active_file,
-                str(err),
-            )
+
+        if USE_TEXTX:
+            try:
+                meta_model = self._meta_model.model_from_str(declaration_node.text)
+                return textx_model_to_declaration(meta_model, filepath)
+            except TextXSyntaxError as err:
+                name = item.attrib.get("Name", "<Unknown>")
+                logger.error(
+                    "Error parsing node `%s` in file `%s`\n(%s)",
+                    name,
+                    self._active_file,
+                    str(err),
+                )
+        else:
+            node = parse_new(declaration_node.text)
+            return ast_node_to_plc_declaration(node, filepath)
 
         return None
 
@@ -255,6 +263,213 @@ class PlcInterpreter:
         raise KeyError(f"Found no models in the folder `{folder}`")
 
 
+def ast_node_to_plc_declaration(node, file) -> "PlcDeclaration":
+    objtype = None
+    name = None
+    args = []
+    members = []
+    comment = ""
+
+    if isinstance(node, ast.Function):
+        name = node.name
+        objtype = node.kind
+        comment = process_comment(node.comment)
+        for vl in node.variable_lists:
+            for v in vl.variables:
+                arg = PlcVariableDeclaration(
+                    kind=vl.kind.lower(),
+                    name=v.name,
+                    ty=ast.type_to_text(v.ty),
+                    comment=v.comment,
+                )
+                args.append(arg)
+
+    elif isinstance(node, ast.TypeDef):
+        name = node.name
+        comment = process_comment(node.comment)
+        if isinstance(node.ty, ast.Struct):
+            objtype = "struct"
+            for f in node.ty.fields:
+                members.append(lark_field_to_var(f))
+        elif isinstance(node.ty, ast.Union):
+            objtype = "union"
+        elif isinstance(node.ty, ast.Enum):
+            objtype = "enum"
+        else:
+            raise ValueError(f"typedef not supported for type: {node.ty}")
+    elif isinstance(node, ast.Property):
+        comment = process_comment(node.comment)
+        objtype = "property"
+        name = node.name
+    elif isinstance(node, ast.VariableList):
+        if file is None:
+            raise ValueError("Cannot parse GVL without file as no naming is present")
+        name = os.path.splitext(os.path.basename(file))[0]
+        objtype = "variable_list"
+    else:
+        raise ValueError(f"Unrecognized declaration in `{node}`")
+
+    assert name is not None
+
+    return PlcDeclaration(
+        objtype, name=name, comment=comment, args=args, members=members, file=file
+    )
+
+
+def lark_field_to_var(field: ast.StructField) -> "PlcVariableDeclaration":
+    comment = field.comment
+    ty = ast.type_to_text(field.ty)
+    return PlcVariableDeclaration(
+        kind="member", name=field.name, ty=ty, comment=comment
+    )
+
+
+def textx_model_to_declaration(
+    meta_model: TextXMetaClass, file=None
+) -> "PlcDeclaration":
+    objtype = None
+    name = None
+    members = []
+
+    if meta_model.functions:
+        model = meta_model.functions[0]
+        objtype = model.function_type.lower().replace("_", "")
+
+    if meta_model.types:
+        model = meta_model.types[0]
+        type_str = type(model.type).__name__
+        if "Enum" in type_str:
+            objtype = "enum"
+        elif "Struct" in type_str:
+            objtype = "struct"
+            if model.type:
+                print(model.type.members)
+                # aarg
+                members = [member_to_plc_declaration(m) for m in model.type.members]
+        elif "Union" in type_str:
+            objtype = "union"
+            if model.type:
+                members = [member_to_plc_declaration(m) for m in model.type.members]
+        else:
+            raise ValueError(f"Could not categorize type `{type_str}`")
+
+    if meta_model.properties:
+        model = meta_model.properties[0]
+        objtype = "property"
+
+    if meta_model.variable_lists:
+        if file is None:
+            raise ValueError("Cannot parse GVL without file as no naming is present")
+        name = os.path.splitext(os.path.basename(file))[0]
+        #     # GVL are annoying because no naming is present in source - we need to
+        #     # extract it from the file name
+
+        model = meta_model.variable_lists[0]
+        objtype = "variable_list"
+
+    if objtype is None:
+        raise ValueError(f"Unrecognized declaration in `{meta_model}`")
+
+    if name is None:
+        name = model.name
+    comment = get_comment(model)
+    args = get_args(model)
+
+    return PlcDeclaration(
+        objtype, name, comment=comment, args=args, members=members, file=file
+    )
+
+
+def member_to_plc_declaration(member) -> "PlcVariableDeclaration":
+    # print()
+    name = member.name
+    comment = member.comment.text if member.comment else ""
+    ty = member.type.name
+    return PlcVariableDeclaration(
+        kind="member",
+        name=name,
+        ty=ty,
+        comment=comment,
+    )
+
+
+def get_comment(_model) -> Optional[str]:
+    """Process main block comment from model into a neat list.
+
+    A list is created for each 'region' of comments. The first comment block above
+    a declaration is the most common one.
+    """
+    if hasattr(_model, "comment") and _model.comment is not None:
+        # Probably a comment line
+        big_block: str = _model.comment.text
+    elif hasattr(_model, "comments") and _model.comments:
+        # Probably a comment block (amongst multiple maybe)
+        block_comment = None
+        for comment in reversed(_model.comments):
+            # Find last block-comment
+            if type(comment).__name__ == "CommentBlock":
+                block_comment = comment
+                break
+
+        if block_comment is None:
+            return None
+
+        big_block: str = block_comment.text
+    else:
+        return None
+
+    big_block = big_block.strip()  # Get rid of whitespace
+    return process_comment(big_block)
+
+
+def process_comment(big_block):
+    # Remove comment indicators (cannot get rid of them by TextX)
+    if big_block.startswith("(*"):
+        big_block = big_block[2:]
+    if big_block.endswith("*)"):
+        big_block = big_block[:-2]
+
+    # It looks like Windows line endings are already lost by now, but make sure
+    big_block = big_block.replace("\r\n", "\n")
+
+    return big_block
+
+
+def get_args(model) -> List:
+    """Return arguments.
+
+    :param skip_internal: If true, only return in, out and inout variables
+    :retval: Empty list if there are none or arguments are applicable to this type.
+    """
+    skip_internal = True
+    if not hasattr(model, "lists"):
+        return []
+
+    args = []
+
+    for var_list in model.lists:
+        var_kind = var_list.name.lower()
+        if skip_internal and var_kind not in [
+            "var_input",
+            "var_output",
+            "var_input_output",
+        ]:
+            continue  # Skip internal variables `VAR`
+
+        for var in var_list.variables:
+            print(var, type(var))
+            args.append(textx_to_var(var_kind, var))
+
+    return args
+
+
+def textx_to_var(var_kind, var):
+    name = var.name
+    ty = var.type.name
+    comment = var.comment.text if var.comment else ""
+    return PlcVariableDeclaration(kind=var_kind, name=name, ty=ty, comment=comment)
+
+
 class PlcDeclaration:
     """Wrapper class for the result of the TextX parsing of a PLC source file.
 
@@ -265,52 +480,19 @@ class PlcDeclaration:
     The `objtype` is as they appear in :class:`StructuredTextDomain`.
     """
 
-    def __init__(self, meta_model: TextXMetaClass, file=None):
+    def __init__(
+        self, objtype: str, name: str, comment=None, args=(), members=(), file=None
+    ):
         """
 
         :param meta_model: Parsing result
         :param file: Path to the file this model originates from
         """
-        self._objtype = None
-        self._name = None
-
-        if meta_model.functions:
-            self._model = meta_model.functions[0]
-            self._objtype = self._model.function_type.lower().replace("_", "")
-
-        if meta_model.types:
-            self._model = meta_model.types[0]
-            type_str = type(self._model.type).__name__
-            if "Enum" in type_str:
-                self._objtype = "enum"
-            elif "Struct" in type_str:
-                self._objtype = "struct"
-            elif "Union" in type_str:
-                self._objtype = "union"
-            else:
-                raise ValueError(f"Could not categorize type `{type_str}`")
-
-        if meta_model.properties:
-            self._model = meta_model.properties[0]
-            self._objtype = "property"
-
-        if meta_model.variable_lists:
-            if file is None:
-                raise ValueError(
-                    "Cannot parse GVL without file as no naming is present"
-                )
-            self._name, _ = os.path.splitext(os.path.basename(file))
-            # GVL are annoying because no naming is present in source - we need to
-            # extract it from the file name
-
-            self._model = meta_model.variable_lists[0]
-            self._objtype = "variable_list"
-
-        if self._objtype is None:
-            raise ValueError(f"Unrecognized declaration in `{meta_model}`")
-
-        if self._name is None:
-            self._name = self._model.name
+        self._objtype = objtype
+        self._name = name
+        self._comment = comment
+        self._args = args
+        self._members = members
         self._file: Optional[str] = file
         self._children: Dict[str, "PlcDeclaration"] = {}
 
@@ -339,73 +521,23 @@ class PlcDeclaration:
 
     @property
     def members(self) -> List[TextXMetaClass]:
-        if not self._model.type:
-            return []
-        return self._model.type.members
+        return self._members
 
-    def get_comment(self) -> Optional[str]:
-        """Process main block comment from model into a neat list.
+    @property
+    def comment(self) -> Optional[str]:
+        return self._comment
 
-        A list is created for each 'region' of comments. The first comment block above
-        a declaration is the most common one.
-        """
-        if hasattr(self._model, "comment") and self._model.comment is not None:
-            # Probably a comment line
-            big_block: str = self._model.comment.text
-        elif hasattr(self._model, "comments") and self._model.comments:
-            # Probably a comment block (amongst multiple maybe)
-            block_comment = None
-            for comment in reversed(self._model.comments):
-                # Find last block-comment
-                if type(comment).__name__ == "CommentBlock":
-                    block_comment = comment
-                    break
-
-            if block_comment is None:
-                return None
-
-            big_block: str = block_comment.text
-        else:
-            return None
-
-        big_block = big_block.strip()  # Get rid of whitespace
-
-        # Remove comment indicators (cannot get rid of them by TextX)
-        if big_block.startswith("(*"):
-            big_block = big_block[2:]
-        if big_block.endswith("*)"):
-            big_block = big_block[:-2]
-
-        # It looks like Windows line endings are already lost by now, but make sure
-        big_block = big_block.replace("\r\n", "\n")
-
-        return big_block
-
-    def get_args(self, skip_internal=True) -> List:
-        """Return arguments.
-
-        :param skip_internal: If true, only return in, out and inout variables
-        :retval: Empty list if there are none or arguments are applicable to this type.
-        """
-        if not hasattr(self._model, "lists"):
-            return []
-
-        args = []
-
-        for var_list in self._model.lists:
-            var_kind = var_list.name.lower()
-            if skip_internal and var_kind not in [
-                "var_input",
-                "var_output",
-                "var_input_output",
-            ]:
-                continue  # Skip internal variables `VAR`
-
-            for var in var_list.variables:
-                var.kind = var_kind
-                args.append(var)
-
-        return args
+    @property
+    def args(self) -> List:
+        return self._args
 
     def add_child(self, child: "PlcDeclaration"):
         self._children[child.name] = child
+
+
+@dataclass
+class PlcVariableDeclaration:
+    kind: str
+    name: str
+    ty: str
+    comment: str
