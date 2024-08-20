@@ -58,3 +58,11 @@
    .. plc:property:: \
       FaceUp
       FaceDown
+
+
+.. GVL -----------------------------
+
+.. plc:gvl:: GVL_MyList
+
+   :var LREAL my_double: Some double-type variable
+   :var USINT some_int: My short integer

@@ -82,11 +82,15 @@ The same options from `function <#function>`_ are available.
       :var_input LREAL myInput:
       :var_output LREAL myOutput:
 
+      Description of my function block.
+
 .. functionblock:: MyFunctionBlock
    :noindex:
 
    :var_input LREAL myInput:
    :var_output LREAL myOutput:
+
+   Description of my function block.
 
 You can also nest e.g. methods and properties:
 
@@ -196,6 +200,34 @@ struct
       :noindex:
    .. member:: Second : LREAL
       :noindex:
+
+gvl
+---
+
+.. code-block:: rst
+
+   .. gvl:: <name>
+
+      <variables>
+
+**Examples:**
+
+.. code-block:: rst
+
+   .. gvl:: GVL_Main
+
+      :var LREAL var_double: Some precision decimal variable
+      :var BOOL my_flag: Another variable, of boolean type
+
+      Main variables list.
+
+.. gvl:: GVL_Main
+   :noindex:
+
+   :var LREAL var_double: Some precision decimal variable
+   :var BOOL my_flag: Another variable, of boolean type
+
+   Main variables list.
 
 folder
 ------
