@@ -18,6 +18,7 @@ from .directives import (
     PlcEnumeratorDescription,
     PlcMemberDescription,
     PlcFolderDescription,
+    PlcVariableListDescription,
 )
 from .roles import PlcXRefRole
 
@@ -61,6 +62,7 @@ class StructuredTextDomain(Domain):
         "struct":           PlcObjectDescription,
         "member":           PlcMemberDescription,
         "property":         PlcObjectDescription,
+        "gvl":              PlcVariableListDescription,
         "folder":           PlcFolderDescription,
     }
 

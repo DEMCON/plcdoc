@@ -253,6 +253,23 @@ class PlcMemberDescription(PlcObjectDescription):
     object_display_type = False
 
 
+class PlcVariableListDescription(PlcObjectDescription):
+    """Directive specifically to show a GVL."""
+
+    # fmt: off
+    doc_field_types = [
+        TypedField(
+            "var",
+            label="VAR",
+            names=("var", "param", "parameter", "arg", "argument"),
+            typerolename="type",
+            typenames=("paramtype", "type", "var_type"),
+            can_collapse=False,
+        ),
+    ]
+    # fmt: on
+
+
 class PlcFolderDescription(PlcObjectDescription):
     """Directive specifically for a folder and contents."""
 

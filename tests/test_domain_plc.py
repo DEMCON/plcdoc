@@ -18,3 +18,4 @@ def test_domain_plc_objects(app, status, warning):
     assert objects["Orientation"][2] == "enum"
     assert objects["ST_MyStruct"][2] == "struct"
     assert objects["ST_MyStruct2"][2] == "struct"
+    assert objects["GVL_MyList"][2] == "gvl"

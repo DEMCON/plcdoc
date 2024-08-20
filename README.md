@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/plc-doc/badge/?version=latest)](https://plc-doc.readthedocs.io/latest/?badge=latest)
 [![Unit tests](https://github.com/DEMCON/plcdoc/actions/workflows/tests.yml/badge.svg)](https://github.com/DEMCON/plcdoc/actions)
-[![codecov](https://codecov.io/github/DEMCON/plcdoc/graph/badge.svg?token=LS0LECRP58)](https://codecov.io/DEMCON/plcdoc)
+[![codecov](https://codecov.io/gh/DEMCON/plcdoc/graph/badge.svg?token=xMg0U6mX2r)](https://codecov.io/gh/DEMCON/plcdoc)
 
 This is a work-in-progress of a tool to get documentation with Sphinx from TwinCAT PLC.
 The focus is on PLC code made with Structured Text (ST), i.e. the IEC 61131-3 standard.
