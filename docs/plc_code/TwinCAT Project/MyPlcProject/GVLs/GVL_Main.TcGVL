@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="GVL_Main" Id="{3c0591f8-7ec2-40bd-a6ee-66aa6ec345bd}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+    flag        : BOOL;             // Flag for the system
+    counter     : ULINT;            // Main counter
+    cycleTIme   : LREAL := 0.001;   // Time between PLC cycles
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

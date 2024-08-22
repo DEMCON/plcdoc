@@ -533,3 +533,11 @@ class PlcFolderDocumenter(PlcDataDocumenter):
                     real_modname="",
                     check_module=False,
                 )
+
+
+class PlcVariableListDocumenter(PlcDataDocumenter):
+
+    objtype = "gvl"
+
+    def format_args(self, **kwargs: Any) -> Optional[str]:
+        return ""  # Do not add arguments like function call

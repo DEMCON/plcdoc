@@ -11,6 +11,6 @@ source_suffix = ".rst"
 nitpicky = True
 
 plc_sources = [
-    os.path.join(os.path.abspath("."), item)
-    for item in ["src_plc/*.TcPOU", "src_plc/*.TcDUT"]
+    os.path.join(os.path.abspath("."), "src_plc", item)
+    for item in ["*.TcPOU", "*.TcDUT", "*.TcGVL"]
 ]
