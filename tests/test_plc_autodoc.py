@@ -144,3 +144,15 @@ def test_autodoc_struct(app, status, warning):
         "      Use as a flag",
         "",
     ] == actual[16:]
+
+
+@pytest.mark.sphinx("html", testroot="plc-autodoc")
+def test_autodoc_gvl(app, status, warning):
+    """Test building a document with the PLC autodoc features."""
+
+    actual = do_autodoc(app, "plc:gvl", "AutoGVL")
+
+    assert ".. plc:gvl:: AutoGVL" == actual[1]
+    assert "   :var BOOL flag: Flag for the system" == actual[4]
+    assert "   :var ULINT counter:" == actual[5]
+    assert "   :var LREAL cycleTime: Time between PLC cycles" == actual[6]

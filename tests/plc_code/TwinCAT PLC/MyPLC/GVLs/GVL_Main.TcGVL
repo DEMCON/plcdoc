@@ -8,7 +8,7 @@ Some global variable list.
 Access must include the file name!
 *)
 VAR_GLOBAL
-    someGlobal      : LREAL;    // Descritpion 1
+    someGlobal      : LREAL;    // Description 1
     otherGlobal     : INT;      // Description 2
 END_VAR
 ]]></Declaration>

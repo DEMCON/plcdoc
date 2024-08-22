@@ -19,6 +19,7 @@ from .documenters import (
     PlcStructDocumenter,
     PlcStructMemberDocumenter,
     PlcFolderDocumenter,
+    PlcVariableListDocumenter,
 )
 from .common import _builtin_types_re
 
@@ -59,6 +60,9 @@ def plcdoc_setup(app: Sphinx) -> Dict:
     app.registry.add_documenter("plc:struct", PlcStructDocumenter)
     app.registry.add_documenter("plc:member", PlcStructMemberDocumenter)
     app.add_directive_to_domain("plc", "autostruct", PlcAutodocDirective)
+
+    app.registry.add_documenter("plc:gvl", PlcVariableListDocumenter)
+    app.add_directive_to_domain("plc", "autogvl", PlcAutodocDirective)
 
     app.registry.add_documenter("plc:folder", PlcFolderDocumenter)
     app.add_directive_to_domain("plc", "autofolder", PlcAutodocDirective)

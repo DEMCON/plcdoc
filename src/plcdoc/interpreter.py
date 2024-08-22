@@ -304,7 +304,7 @@ class PlcDeclaration:
             # extract it from the file name
 
             self._model = meta_model.variable_lists[0]
-            self._objtype = "variable_list"
+            self._objtype = "gvl"
 
         if self._objtype is None:
             raise ValueError(f"Unrecognized declaration in `{meta_model}`")
@@ -387,22 +387,25 @@ class PlcDeclaration:
         :param skip_internal: If true, only return in, out and inout variables
         :retval: Empty list if there are none or arguments are applicable to this type.
         """
-        if not hasattr(self._model, "lists"):
-            return []
-
         args = []
 
-        for var_list in self._model.lists:
-            var_kind = var_list.name.lower()
-            if skip_internal and var_kind not in [
-                "var_input",
-                "var_output",
-                "var_input_output",
-            ]:
-                continue  # Skip internal variables `VAR`
+        if hasattr(self._model, "lists"):
+            for var_list in self._model.lists:
+                var_kind = var_list.name.lower()
+                if skip_internal and var_kind not in [
+                    "var_input",
+                    "var_output",
+                    "var_input_output",
+                ]:
+                    continue  # Skip internal variables `VAR`
 
-            for var in var_list.variables:
-                var.kind = var_kind
+                for var in var_list.variables:
+                    var.kind = var_kind
+                    args.append(var)
+
+        if hasattr(self._model, "variables"):
+            for var in self._model.variables:
+                var.kind = "var"
                 args.append(var)
 
         return args

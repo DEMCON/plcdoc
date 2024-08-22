@@ -25,7 +25,7 @@ class TestPlcInterpreter:
         "POUs/FB_SecondBlock.TcPOU",
         "POUs/MAIN.TcPOU",
         "DUTs/E_Options.TcDUT",
-        "GVL/GVL_Main.TcGVL",
+        "GVLs/GVL_Main.TcGVL",
     ]
 
     def test_files(self, interpreter):
@@ -44,6 +44,7 @@ class TestPlcInterpreter:
             "FB_SecondBlock",
             "MAIN",
             "E_Options",
+            "GVL_Main",
         ]
 
         for name in objects:
@@ -66,7 +67,7 @@ class TestPlcInterpreter:
                 "struct": 12,
                 "function": 5 + 20,  # Functions + Methods
                 "property": 1,
-                "variable_list": 4,
+                "gvl": 4,
             },
         ),
         (
@@ -75,7 +76,7 @@ class TestPlcInterpreter:
                 "functionblock": 32,
                 "struct": 5,
                 "function": 10 + 3,
-                "variable_list": 2,
+                "gvl": 2,
             },
         ),
         (
@@ -86,7 +87,7 @@ class TestPlcInterpreter:
                 "union": 1,
                 "functionblock": 14 + 3,  # Blocks + Interfaces
                 "function": 36 + 138,
-                "variable_list": 3,
+                "gvl": 3,
             },
         ),
     ]

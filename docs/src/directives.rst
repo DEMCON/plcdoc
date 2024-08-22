@@ -414,6 +414,22 @@ autostruct
 .. autostruct:: ST_ExampleStruct
    :noindex:
 
+autogvl
+-------
+
+.. code-block:: rst
+
+   .. autogvl:: <name>
+
+**Examples:**
+
+.. code-block:: rst
+
+   .. autogvl:: GVL_Main
+
+.. autogvl:: GVL_Main
+   :noindex:
+
 autofolder
 ----------
 
