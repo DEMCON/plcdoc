@@ -132,6 +132,7 @@ class PlcInterpreter:
             plc_item = item.tag  # I.e. "POU"
 
             if plc_item not in self.XML_TYPES:
+                logger.warning(f"Skipping file with XML tag {plc_item}")
                 continue
 
             # Name is repeated inside the declaration, use it from there instead
@@ -139,6 +140,7 @@ class PlcInterpreter:
 
             object_model = self._parse_declaration(item)
             if object_model is None:
+                # Log entry is made inside _parse_declaration() already
                 continue
 
             obj = PlcDeclaration(object_model, filepath)

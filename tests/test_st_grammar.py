@@ -5,7 +5,7 @@ Run the TextX grammar over some PLC code to see if it works.
 import pytest
 
 import os
-from textx import metamodel_from_file
+from textx import metamodel_from_file, TextXSyntaxError
 import re
 
 
@@ -30,6 +30,7 @@ grammar_files = [
     "E_Filter.txt",
     "Properties.txt",
     "Unions.txt",
+    "T_ALIAS.txt",
     "GlobalVariableList.txt",
     "Main.txt",
 ]
@@ -41,8 +42,8 @@ def test_grammar_on_files(meta_model, file):
     filepath = os.path.realpath(tests_dir + "/plc_code/" + file)
     try:
         model = meta_model.model_from_file(filepath)
-    except:
-        pytest.fail(f"Error when analyzing the file `{file}`")
+    except TextXSyntaxError as err:  # noqa
+        pytest.fail(f"Error when analyzing the file `{file}`: {err}")
     else:
         assert model is not None
         assert (

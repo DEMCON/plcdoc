@@ -8,12 +8,13 @@ Note: `FUNCTION*` does not have a closing call for some reason!
 
 There are a lot of `comments*=CommentAny`. This will offer a list of comments, the relevant docblocks need to be
 extracted later. There seems no better way to do this in TextX.
-Comment captures should be move down (= more basic elements) as much as possible to limit their usage.
+Comment captures should be moved down (= more basic elements) as much as possible to limit their usage.
 
 There can be dynamic expressions in variable declarations, which are very tricky to parse. Therefore expected
-expressions are parsed greedily as whole string. As a consequence, blocks like argument lists will result in a long
+expressions are parsed greedily as whole strings. As a consequence, blocks like argument lists will result in a long
 string including the parentheses and commas.
 */
+
 Declaration:
     types*=TypeDef
     properties*=Property

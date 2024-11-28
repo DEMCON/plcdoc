@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="F_SyntaxError" Id="{245635d7-7d54-4aa8-92df-775383b63265}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_SyntaxError RETURNS BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
