@@ -29,6 +29,7 @@ PLC Doc's documentation!
    src/directives
    src/examples
    src/modules
+   src/limitations
 
 
 ##################
