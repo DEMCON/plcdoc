@@ -14,3 +14,11 @@ TYPE E_Filter :
     Filter697nm := 6    // Note: non-consecutive number!
 ) USINT;                // Specify base type so API is explicit
 END_TYPE
+
+TYPE E_FilterDefault :
+(
+    NoFilter := 0,
+    Filter434nm,
+    Filter697nm
+) USINT := NoFilter;
+END_TYPE
