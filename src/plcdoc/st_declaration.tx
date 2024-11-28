@@ -67,6 +67,7 @@ TypeEnum:
     CommentAny*
     ')'
     (base_type=Fqn)?
+    (default=EnumDefault)?
     ';'
 ;
 
@@ -76,6 +77,12 @@ EnumOption:
     (':=' number=INT)?
     (',')?
     (comment=CommentLine)?
+;
+
+EnumDefault:
+   ':='
+   option=ID
+   // Enum default must be a literal field, it cannot be e.g. an integer
 ;
 
 TypeAlias:
