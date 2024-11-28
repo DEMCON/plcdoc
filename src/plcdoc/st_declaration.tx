@@ -42,7 +42,7 @@ TypeDef:
 ;
 
 AnyType:
-    TypeStruct | TypeUnion | TypeEnum
+    TypeStruct | TypeUnion | TypeEnum | TypeAlias
 ;
 
 TypeStruct:
@@ -76,6 +76,13 @@ EnumOption:
     (':=' number=INT)?
     (',')?
     (comment=CommentLine)?
+;
+
+TypeAlias:
+   base=VariableType
+   CommentAny*
+   // Catch trailing comments here, not at the end of `Variable`
+   ';'
 ;
 
 /*
