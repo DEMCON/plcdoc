@@ -80,8 +80,8 @@ def test_grammar_variables(meta_model):
     filepath = os.path.realpath(tests_dir + "/plc_code/" + filename)
     try:
         model = meta_model.model_from_file(filepath)
-    except:
-        pytest.fail(f"Error when analyzing the file `{filename}`")
+    except TextXSyntaxError as err:
+        pytest.fail(f"Error when analyzing the file `{filename}`: {err}")
     else:
         assert model.functions
         fb = model.functions[0]
@@ -145,12 +145,13 @@ def test_grammar_variables(meta_model):
             ("mypointer1", "UDINT", None, None, None, "POINTER"),
             ("mypointer2", "UDINT", None, None, None, "REFERENCE"),
             ("mypointer3", "FB_Motor", "_motor", None, None, "REFERENCE"),
+            ("extra_semicolons", "INT", "7", None, None, None),
             ("timeout1", "TIME", "T#2S", None, None, None),
             ("timeout2", "TIME", "T#12m13s14ms", None, None, None),
             ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 44
+        assert len(variables) == 45
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)

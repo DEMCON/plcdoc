@@ -68,7 +68,7 @@ TypeEnum:
     ')'
     (base_type=Fqn)?
     (default=EnumDefault)?
-    ';'
+    SemiColon
 ;
 
 EnumOption:
@@ -89,7 +89,7 @@ TypeAlias:
    base=VariableType
    CommentAny*
    // Catch trailing comments here, not at the end of `Variable`
-   ';'
+   SemiColon
 ;
 
 /*
@@ -106,7 +106,7 @@ Function:
     ('EXTENDS' extends=Fqn)?
     ('IMPLEMENTS' implements=Fqn)?
     (':' return=VariableType (arglist=ArgList)?)?
-    (';')?
+    (SemiColon)?
     lists*=VariableList
 ;
 
@@ -167,7 +167,7 @@ Variable:
     type=VariableType
     (arglist=ArgList)?
     (AssignmentSymbol value=AssignmentValue)?
-    ';'
+    SemiColon
     comment=CommentLine?
 ;
 
@@ -233,6 +233,13 @@ Fqn[noskipws]:
     /\s/*-
     ID('.'ID)*
     /\s/*-
+;
+
+/*
+Semi-colons may be repeated in valid code
+*/
+SemiColon:
+   ';'+
 ;
 
 /*
