@@ -19,6 +19,7 @@ def test_project_interpret(app, status, warning):
         "program": ["MAIN"],
         "enum": ["E_Error"],
         "struct": ["ST_MyStruct"],
+        "alias": ["T_ALIAS"],
     }
 
     for objtype, objects in expected.items():

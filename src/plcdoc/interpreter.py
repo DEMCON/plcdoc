@@ -289,6 +289,8 @@ class PlcDeclaration:
                 self._objtype = "struct"
             elif "Union" in type_str:
                 self._objtype = "union"
+            elif "Alias" in type_str:
+                self._objtype = "alias"
             else:
                 raise ValueError(f"Could not categorize type `{type_str}`")
 
