@@ -54,6 +54,8 @@ myfloat_no_ws:REAL;
     mypointer2          : REFERENCE TO UDINT;
     mypointer3          : REFERENCE TO FB_Motor REF= _motor;
 
+    extra_semicolons    : INT := 7;;;;;;;;;;
+
     timeout1            : TIME := T#2S;
     timeout2            : TIME := T#12m13s14ms;
 
