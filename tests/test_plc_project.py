@@ -17,6 +17,8 @@ def test_project_interpret(app, status, warning):
         "functionblock": ["FB_MyBlock", "FB_SecondBlock", "PlainFunctionBlock"],
         "function": ["PlainFunction", "RegularFunction"],
         "program": ["MAIN"],
+        "enum": ["E_Error"],
+        "struct": ["ST_MyStruct"],
     }
 
     for objtype, objects in expected.items():
@@ -29,6 +31,8 @@ def test_project_interpret(app, status, warning):
 
 
 @pytest.mark.sphinx("dummy", testroot="plc-project")
-def test_project_build(app, status, warning):
+def test_project_build(app, status, warning, caplog):
     """Test building a document loading a project."""
     app.builder.build_all()
+    # Project contains a function with an outright syntax error, but the project
+    # completes nonetheless.
