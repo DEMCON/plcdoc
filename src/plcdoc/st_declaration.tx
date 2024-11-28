@@ -246,6 +246,21 @@ SemiColon:
 Anything that is considered a value: a literal, a variable, or e.g. a sum
 */
 Expression:
+   ExpressionString | ExpressionAnything
+;
+
+/*
+Because a string expression could use a syntax character, we need to make an effort match string content, to
+escape the content.
+
+We use a literal string match, instead of TextX's `STRING`, because we need to keep the quotes so we can later
+still distinguish a literal string type (over e.g. a variable name).
+*/
+ExpressionString:
+   /'.*'/
+;
+
+ExpressionAnything:
     /[^;]*/
     // Match anything, including parentheses, up to (but excluding) the semicolon
 ;

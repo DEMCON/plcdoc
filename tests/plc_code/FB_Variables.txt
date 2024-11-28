@@ -28,6 +28,10 @@ myfloat_no_ws:REAL;
     mystring_size5      : STRING(35) := 'Unknown';
     mystring_size6      : STRING[Module.SIZE] := 'Unknown';
 
+    mystring_escape     : STRING := ':;"';
+
+    mystring_concat     : STRING := CONCAT('abc', 'xyz');
+
     myint               : INT := SomeConstant;
     myint2              : INT := E_Error.NoError;
 

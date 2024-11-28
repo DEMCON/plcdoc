@@ -124,6 +124,8 @@ def test_grammar_variables(meta_model):
             ("mystring_size4", "STRING[SIZE]", None, None, None, None),
             ("mystring_size5", "STRING(35)", "'Unknown'", None, None, None),
             ("mystring_size6", "STRING[Module.SIZE]", "'Unknown'", None, None, None),
+            ("mystring_escape", "STRING", "':;\"'", None, None, None),
+            ("mystring_concat", "STRING", "CONCAT('abc','xyz')", None, None, None),
             ("myint", "INT", "SomeConstant", None, None, None),
             ("myint2", "INT", "E_Error.NoError", None, None, None),
             ("mylist", "BOOL", None, None, "0..4", None),
@@ -151,7 +153,7 @@ def test_grammar_variables(meta_model):
             ("inline1", "INT", None, None, None, None),
         ]
 
-        assert len(variables) == 45
+        assert len(variables) == 47
 
         for i, expected in enumerate(expected_list):
             assert_variable(variables[i], expected)
