@@ -157,9 +157,12 @@ VariableListType:
 Single variable declaration
 
 Unfortunately, it is possible to define multiple variables inline - those are ignored for now
+
+Inline comments after the variable are matched, but comments above it also. Because of priority
+comments above would have been caught by the preceding variable if relevant.
 */
 Variable:
-    CommentAny*
+    comments_above=CommentAny*
     name=ID
     (',' ID)*
     (address=Address)?

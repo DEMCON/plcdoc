@@ -369,6 +369,9 @@ class PlcDeclaration:
                 return None
 
             big_block: str = block_comment.text
+        elif hasattr(self._model, "comments_above") and self._model.comments_above is not None:
+            # Comment was put above it instead of inline
+            big_block: str = self._model.comments_above[-1].text
         else:
             return None
 

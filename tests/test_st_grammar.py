@@ -168,8 +168,8 @@ def test_grammar_comments(meta_model):
     filepath = os.path.realpath(tests_dir + "/plc_code/" + filename)
     try:
         model = meta_model.model_from_file(filepath)
-    except:
-        pytest.fail(f"Error when analyzing the file `{filename}`")
+    except TextXSyntaxError as err:
+        pytest.fail(f"Error when analyzing the file `{filename}`: {err}")
     else:
         assert model is not None
         assert model.functions and not model.types
@@ -181,7 +181,7 @@ def test_grammar_comments(meta_model):
             "VAR_INPUT",
             "VAR_OUTPUT",
             "VAR",
-            "VAR",
+        "VAR",
         ]
         assert [l.constant for l in fb.lists] == [False, False, True, False]
 
@@ -190,6 +190,7 @@ def test_grammar_comments(meta_model):
             fb.comments[-1].text,
             fb.lists[0].variables[0].comment.text,
             fb.lists[0].variables[1].comment.text,
+            fb.lists[0].variables[2].comments_above[0].text,
             fb.lists[1].variables[0].comment.text,
             fb.lists[2].variables[0].comment.text,
             fb.lists[3].variables[0].comment.text,

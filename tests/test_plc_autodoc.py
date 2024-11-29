@@ -70,7 +70,7 @@ def test_autodoc_function(app, status, warning):
 
     actual = do_autodoc(app, "plc:function", "AutoFunction")
 
-    assert ".. plc:function:: AutoFunction(input, other_arg)" in actual
+    assert ".. plc:function:: AutoFunction(input, other_arg, above)" in actual
 
     expected_end = [
         "   Short description of the function.",
@@ -80,10 +80,11 @@ def test_autodoc_function(app, status, warning):
         "",
         "   :var_input LREAL input: This is an in-code description of some variable",
         "   :var_input UDINT other_arg:",
+        '   :var_input BOOL above: This is a comment above "above"',
         "",
     ]
 
-    assert expected_end == actual[-8:]
+    assert list(actual)[-9:] == expected_end
 
 
 @pytest.mark.sphinx("html", testroot="plc-autodoc")

@@ -12,6 +12,8 @@ VAR_INPUT // Ignored
     someInput       : LREAL;  // Important
     // Ignored
     otherInput      : BOOL;                    // Important
+    // Important
+    lastInput       : INT;
 END_VAR
 // Ignored
 VAR_OUTPUT

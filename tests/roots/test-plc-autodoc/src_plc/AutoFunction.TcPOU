@@ -11,6 +11,9 @@ FUNCTION AutoFunction : LREAL
 VAR_INPUT
     input       : LREAL;            // This is an in-code description of some variable
     other_arg   : UDINT;
+
+    // This is a comment above "above"
+    above       : BOOL;
 END_VAR
 VAR
 END_VAR
