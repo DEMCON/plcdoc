@@ -7,6 +7,18 @@ VAR_GLOBAL
     counter     : ULINT;
     cycleTime   : LREAL := 0.001;   // Time between PLC cycles
 END_VAR
+
+VAR_GLOBAL
+    otherSection : BOOL;
+END_VAR
+
+VAR_GLOBAL CONSTANT
+    MY_CONST    : INT := 420;
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    runtime_sec : UDINT;
+END_VAR
 ]]></Declaration>
   </GVL>
 </TcPlcObject>

@@ -108,3 +108,13 @@ Manually Typed PLC Structs
    .. plc:member:: \
       FaceUp
       FaceDown
+
+
+Manually Typed PLC GVLs
+=======================
+
+.. plc:gvl:: GVL_MyGVL
+
+   Global variable list with, well, global variables.
+
+   :var UDINT tickInterval_us: PLC tick interval

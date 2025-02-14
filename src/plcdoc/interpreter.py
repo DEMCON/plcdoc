@@ -307,7 +307,8 @@ class PlcDeclaration:
             # GVL are annoying because no naming is present in source - we need to
             # extract it from the file name
 
-            self._model = meta_model.variable_lists[0]
+            self._model = meta_model
+            # ^ A GVL can contain multiple lists, store them all
             self._objtype = "gvl"
 
         if self._objtype is None:
@@ -411,6 +412,12 @@ class PlcDeclaration:
             for var in self._model.variables:
                 var.kind = "var"
                 args.append(var)
+
+        if hasattr(self._model, "variable_lists"):
+            for var_list in self._model.variable_lists:
+                for var in var_list.variables:
+                    var.kind = "var"
+                    args.append(var)
 
         return args
 

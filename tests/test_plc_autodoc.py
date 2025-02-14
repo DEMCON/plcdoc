@@ -156,3 +156,6 @@ def test_autodoc_gvl(app, status, warning):
     assert "   :var BOOL flag: Flag for the system" == actual[4]
     assert "   :var ULINT counter:" == actual[5]
     assert "   :var LREAL cycleTime: Time between PLC cycles" == actual[6]
+    assert "   :var BOOL otherSection:" == actual[7]
+    assert "   :var INT MY_CONST:" == actual[8]
+    assert "   :var UDINT runtime_sec:" == actual[9]
